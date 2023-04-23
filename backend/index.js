@@ -14,7 +14,7 @@ const db = mysql.createConnection({
 
 // if auth problems run this -> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'ROOTPW';
 
-
+// new change
 app.use(express.json())
 app.use(cors()) 
 
