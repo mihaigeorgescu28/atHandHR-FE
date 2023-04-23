@@ -30,7 +30,8 @@ function FixedPlugin(props) {
     }
   };
   return (
-    <div className="fixed-plugin">
+    null
+    /*<div className="fixed-plugin">
       <div className={classes}>
         <div onClick={handleClick}>
           <i className="fa fa-cog fa-2x" />
@@ -181,7 +182,7 @@ function FixedPlugin(props) {
           </li>
         </ul>
       </div>
-    </div>
+    </div>*/
   );
 }
 

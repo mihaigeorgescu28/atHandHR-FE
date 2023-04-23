@@ -50,7 +50,9 @@ const chartExample1 = {
       "Jul",
       "Aug",
       "Sep",
-      "Oct"
+      "Oct",
+      "Nov",
+      "Dec"
     ],
     datasets: [
       {
@@ -62,7 +64,75 @@ const chartExample1 = {
         borderWidth: 3,
         barPercentage: 1.6,
         tension: 0.4,
-        data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610]
+        data: [5.4, 4.8, 4.3, 5.5, 5.3, 4.5, 3.8, 4.3, 5.6, 6.1,8,10]
+      }
+    ]
+  },
+  options: {
+    plugins: {
+      legend: {
+        display: false
+      },
+
+      tooltips: {
+        enabled: false
+      }
+    },
+
+    scales: {
+      y: {
+        ticks: {
+          color: "#9f9f9f",
+          beginAtZero: false,
+          maxTicksLimit: 5
+          //padding: 20
+        },
+        grid: {
+          drawBorder: false,
+          display: false
+        }
+      },
+      x: {
+        grid: {
+          drawBorder: false,
+          display: false
+        },
+        ticks: {
+          padding: 20,
+          color: "#9f9f9f"
+        }
+      }
+    }
+  }
+};
+
+const chartExample111 = {
+  data: {
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    datasets: [
+      {
+        label: "Active Users",
+        borderColor: "#6bd098",
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        fill: false,
+        borderWidth: 3,
+        barPercentage: 1.6,
+        tension: 0.4,
+        data: [0, 2, 3, 1, 5, 2, 6, 7, 3, 1,3,5]
       }
     ]
   },
@@ -532,7 +602,7 @@ const chartExample7 = {
 // #########################################
 const chartExample8 = {
   data: {
-    labels: [1, 2],
+    labels: ['Signed In', 'Pending'],
     datasets: [
       {
         label: "Emails",
@@ -541,7 +611,7 @@ const chartExample8 = {
         backgroundColor: ["#66615b", "#f4f3ef"],
         borderWidth: 0,
         barPercentage: 1.6,
-        data: [11, 89]
+        data: [82, 18]
       }
     ]
   },
@@ -555,7 +625,7 @@ const chartExample8 = {
       },
       title: {
         display: true,
-        text: "11%",
+        text: "82%",
         position: "bottom",
         color: "#66615c",
         font: {
@@ -739,13 +809,13 @@ const chartExample10 = {
 
 const chartExample11 = {
   data: {
-    labels: [1, 2, 3],
+    labels: ['Rejected', 'Approved', 'Outstanding'],
     datasets: [
       {
         label: "Emails",
         pointRadius: 0,
         pointHoverRadius: 0,
-        backgroundColor: ["#e3e3e3", "#4acccd", "#fcc468"],
+        backgroundColor: ["#f17e5d", "#4acccd", "#fcc468"],
         borderWidth: 0,
         barPercentage: 1.6,
         data: [542, 480, 430]
@@ -755,7 +825,7 @@ const chartExample11 = {
   options: {
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
 
       tooltips: {
@@ -873,6 +943,117 @@ const chartExample12 = {
   }
 };
 
+const chartExample13 = {
+  data: {
+    labels: ['Rejected', 'Approved', 'Outstanding'],
+    datasets: [
+      {
+        label: "Emails",
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        backgroundColor: ["#f17e5d", "#4acccd", "#fcc468"],
+        borderWidth: 0,
+        barPercentage: 1.6,
+        data: [50, 200, 20]
+      }
+    ]
+  },
+  options: {
+    plugins: {
+      legend: {
+        display: false,
+      },
+
+      tooltips: {
+        enabled: false
+      }
+    },
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        ticks: {
+          display: false
+        },
+        grid: {
+          drawBorder: false,
+          zeroLineColor: "transparent",
+          color: "rgba(255,255,255,0.05)"
+        }
+      },
+      x: {
+        grid: {
+          drawBorder: false,
+          color: "rgba(255,255,255,0.1)",
+          zeroLineColor: "transparent"
+        },
+        ticks: {
+          display: false
+        }
+      }
+    }
+  }
+};
+
+const chartExample14 = {
+  data: {
+    labels: ['Signed Out', 'Pending'],
+    datasets: [
+      {
+        label: "Emails",
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        backgroundColor: ["#66615b", "#f4f3ef"],
+        borderWidth: 0,
+        barPercentage: 1.6,
+        data: [59, 41]
+      }
+    ]
+  },
+  options: {
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltips: {
+        enabled: false
+      },
+      title: {
+        display: true,
+        text: "59%",
+        position: "bottom",
+        color: "#66615c",
+        font: {
+          weight: 400,
+          size: 30
+        }
+      }
+    },
+    maintainAspectRatio: false,
+    cutout: "90%",
+    scales: {
+      y: {
+        ticks: {
+          display: false
+        },
+        grid: {
+          drawBorder: false,
+          display: false
+        }
+      },
+      x: {
+        grid: {
+          drawBorder: false,
+          display: false
+        },
+        ticks: {
+          display: false
+        }
+      }
+    }
+  }
+};
+
+
 module.exports = {
   // used for Charts and Dashboard views
   chartExample1,
@@ -897,5 +1078,8 @@ module.exports = {
   // used for Charts view
   chartExample11,
   // used for Charts view
-  chartExample12
+  chartExample12,
+  chartExample111,
+  chartExample13,
+  chartExample14
 };

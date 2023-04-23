@@ -1,33 +1,20 @@
-/*!
-
-=========================================================
-* Paper Dashboard PRO React - v1.3.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
-// javascript plugin used to create scrollbars on windows
+import { Routes, Route, Outlet, useLocation } from "react-router-dom";
 import PerfectScrollbar from "perfect-scrollbar";
-import { Route, Switch } from "react-router-dom";
-
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import Footer from "components/Footer/Footer.js";
-
-import routes from "routes.js";
+import Login from "views/pages/Login.js";
+import Register from "views/pages/Register.js";
+import LockScreen from "views/pages/LockScreen.js";
+import NotFound from "views/pages/NotFound.js"
 
 var ps;
 
-function Pages() {
+
+function AuthLayout() {
   const fullPages = React.useRef();
+  const location = useLocation();
+
   React.useEffect(() => {
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(fullPages.current);
@@ -38,30 +25,30 @@ function Pages() {
       }
     };
   });
-  const getRoutes = (routes) => {
-    return routes.map((prop, key) => {
-      if (prop.collapse) {
-        return getRoutes(prop.views);
-      }
-      if (prop.layout === "/auth") {
-        return (
-          <Route
-            path={prop.layout + prop.path}
-            component={prop.component}
-            key={key}
-          />
-        );
-      } else {
-        return null;
-      }
-    });
+
+  const nestedRoute = () => {
+    const { pathname } = location;
+    if (pathname === "/auth/login") {
+      return <Login />;
+    } else if (pathname === "/auth/register") {
+      return <Register/>;
+    } else if (pathname === "/auth/lock-screen") {
+      return <LockScreen/>;
+    }
+    else return <NotFound/>;
+    
+    // Add other cases here for additional routes
   };
+
   return (
     <>
       <AuthNavbar />
       <div className="wrapper wrapper-full-page" ref={fullPages}>
         <div className="full-page section-image">
-          <Switch>{getRoutes(routes)}</Switch>
+          <Routes>
+            <Route path="/" element={<Outlet />} />
+          </Routes>
+          {nestedRoute()}
           <Footer fluid />
         </div>
       </div>
@@ -69,4 +56,4 @@ function Pages() {
   );
 }
 
-export default Pages;
+export default AuthLayout;

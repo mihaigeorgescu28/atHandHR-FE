@@ -16120,3 +16120,51 @@ This file was modified entirely by Creative Tim for React-Select v2.0.0
     border-color: #FFFFFF;
     background-color: #FFFFFF;
     color: inherit; }
+    .custom-modal {
+      position: fixed;
+      top: 50%;
+      left: 55%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      max-width: 500px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+      }
+    body.modal-open {
+      overflow: hidden;
+    }
+  .modal-open .rbc-month-view .rbc-row-bg {
+      pointer-events: none;
+      background-color: transparent;
+    }
+
+    
+    .ReactModal__Overlay {
+      z-index: 1000 !important;
+    }
+
+    .ReactModal__Title {
+      text-align: center;
+    }
+
+    .first-input-group {
+      margin-top: 10px;
+    }
+
+    .button-container {
+      margin-top: 20px;
+    }
+
+    .custom-modal .custom-title {
+      margin-bottom: 40px;
+    }
+    
+    .custom-modal .custom-input-group {
+      margin-top: 20px;
+    }
+
+
+
+    

@@ -46,11 +46,14 @@ function Register() {
   const [passwordValidationError, setPasswordValidationError] = useState("");
   const [disabled, setDisabled] = useState(false);
   const [agreement, setAgreement] = useState(false);
+  const [agreementError, setAgreementError] = useState("");
 
   var yesterday = moment().subtract(1, "day");
 
   const handlecheck = (event) => {
+    
     setAgreement(event.target.checked);
+
   }
 
   // called for each field on the form
@@ -152,6 +155,10 @@ function Register() {
     event.preventDefault();
      console.log(inputs);
 
+     if(agreement == true)
+    {
+      setAgreementError("");
+
       axios.post(
         "http://localhost:8800/register",
         {
@@ -184,12 +191,12 @@ function Register() {
       .catch(function (error) {
         console.log(error);
       })
-    
-  }
-
-  function valid(current) 
-  {
-  return current.isBefore(yesterday);
+    }
+    else
+    {
+      setAgreementError("You need to agree with the T&C in order to register");
+      setMessage("");
+    }
   }
 
   function hasNumber(myString) {
@@ -198,14 +205,12 @@ function Register() {
 
   return (
     <div className="register-page">
-      <Container>
+      <Container >
         <Row>
-
           <Col className="ml-auto mr-auto" lg="4" md="6">
-            <Card className="card-signup text-center">
+            <Card className="card-signup text-center" >
               <CardHeader>
                 <CardTitle tag="h4">Register</CardTitle>
-
               </CardHeader>
               <CardBody>
               
@@ -312,13 +317,12 @@ function Register() {
                    <FormGroup check className="text-left">
                     <Label check>
                       <Input id = "tc" type="checkbox" name="t&c"
-                      onChange={handlecheck}
-                      required
+                      onClick={handlecheck}
                       />
                       
                       <span className="form-check-sign" />I agree to the{" "}
                       
-                      <a onClick={handlecheck}>
+                      <a>
                         terms and conditions
                       </a>
                       .
@@ -326,7 +330,12 @@ function Register() {
                   </FormGroup>
                   )}
 
-                  
+                {!success &&
+                <p style={{ color: "red"}}>
+                  {agreementError}
+                </p>
+                }
+
 
                 {!success &&
                 <p style={{ color: "red"}}>
@@ -349,9 +358,6 @@ function Register() {
                 Login
                 </Button>)
                 }
-
-                  
-
 
                 {!submit && (
                   <Button

@@ -22,21 +22,13 @@ import PropTypes from "prop-types";
 
 function Footer(props) {
   return (
-    <footer className={"footer" + (props.default ? " footer-default" : "")}>
+    <footer className={"footer" + (props.default ? " footer-default" : "")} >
       <Container fluid={props.fluid ? true : false}>
         <Row>
           <nav className="footer-nav">
             <ul>
               <li>
-                <a href="https://www.creative-tim.com">Creative Tim</a>
-              </li>
-              <li>
-                <a href="https://blog.creative-tim.com">Blog</a>
-              </li>
-              <li>
-                <a href="https://www.creative-tim.com/license" target="_blank">
-                  Licenses
-                </a>
+                <a href="https://www.athandhr.com/">At Hand HR</a>
               </li>
             </ul>
           </nav>

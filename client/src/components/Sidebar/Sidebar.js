@@ -1,33 +1,22 @@
-/*!
 
-=========================================================
-* Paper Dashboard PRO React - v1.3.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Nav, Collapse } from "reactstrap";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
+import axios from 'axios';
 
-import avatar from "assets/img/faces/ayo-ogunseinde-2.jpg";
+import avatar from "assets/img/default-avatar.png";
 import logo from "assets/img/react-logo.png";
+import { useLocation } from "react-router-dom";
 
 var ps;
 
 function Sidebar(props) {
+  const location = useLocation();
   const [openAvatar, setOpenAvatar] = React.useState(false);
   const [collapseStates, setCollapseStates] = React.useState({});
+  const [userFullName, setUserFullName] = useState('');
   const sidebar = React.useRef();
   // this creates the intial state of this component based on the collapse routes
   // that it gets through props.routes
@@ -64,9 +53,13 @@ function Sidebar(props) {
       if (prop.redirect) {
         return null;
       }
+      if (prop.sidebar == 'True' )
+      {
+      
       if (prop.collapse) {
         var st = {};
         st[prop["state"]] = !collapseStates[prop.state];
+        
         return (
           <li
             className={getCollapseInitialState(prop.views) ? "active" : ""}
@@ -105,28 +98,54 @@ function Sidebar(props) {
           </li>
         );
       }
-      return (
-        <li className={activeRoute(prop.layout + prop.path)} key={key}>
-          <NavLink to={prop.layout + prop.path} activeClassName="">
-            {prop.icon !== undefined ? (
-              <>
-                <i className={prop.icon} />
-                <p>{prop.name}</p>
-              </>
-            ) : (
-              <>
-                <span className="sidebar-mini-icon">{prop.mini}</span>
-                <span className="sidebar-normal">{prop.name}</span>
-              </>
-            )}
-          </NavLink>
-        </li>
-      );
+      
+        return (
+
+          <li className={activeRoute(prop.layout + prop.path)} key={key}>
+            <NavLink to={prop.layout + prop.path} >
+              {prop.icon !== undefined ? (
+                <>
+                  <i className={prop.icon} />
+                  <p>{prop.name}</p>
+                </>
+              ) : (
+                <>
+                  <span className="sidebar-mini-icon">{prop.mini}</span>
+                  <span className="sidebar-normal">{prop.name}</span>
+                </>
+              )}
+            </NavLink>
+          </li>
+        );
+      }
     });
   };
+
+  useEffect(() => {
+    async function fetchUserFullName() {
+      const UserID = localStorage.getItem("UserID");
+      try {
+        const result = await axios.post(
+          "http://localhost:8800/user",
+          {
+            UserID: UserID,
+          }
+        );
+        if (result.status === 200) {
+          setUserFullName(result.data.FullName);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchUserFullName();
+  }, []);
+
+  
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
-    return props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
+    return location.pathname.indexOf(routeName) > -1 ? "active" : "";
   };
   React.useEffect(() => {
     // if you are using a Windows Machine, the scrollbars will have a Mac look
@@ -147,6 +166,7 @@ function Sidebar(props) {
   React.useEffect(() => {
     setCollapseStates(getCollapseStates(props.routes));
   }, []);
+
   return (
     <div
       className="sidebar"
@@ -155,7 +175,7 @@ function Sidebar(props) {
     >
       <div className="logo">
         <a
-          href="https://www.creative-tim.com"
+          href="https://athandhr.com"
           className="simple-text logo-mini"
         >
           <div className="logo-img">
@@ -163,10 +183,10 @@ function Sidebar(props) {
           </div>
         </a>
         <a
-          href="https://www.creative-tim.com"
+          href="https://athandhr.com"
           className="simple-text logo-normal"
         >
-          Creative Tim
+          At Hand HR
         </a>
       </div>
 
@@ -183,28 +203,16 @@ function Sidebar(props) {
               onClick={() => setOpenAvatar(!openAvatar)}
             >
               <span>
-                Chet Faker
+                {userFullName}
                 <b className="caret" />
               </span>
             </a>
             <Collapse isOpen={openAvatar}>
               <ul className="nav">
                 <li>
-                  <NavLink to="/admin/user-profile" activeClassName="">
+                  <NavLink to="/admin/user-profile" >
                     <span className="sidebar-mini-icon">MP</span>
                     <span className="sidebar-normal">My Profile</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/admin/user-profile" activeClassName="">
-                    <span className="sidebar-mini-icon">EP</span>
-                    <span className="sidebar-normal">Edit Profile</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/admin/user-profile" activeClassName="">
-                    <span className="sidebar-mini-icon">S</span>
-                    <span className="sidebar-normal">Settings</span>
                   </NavLink>
                 </li>
               </ul>
@@ -212,6 +220,7 @@ function Sidebar(props) {
           </div>
         </div>
         <Nav>{createLinks(props.routes)}</Nav>
+        
       </div>
     </div>
   );

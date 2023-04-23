@@ -29,16 +29,16 @@
   "bugs": {
     "url": "https://github.com/creativetimofficial/ct-paper-dashboard-pro-react/issues"
   },
-  "homepage": "https://demos.creative-tim.com/paper-dashboard-pro-react/#/",
-  
+  "homepage": "https://athandhr.com",
   "dependencies": {
     "axios": "^1.2.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "4.5.3",
     "chart.js": "3.4.1",
     "classnames": "2.3.1",
+    "google-maps-react": "^2.0.6",
     "match-sorter": "6.3.1",
-    "moment": "2.29.3",
+    "moment": "^2.29.4",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "nouislider": "14.6.3",
@@ -53,9 +53,10 @@
     "react-datetime": "3.1.1",
     "react-dom": "^18.2.0",
     "react-jvectormap": "0.0.16",
+    "react-modal": "^3.16.1",
     "react-notification-alert": "0.0.13",
-    "react-router-dom": "5.2.0",
-    "react-scripts": "5.0.1",
+    "react-router-dom": "^6.9.0",
+    "react-scripts": "^5.0.1",
     "react-select": "3.1.1",
     "react-table": "7.8.0",
     "react-tagsinput": "3.19.0",
@@ -74,7 +75,7 @@
     "typescript": "4.7.4"
   },
   "devDependencies": {
-    "gulp": "4.0.2",
+    "gulp": "^4.0.2",
     "gulp-append-prepend": "1.0.9"
   }
 }

@@ -1,22 +1,7 @@
-/*!
-
-=========================================================
-* Paper Dashboard PRO React - v1.3.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import { useLocation } from "react-router-dom";
+import { useLocation,useNavigate } from "react-router-dom";
+import axios from 'axios';
 import {
   Button,
   Collapse,
@@ -37,11 +22,16 @@ import {
   Container
 } from "reactstrap";
 
+
 function AdminNavbar(props) {
   const [collapseOpen, setCollapseOpen] = React.useState(false);
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [color, setColor] = React.useState("navbar-transparent");
+  const [clientName, setClientName] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
+
+
   React.useEffect(() => {
     window.addEventListener("resize", updateColor);
   });
@@ -77,9 +67,43 @@ function AdminNavbar(props) {
     }
     setCollapseOpen(!collapseOpen);
   };
+
+
+  function Logout()
+  {
+    window.location.href = "/auth/login";
+    localStorage.removeItem('isLoggedIn');
+  }
+
+
+    useEffect(() => {
+    async function fetchClientName() {
+      const UserID = localStorage.getItem("UserID");
+      try {
+        const result = await axios.post(
+          "http://localhost:8800/currentClient",
+          {
+            UserID: UserID,
+          }
+        );
+        if (result.status === 200) {
+          setClientName(result.data.ClientName);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchClientName();
+  }, []);
+  
+
+  
+
   return (
     <>
       <Navbar
+        
         className={classnames("navbar-absolute fixed-top", color)}
         expand="lg"
       >
@@ -113,9 +137,9 @@ function AdminNavbar(props) {
             </div>
             <NavbarBrand href="#pablo" onClick={(e) => e.preventDefault()}>
               <span className="d-none d-md-block">
-                Paper Dashboard PRO React
+              {clientName}
               </span>
-              <span className="d-block d-md-none">PD PRO React</span>
+              <span className="d-block d-md-none">{clientName}</span>
             </NavbarBrand>
           </div>
           <button
@@ -137,80 +161,16 @@ function AdminNavbar(props) {
             navbar
             isOpen={collapseOpen}
           >
-            <Form>
-              <InputGroup className="no-border">
-                <Input defaultValue="" placeholder="Search..." type="text" />
-                <InputGroupAddon addonType="append">
-                  <InputGroupText>
-                    <i className="nc-icon nc-zoom-split" />
-                  </InputGroupText>
-                </InputGroupAddon>
-              </InputGroup>
-            </Form>
             <Nav navbar>
-              <NavItem>
-                <NavLink
-                  className="btn-magnify"
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <i className="nc-icon nc-layout-11" />
-                  <p>
-                    <span className="d-lg-none d-md-block">Stats</span>
-                  </p>
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown className="btn-rotate" nav>
-                <DropdownToggle
-                  aria-haspopup={true}
-                  caret
-                  color="default"
-                  data-toggle="dropdown"
-                  id="navbarDropdownMenuLink"
-                  nav
-                >
-                  <i className="nc-icon nc-bell-55" />
-                  <p>
-                    <span className="d-lg-none d-md-block">Some Actions</span>
-                  </p>
-                </DropdownToggle>
-                <DropdownMenu
-                  persist
-                  aria-labelledby="navbarDropdownMenuLink"
-                  right
-                >
-                  <DropdownItem
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Action
-                  </DropdownItem>
-                  <DropdownItem
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Another action
-                  </DropdownItem>
-                  <DropdownItem
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Something else here
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-              <NavItem>
-                <NavLink
-                  className="btn-rotate"
-                  href="#pablo"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <i className="nc-icon nc-settings-gear-65" />
-                  <p>
-                    <span className="d-lg-none d-md-block">Account</span>
-                  </p>
-                </NavLink>
-              </NavItem>
+
+            <UncontrolledDropdown nav>
+            <DropdownToggle onClick={() => Logout()} nav>
+            <i className="nc-icon nc-button-power" />
+            &nbsp;Log out
+            </DropdownToggle>
+            </UncontrolledDropdown>
+
+
             </Nav>
           </Collapse>
         </Container>

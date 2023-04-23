@@ -1,20 +1,8 @@
-/*!
-
-=========================================================
-* Paper Dashboard PRO React - v1.3.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
+import { useState } from 'react';
+import axios from 'axios';
+import bcrypt from 'bcryptjs';
+import { useNavigate } from "react-router-dom";
 
 // reactstrap components
 import {
@@ -23,6 +11,7 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
+  CardTitle,
   Label,
   FormGroup,
   Form,
@@ -35,7 +24,78 @@ import {
   Row
 } from "reactstrap";
 
+
 function Login() {
+
+  const [inputs, setInputs] = useState({});
+  const [submit, setSubmit] = useState(false);
+  const [isBackgroundRed, setBackgroundRed] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+  
+
+  // called for each field on the form
+  const handleChange = (event, field) => {
+  
+    if(field == 'password')
+    {
+      const name = event.target.name;
+      const value = event.target.value;
+      const valueEncrypted = bcrypt.hashSync(value, '$2a$10$CwTycUXWue0Thq9StjUM0u')
+      setInputs(values => ({...values, [name]: valueEncrypted}))
+      
+    }
+    else
+    {
+      const name = event.target.name;
+      const value = event.target.value;
+      setInputs(values => ({...values, [name]: value}))
+    }
+  
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+      axios.post(
+        "http://localhost:8800/login",
+        {
+          email: inputs.email,
+          password: inputs.password
+        },
+      ).then(
+        (result) =>
+        {
+
+          if(result.status == 200)
+          {
+          setMessage(result.data.message);
+
+          if(result.data.message == "Success")
+          {
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('UserID', result.data.UserID);
+            setSubmit(true);
+            setSuccess(true);
+            navigate("/admin/newsfeed");
+
+          }
+          else if(result.data.message == 'The email address and/or the password selected are not valid. Please try different credentials.')
+          {
+            localStorage.setItem('isLoggedIn', 'false');
+            setBackgroundRed(true);
+            setMessage(result.data.message);
+          }
+
+          }
+          
+        }).catch(function (error) {
+        })
+  }
+
+
   React.useEffect(() => {
     document.body.classList.toggle("login-page");
     return function cleanup() {
@@ -44,61 +104,74 @@ function Login() {
   });
   return (
     <div className="login-page">
-      <Container>
+  <Container>
         <Row>
+
           <Col className="ml-auto mr-auto" lg="4" md="6">
-            <Form action="" className="form" method="">
-              <Card className="card-login">
-                <CardHeader>
-                  <CardHeader>
-                    <h3 className="header text-center">Login</h3>
-                  </CardHeader>
-                </CardHeader>
-                <CardBody>
+            <Card className="card-signin text-center">
+              <CardHeader>
+                <CardTitle tag="h4">Login</CardTitle>
+
+              </CardHeader>
+              <CardBody>
+              
+                <Form onSubmit={handleSubmit} className="form" method="">
+                  
+                  
                   <InputGroup>
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
-                        <i className="nc-icon nc-single-02" />
+                        <i className="nc-icon nc-email-85" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="First Name..." type="text" />
+                    <Input placeholder="Email" type="email"
+                    name="email"
+                    size="32" 
+                    required
+                    onChange={(e) => handleChange(e, "email")}
+                    className={isBackgroundRed == true ? 'background-red' : 'background-blue'}
+                    />
                   </InputGroup>
+                  
+
+                  
                   <InputGroup>
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
                         <i className="nc-icon nc-key-25" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input
-                      placeholder="Password"
-                      type="password"
-                      autoComplete="off"
-                    />
+                    <Input placeholder="Password" type="password"
+                    id = "pw1"
+                    name="password" 
+                    onChange={(e) => handleChange(e, "password")}
+                    onPaste={(e)=>{e.preventDefault()
+                      return false;
+                      }}
+                    required/>
                   </InputGroup>
-                  <br />
-                  <FormGroup>
-                    <FormGroup check>
-                      <Label check>
-                        <Input defaultChecked defaultValue="" type="checkbox" />
-                        <span className="form-check-sign" />
-                        Subscribe to newsletter
-                      </Label>
-                    </FormGroup>
-                  </FormGroup>
-                </CardBody>
-                <CardFooter>
+
+                  {!success &&
+                <p style={{ color: "red"}}>
+                  {message}
+                </p>
+                }
+                  
                   <Button
-                    block
-                    className="btn-round mb-3"
-                    color="warning"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                  type = "submit"
+                  className="btn-round"
+                  color="info"
+                  disabled={disabled}
                   >
-                    Get Started
+                  Login
                   </Button>
-                </CardFooter>
-              </Card>
-            </Form>
+                
+                  </Form> 
+              </CardBody>
+              <CardFooter>
+                
+              </CardFooter>
+            </Card>
           </Col>
         </Row>
       </Container>

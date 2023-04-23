@@ -1,19 +1,3 @@
-/*!
-
-=========================================================
-* Paper Dashboard PRO React - v1.3.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import Buttons from "views/components/Buttons.js";
 import Calendar from "views/Calendar.js";
 import Charts from "views/Charts.js";
@@ -40,55 +24,97 @@ import ValidationForms from "views/forms/ValidationForms.js";
 import VectorMap from "views/maps/VectorMap.js";
 import Widgets from "views/Widgets.js";
 import Wizard from "views/forms/Wizard.js";
+import NotFound from "views/pages/NotFound.js"
+import NewsFeed from "views/pages/NewsFeed.js"
+import SignInOut from "views/pages/SignInOut.js";
 
 const routes = [
+  {
+    path: "/newsfeed",
+    name: "Newsfeed",
+    icon: "nc-icon nc-bell-55",
+    component: NewsFeed,
+    layout: "/admin",
+    sidebar: "True"
+  },
+  {
+    path: "/time-management",
+    name: "Time Management",
+    icon: "nc-icon nc-watch-time",
+    component: SignInOut,
+    layout: "/admin",
+    sidebar: "True"
+  },
+  {
+    path: "/submit-leave",
+    name: "Submit Leave",
+    icon: "nc-icon nc-calendar-60",
+    component: Calendar,
+    layout: "/admin",
+    sidebar: "True"
+  },
   {
     path: "/dashboard",
     name: "Dashboard",
     icon: "nc-icon nc-bank",
     component: Dashboard,
-    layout: "/admin"
+    layout: "/admin",
+    sidebar: "True"
   },
   {
     collapse: true,
     name: "Pages",
     icon: "nc-icon nc-book-bookmark",
     state: "pagesCollapse",
+    sidebar: "False",
     views: [
       {
         path: "/timeline",
         name: "Timeline",
         mini: "T",
         component: Timeline,
-        layout: "/admin"
+        layout: "/admin",
+        sidebar: "False"
       },
       {
         path: "/login",
         name: "Login",
         mini: "L",
         component: Login,
-        layout: "/auth"
+        layout: "/auth",
+        sidebar: "False"
       },
       {
         path: "/register",
         name: "Register",
         mini: "R",
         component: Register,
-        layout: "/auth"
+        layout: "/auth",
+        sidebar: "False"
       },
       {
         path: "/lock-screen",
         name: "LockScreen",
         mini: "LS",
         component: LockScreen,
-        layout: "/auth"
+        layout: "/auth",
+        sidebar: "False"
+      },
+      {
+        path: "/not-found",
+        name: "NotFound",
+        mini: "NF",
+        component: NotFound,
+        layout: "/auth",
+        sidebar: "False"
       },
       {
         path: "/user-profile",
         name: "UserProfile",
         mini: "UP",
         component: UserProfile,
-        layout: "/admin"
+        layout: "/admin",
+        sidebar: "False"
       }
     ]
   },
@@ -219,13 +245,15 @@ const routes = [
     name: "Maps",
     icon: "nc-icon nc-pin-3",
     state: "mapsCollapse",
+    sidebar: "False",
     views: [
       {
         path: "/google-maps",
         name: "Google Maps",
         mini: "GM",
         component: GoogleMaps,
-        layout: "/admin"
+        layout: "/admin",
+        sidebar: "False"
       },
       {
         path: "/full-screen-map",
@@ -255,13 +283,6 @@ const routes = [
     name: "Charts",
     icon: "nc-icon nc-chart-bar-32",
     component: Charts,
-    layout: "/admin"
-  },
-  {
-    path: "/calendar",
-    name: "Calendar",
-    icon: "nc-icon nc-calendar-60",
-    component: Calendar,
     layout: "/admin"
   }
 ];
