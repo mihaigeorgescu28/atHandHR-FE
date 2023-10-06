@@ -22,6 +22,8 @@ import {
   Container
 } from "reactstrap";
 
+const apiUrl = process.env.REACT_APP_APIURL;
+
 
 function AdminNavbar(props) {
   const [collapseOpen, setCollapseOpen] = React.useState(false);
@@ -30,6 +32,7 @@ function AdminNavbar(props) {
   const [clientName, setClientName] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
+  
 
 
   React.useEffect(() => {
@@ -81,13 +84,14 @@ function AdminNavbar(props) {
       const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-          "http://localhost:8800/currentClient",
+          `${apiUrl}/currentClient`,
           {
             UserID: UserID,
           }
         );
         if (result.status === 200) {
           setClientName(result.data.ClientName);
+          localStorage.setItem('ClientID', result.data.ClientID);
         }
       } catch (error) {
         console.error(error);

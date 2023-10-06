@@ -27,8 +27,17 @@ import Wizard from "views/forms/Wizard.js";
 import NotFound from "views/pages/NotFound.js"
 import NewsFeed from "views/pages/NewsFeed.js"
 import SignInOut from "views/pages/SignInOut.js";
+import EditUserForm from "views/helper/EditUserForm.js";
 
 const routes = [
+  {
+    path: "/dashboard/totalStaff/:id",
+    name: "User Details",
+    icon: "nc-icon nc-watch-time",
+    component: EditUserForm,
+    layout: "/admin",
+    sidebar: "false"
+  },
   {
     path: "/newsfeed",
     name: "Newsfeed",

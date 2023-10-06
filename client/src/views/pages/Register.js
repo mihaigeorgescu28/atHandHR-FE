@@ -47,6 +47,7 @@ function Register() {
   const [disabled, setDisabled] = useState(false);
   const [agreement, setAgreement] = useState(false);
   const [agreementError, setAgreementError] = useState("");
+  const apiUrl = process.env.REACT_APP_APIURL;
 
   var yesterday = moment().subtract(1, "day");
 
@@ -160,7 +161,7 @@ function Register() {
       setAgreementError("");
 
       axios.post(
-        "http://localhost:8800/register",
+        `${apiUrl}/register`,
         {
           firstName : inputs.firstName,
           lastName : inputs.lastName,

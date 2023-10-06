@@ -13708,7 +13708,8 @@ button.rbc-input::-moz-focus-inner {
   pointer-events: none; }
 
 .rbc-event.rbc-selected {
-  background-color: #265985; }
+    background-color: #A5E1E0 !important;
+  }
 
 .rbc-event-label {
   font-size: 80%; }
@@ -15719,6 +15720,7 @@ This file was modified entirely by Creative Tim for React-Select v2.0.0
   .ReactTable .rt-thead .rt-resizable-header-content:focus {
     outline: none; }
 
+
 .ReactTable .rt-thead .rt-header-pivot {
   border-right-color: #f7f7f7; }
 
@@ -16165,6 +16167,12 @@ This file was modified entirely by Creative Tim for React-Select v2.0.0
       margin-top: 20px;
     }
 
+    .user-form-container {
+      padding-top: 90px;
+    }
 
-
-    
+    .fixed-width-table-chart-container {
+      width: 1230px;
+      margin: 0 auto;
+      padding-left: 15px;
+    }

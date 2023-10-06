@@ -11,6 +11,7 @@ import logo from "assets/img/react-logo.png";
 import { useLocation } from "react-router-dom";
 
 var ps;
+const apiUrl = process.env.REACT_APP_APIURL;
 
 function Sidebar(props) {
   const location = useLocation();
@@ -18,6 +19,7 @@ function Sidebar(props) {
   const [collapseStates, setCollapseStates] = React.useState({});
   const [userFullName, setUserFullName] = useState('');
   const sidebar = React.useRef();
+  
   // this creates the intial state of this component based on the collapse routes
   // that it gets through props.routes
   const getCollapseStates = (routes) => {
@@ -126,7 +128,7 @@ function Sidebar(props) {
       const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-          "http://localhost:8800/user",
+          `${apiUrl}/user`,
           {
             UserID: UserID,
           }

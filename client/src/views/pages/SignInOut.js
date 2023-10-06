@@ -20,6 +20,8 @@ import {
 } from "reactstrap";
 
 
+const apiUrl = process.env.REACT_APP_APIURL;
+
 
 function SignInOut(props) {
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
@@ -78,7 +80,7 @@ function SignInOut(props) {
       const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-          "http://localhost:8800/user",
+        `${apiUrl}/user`,
           {
             UserID: UserID,
           }
@@ -99,7 +101,7 @@ function SignInOut(props) {
       const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-          "http://localhost:8800/currentShift",
+          `${apiUrl}/currentShift`,
           {
             UserID: UserID,
           }
@@ -153,7 +155,7 @@ function SignInOut(props) {
   
         try {
           const result = axios.post(
-            "http://localhost:8800/dailyShift",
+            `${apiUrl}/dailyShift`,
             {
               UserID: UserID,
               password: inputs.password,

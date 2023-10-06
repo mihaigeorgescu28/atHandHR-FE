@@ -1,19 +1,3 @@
-/*!
-
-=========================================================
-* Paper Dashboard PRO React - v1.3.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import classnames from "classnames";
 
@@ -55,7 +39,7 @@ const Step2 = React.forwardRef((props, ref) => {
                 <div className="icon">
                   <i className="nc-icon nc-ruler-pencil" />
                 </div>
-                <h6>Design</h6>
+                <h6>Reset Password</h6>
               </div>
             </Col>
             <Col sm="4">
@@ -73,7 +57,7 @@ const Step2 = React.forwardRef((props, ref) => {
                 <div className="icon">
                   <i className="nc-icon nc-laptop" />
                 </div>
-                <h6>Code</h6>
+                <h6>Send Registration Email</h6>
               </div>
             </Col>
             <Col sm="4">

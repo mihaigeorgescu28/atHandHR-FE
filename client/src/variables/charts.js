@@ -174,6 +174,8 @@ const chartExample111 = {
   }
 };
 
+
+
 // #########################################
 // // // used inside src/views/Dashboard.js
 // #########################################
@@ -809,7 +811,7 @@ const chartExample10 = {
 
 const chartExample11 = {
   data: {
-    labels: ['Rejected', 'Approved', 'Outstanding'],
+    labels: ['Declined', 'Approved', 'Outstanding'],
     datasets: [
       {
         label: "Emails",

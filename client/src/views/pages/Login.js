@@ -24,6 +24,7 @@ import {
   Row
 } from "reactstrap";
 
+const apiUrl = process.env.REACT_APP_APIURL;
 
 function Login() {
 
@@ -58,9 +59,8 @@ function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
       axios.post(
-        "http://localhost:8800/login",
+        `${apiUrl}/login`,
         {
           email: inputs.email,
           password: inputs.password

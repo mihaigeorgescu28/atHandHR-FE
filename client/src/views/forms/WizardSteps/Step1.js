@@ -1,19 +1,3 @@
-/*!
-
-=========================================================
-* Paper Dashboard PRO React - v1.3.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import classnames from "classnames";
 // reactstrap components
@@ -30,15 +14,17 @@ import {
 import PictureUpload from "components/CustomUpload/PictureUpload.js";
 
 const Step1 = React.forwardRef((props, ref) => {
-  const [firstname, setfirstname] = React.useState("");
-  const [lastname, setlastname] = React.useState("");
-  const [email, setemail] = React.useState("");
+  const { userData } = props;
+  //const [firstname, setfirstname] = React.useState(userData.FullName || "");
+  //const [lastname, setlastname] = React.useState("");
+  //const [email, setemail] = React.useState(userData.EmailAddress || "");
   const [firstnameState, setfirstnameState] = React.useState("");
   const [lastnameState, setlastnameState] = React.useState("");
   const [emailState, setemailState] = React.useState("");
   const [firstnameFocus, setfirstnameFocus] = React.useState("");
   const [lastnameFocus, setlastnameFocus] = React.useState("");
   const [emailFocus, setemailFocus] = React.useState("");
+
   React.useImperativeHandle(ref, () => ({
     isValidated: () => {
       return isValidated();

@@ -1,15 +1,19 @@
 import express from "express"
 import mysql from "mysql"
 import cors from "cors"
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: 'C:/Users/mihai/source/repos/atHandHR/backend/.env' });
 
 const app = express()
 
 const db = mysql.createConnection({
-    host:"127.0.0.1",
-    user:"root",
-    password:"Uv226cb04v",
-    database:"at_hand_hr_test"
-})
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+});
 
 
 // if auth problems run this -> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'ROOTPW';
@@ -99,9 +103,6 @@ app.post("/login", (req,res) =>
     }
     else
     {
-        
-        console.log("users found:" + result[0].UserFound)
-
         if(result[0].UserFound == 0)
         {
             res.send({
@@ -124,7 +125,7 @@ app.post("/login", (req,res) =>
 
 app.post("/currentClient", (req, res) =>
     {
-    const currentClientID = "SELECT ClientName FROM client WHERE ClientID IN (SELECT ClientID from user WHERE UserID = ?)";
+    const currentClientID = "SELECT ClientID, ClientName, HolidaySystem, DailyShiftTracker, LatLongTracker, WorkingWeekends FROM client WHERE ClientID IN (SELECT ClientID from user WHERE UserID = ?) AND Status = 'Active' ";
     const UserID = req.body.UserID
 
     db.query(currentClientID, UserID, (err, result) =>
@@ -138,7 +139,12 @@ app.post("/currentClient", (req, res) =>
         res.send({
             message:
               "Success",
-              "ClientName": result[0].ClientName
+              "ClientID": result[0].ClientID,
+              "ClientName": result[0].ClientName,
+              "HolidaySystem": result[0].HolidaySystem,
+              "DailyShiftTracker": result[0].DailyShiftTracker,
+              "LatLongTracker": result[0].LatLongTracker,
+              "WorkingWeekends": result[0].WorkingWeekends
             });
     }
     })
@@ -360,7 +366,7 @@ app.post("/currentClient", (req, res) =>
           app.post("/userHolidayInfo", (req, res) => {
             const UserID = req.body.UserID;
             const userHolidayInfo =
-            "SELECT WorkingShiftHours, HolidayEntitelementLeftDays, HolidayEntitelementLeftHours FROM user WHERE UserID = ?";
+            "SELECT WorkingShiftHours, HolidayEntitelementLeftDays, HolidayEntitelementLeftHours, client.WorkingWeekends FROM user LEFT JOIN client on user.ClientID = client.ClientID WHERE user.UserID = ?";
     
               db.query(userHolidayInfo, UserID, (err, result) => {
                 if (err) {
@@ -383,13 +389,579 @@ app.post("/currentClient", (req, res) =>
                             message: "Success",
                             WorkingShiftHours: result[0].WorkingShiftHours,
                             HolidayEntitelementLeftDays: result[0].HolidayEntitelementLeftDays,
-                            HolidayEntitelementLeftHours: result[0].HolidayEntitelementLeftHours
+                            HolidayEntitelementLeftHours: result[0].HolidayEntitelementLeftHours,
+                            WorkingWeekends: result[0].WorkingWeekends
                           });
                       } 
                 }
               });
           })
       })
+
+
+      app.post("/submitLeave", (req, res) => {
+        const UserID = req.body.UserID;
+
+        const q = "INSERT INTO leave_request (`UserID`,`LeaveTypeID`, `StatusID`, `StartDateTime`, `EndDateTime`,`WorkingDays`,`WorkingHours`,`Notes`) VALUES (?)"
+
+        const values = [
+            req.body.UserID,
+            req.body.LeaveTypeID,
+            1,
+            req.body.StartDateTime,
+            req.body.EndDateTime,
+            req.body.WorkingDays,
+            req.body.WorkingHours,
+            req.body.Notes
+        ]
+
+        db.query(q,[values], (err,data) =>
+    {
+        if(err)
+        {
+            return res.json(err);
+        }
+        else
+            res.send({
+            message:
+              "Your leave request was submitted!",
+            });
+
+    })
+
+      })
+
+      app.get("/leaveRequests", (req, res) => {
+        const ClientID = req.query.ClientID; // Use req.query to get the query parameter
+      
+        const allLeaveRequests = `
+          (SELECT b.LeaveTypeName, a.StartDateTime, a.EndDateTime, c.FirstName 
+          FROM leave_request a 
+          LEFT JOIN leave_type b on a.LeaveTypeID = b.LeaveTypeID 
+          LEFT JOIN user c on c.UserID = a.UserID
+          WHERE c.ClientID = ?)
+          UNION 
+          (SELECT 'Bank Holiday', d.Date, d.Date, 'N/A' FROM bank_holiday d)`;
+      
+        db.query(allLeaveRequests, [ClientID], (err, result) => {
+          if (err) {
+            return res.send({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            const response = result.map((item) => ({
+              title: item.LeaveTypeName + (item.FirstName !== 'N/A' ? (" - " + item.FirstName) : ''),
+              allDay: true,
+              start: new Date(item.StartDateTime),
+              end: new Date(item.EndDateTime)
+            }));
+      
+            return res.send(response);
+          }
+        });
+      });
+      
+
+
+      app.post("/bankHoliday", (req, res) => {
+        const bankHolidayCheck = "SELECT Date FROM bank_holiday WHERE Date = ? LIMIT 1";
+        const inputDate = new Date(req.body.Date)
+      
+        db.query(bankHolidayCheck, [inputDate], (err, result) => {
+          if (err) {
+            console.error(err);
+            res.status(500).send({ error: "An error occurred while executing the query." });
+            return;
+          }
+      
+          if (result.length === 0) {
+            res.status(200).send({ BankHoliday: "No" });
+          } else {
+            res.status(200).send({ BankHoliday: "Yes" });
+          }
+        });
+      });
+
+
+      app.post("/WithinBankHoliday", (req, res) => {
+        const bankHolidayCheck = "SELECT COUNT(*) as NumberOfBankHolidays FROM bank_holiday WHERE Date BETWEEN ? AND ?";
+        const start = new Date(req.body.start);
+        const end = new Date(req.body.end);
+      
+        db.query(bankHolidayCheck, [start, end], (err, result) => {
+          if (err) {
+            console.error(err);
+            res.status(500).send({ error: "An error occurred while executing the query." });
+            return;
+          }
+      
+          if (result.length >= 0) {
+            const numberOfBankHolidays = result[0].NumberOfBankHolidays;
+            const bankHolidayDuration = numberOfBankHolidays * 24 * 60 * 60 * 1000; // Assuming 1 bank holiday is 8 hours
+            const updatedDiffInMs = req.body.diffInMs - bankHolidayDuration;
+      
+            res.status(200).send({ NumberOfBankHolidays: numberOfBankHolidays, updatedDiffInMs: updatedDiffInMs });
+          }
+        });
+      });
+
+
+      app.get("/totalStaffOfClient", (req, res) => {
+        const totalStaffOfClient = `
+        SELECT 
+          UserID,
+          CONCAT(FirstName, ' ', LastName) as 'FullName',
+          EmailAddress,
+          DATE_FORMAT(DOB, '%d/%m/%Y') as DateOfBirth,
+          WorkingShiftHours,
+          CONCAT(
+            HolidayEntitelementLeftDays,
+            IF(HolidayEntitelementLeftDays > 1 OR HolidayEntitelementLeftDays = 0, ' days, ', ' day, '),
+            HolidayEntitelementLeftHours,
+            IF(HolidayEntitelementLeftHours > 1 OR HolidayEntitelementLeftHours = 0, ' hours', ' hour')
+          ) as HolidayEntitlement,
+          PositionName,
+          EmployeeNumber
+        FROM user
+        LEFT JOIN position p on user.PositionID = p.PositionID
+        WHERE user.ClientID = ?
+      `;
+      
+        const values = [req.query.ClientID]; // Retrieve ClientID from query parameters
+      
+      
+        db.query(totalStaffOfClient, values, (err, result) => {
+          if (err) {
+            return res.send({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            const response = result.map(item => ({  
+              UserID: item.UserID,
+              FullName: item.FullName,
+              EmailAddress: item.EmailAddress,
+              DOB: item.DateOfBirth,
+              WorkingShiftHours: item.WorkingShiftHours,
+              HolidayEntitlement: item.HolidayEntitlement,
+              Position : item.PositionName,
+              EmployeeNumber : item.EmployeeNumber
+            }));
+      
+            
+        
+            return res.send(response);
+          }
+        });
+      });
+      
+      app.get("/getUserData/:userID", (req, res) => {
+        const userData = `
+          SELECT 
+            UserID,
+            CONCAT(FirstName, ' ', LastName) as 'FullName',
+            EmailAddress,
+            DATE_FORMAT(DOB, '%d/%m/%Y') as DateOfBirth,
+            WorkingShiftHours,
+            CONCAT(
+              HolidayEntitelementLeftDays,
+              IF(HolidayEntitelementLeftDays > 1 OR HolidayEntitelementLeftDays = 0, ' days, ', ' day, '),
+              HolidayEntitelementLeftDays,
+              IF(HolidayEntitelementLeftDays > 1 OR HolidayEntitelementLeftDays = 0, ' hours', ' hour')
+            ) as HolidayEntitlement,
+            PositionName,
+            EmployeeNumber
+          FROM user
+          LEFT JOIN position p on user.PositionID = p.PositionID
+          WHERE user.UserID = ?
+        ` 
+        const values = [req.params.userID]; // Retrieve UserID from URL params
+      
+        db.query(userData, values, (err, result) => {
+          if (err) {
+            return res.status(500).json({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            const response = result.map((item) => ({
+              UserID: item.UserID,
+              FullName: item.FullName,
+              EmailAddress: item.EmailAddress,
+              DOB: item.DateOfBirth,
+              WorkingShiftHours: item.WorkingShiftHours,
+              HolidayEntitlement: item.HolidayEntitlement,
+              Position : item.PositionName,
+              EmployeeNumber : item.EmployeeNumber
+            }));
+      
+            return res.status(200).json(response);
+          }
+        });
+      });
+
+      app.get("/countStaffData", (req, res) => {
+        const clientID = req.query.ClientID;
+        
+        const sqlQuery = `
+          SELECT
+            (
+              SELECT COUNT(*) 
+              FROM user 
+              WHERE ClientID = u.ClientID
+            ) AS TotalStaff,
+            (
+              SELECT COUNT(*) 
+              FROM leave_request lr
+              LEFT JOIN user u ON u.UserID = lr.UserID
+              WHERE lr.EndDateTime >= CURDATE()
+              AND u.ClientID = u.ClientID
+              AND lr.StartDateTime <= DATE_ADD(CURDATE(), INTERVAL 0 DAY)
+            ) AS StaffOnLeave,
+            (
+              SELECT COUNT(*) 
+              FROM leave_request lr
+              LEFT JOIN user u ON u.UserID = lr.UserID
+              WHERE lr.EndDateTime >= CURDATE()
+              AND lr.StartDateTime <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+              AND u.ClientID = u.ClientID
+            ) AS StaffOnLeaveNext30Days
+          FROM user u
+          WHERE u.ClientID = ?`;
+        
+        db.query(sqlQuery, [clientID], (err, result) => {
+          if (err) {
+            return res.send({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            return res.send(result[0]);
+          }
+        });
+      });
+      
+
+      app.get("/leaveRequestsReport", (req, res) => {
+        const LeaveRequestsGroupedByStatus = `
+        SELECT s.StatusName, IFNULL(subquery.NoOfLeaveRequests, 0) AS NoOfLeaveRequests
+        FROM status s
+        LEFT JOIN (
+            SELECT a.StatusID, COUNT(*) AS NoOfLeaveRequests
+            FROM leave_request a
+            LEFT JOIN leave_type b ON a.LeaveTypeID = b.LeaveTypeID
+            LEFT JOIN user c ON c.UserID = a.UserID
+            WHERE YEAR(a.StartDateTime) = YEAR(NOW())
+            AND c.ClientID = ?
+            AND b.LeaveTypeID = ?
+            GROUP BY a.StatusID
+        ) subquery ON s.StatusID = subquery.StatusID
+        ORDER BY s.StatusID;
+        
+        `;
+      
+        const { ClientID, LeaveTypeID } = req.query; // Extract query parameters from the URL
+      
+        const values = [ClientID, LeaveTypeID];
+
+        db.query(LeaveRequestsGroupedByStatus, values, (err, result) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            // Reorder the response data to match the expected order
+            const reorderedResponse = [
+              result.find(item => item.StatusName === "Declined").NoOfLeaveRequests,
+              result.find(item => item.StatusName === "Approved").NoOfLeaveRequests,
+              result.find(item => item.StatusName === "Requested").NoOfLeaveRequests,
+            ];
+      
+            return res.send(reorderedResponse);
+          }
+        });
+      });
+
+      app.get("/leaveRequestLastUpdated", (req, res) => {
+        const LeaveRequestsLastUpdated = `
+        SELECT CASE
+        WHEN TIMESTAMPDIFF(DAY, a.ModifiedDate, NOW()) < 1 THEN
+            CONCAT(TIMESTAMPDIFF(HOUR, a.ModifiedDate, NOW()), ' hours')
+        ELSE
+            CONCAT(TIMESTAMPDIFF(DAY, a.ModifiedDate, NOW()), ' days')
+        END AS 'LastUpdatedInDays'
+        FROM leave_request a
+        LEFT JOIN leave_type b on a.LeaveTypeID = b.LeaveTypeID
+        LEFT JOIN user c on c.UserID = a.UserID
+        LEFT JOIN status d on d.StatusID = a.StatusID
+        WHERE YEAR(a.StartDateTime) = YEAR(NOW())
+        AND c.ClientID = ?
+        AND b.LeaveTypeID = ?
+        ORDER BY a.ModifiedDate DESC
+        LIMIT 1
+        `;
+      
+        const { ClientID, LeaveTypeID } = req.query; // Extract query parameters from the URL
+      
+        const values = [ClientID, LeaveTypeID];
+      
+        db.query(LeaveRequestsLastUpdated, values, (err, result) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            // Reorder the response data to match the expected order
+            const response = result.map(item => ({  
+              LastUpdatedLeaveDate: item.LastUpdatedInDays
+            }));
+      
+            return res.send(response);
+          }
+        });
+      });
+
+      app.get("/SignInOutReportToday", (req, res) => {
+        const SignInOutReportToday = `
+        SELECT
+      (SELECT COUNT(DISTINCT UserID) FROM user_shift_times usshti_inner WHERE usshti_inner.ActionTypeID = us.ActionTypeID AND DATE(usshti_inner.DateTime) = CURDATE()) AS NumberOfUsersSignedInOut,
+      ((SELECT COUNT(*) FROM user WHERE ClientID = u.ClientID AND user.Status = 'Active') -  (SELECT COUNT(DISTINCT UserID) FROM user_shift_times usshti_inner WHERE usshti_inner.ActionTypeID = us.ActionTypeID AND DATE(usshti_inner.DateTime) = CURDATE())) AS NumberOfUsersNotSignedInOut,
+      (SELECT COUNT(*) FROM user WHERE ClientID = u.ClientID  AND user.Status = 'Active') AS TotalUsers,
+      ROUND(((SELECT COUNT(DISTINCT UserID) FROM user_shift_times usshti_inner WHERE usshti_inner.ActionTypeID = us.ActionTypeID AND DATE(usshti_inner.DateTime) = CURDATE()) / (SELECT COUNT(*) FROM user WHERE ClientID = u.ClientID AND user.Status = 'Active')) * 100, 0) AS PercentageOfUsersSignedInOutToday
+      FROM user_shift_times us
+      LEFT JOIN user u ON u.UserID = us.UserID
+      WHERE u.ClientID = ?
+      AND us.ActionTypeID = ?
+      GROUP BY u.ClientID;
+        `;
+      
+        const { ClientID, ActionTypeID } = req.query; // Extract query parameters from the URL
+      
+        const values = [ClientID, ActionTypeID];
+      
+        db.query(SignInOutReportToday, values, (err, result) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            const NumberOfUsersSignedInOut = result[0].NumberOfUsersSignedInOut;
+            const NumberOfUsersNotSignedInOut = result[0].NumberOfUsersNotSignedInOut;
+        
+            // Extract PercentageOfUsersSignedOutToday
+            const PercentageOfUsersSignedInOutToday = result[0].PercentageOfUsersSignedInOutToday;
+        
+            // Create an array with NumberOfUsersSignedOut and NumberOfUsersNotSignedOut
+            const responseArray = [NumberOfUsersSignedInOut, NumberOfUsersNotSignedInOut];
+
+            const responseObject = {
+              SignInOutPending: responseArray,
+              PercentageOfUsersSignedInOutToday,
+            };
+            return res.send(responseObject);
+          }
+        });
+
+        app.get("/SignInOutLastUpdated", (req, res) => {
+          const SignInOutLastUpdated = `
+          SELECT CASE
+          WHEN TIMESTAMPDIFF(HOUR, a.DateTime, NOW()) < 1 THEN
+			  CONCAT(TIMESTAMPDIFF(MINUTE, a.DateTime, NOW()), ' minutes')
+          WHEN TIMESTAMPDIFF(DAY, a.DateTime, NOW()) < 1 THEN
+              CONCAT(TIMESTAMPDIFF(HOUR, a.DateTime, NOW()), ' hours')
+          ELSE
+              CONCAT(TIMESTAMPDIFF(DAY, a.DateTime, NOW()), ' days')
+          END AS 'LastUpdatedInDays'
+          FROM user_shift_times a
+          LEFT JOIN user b on a.UserID = b.UserID
+          WHERE YEAR(a.DateTime) = YEAR(NOW())
+          AND b.ClientID = ?
+          AND a.ActionTypeID = ?
+          ORDER BY a.DateTime DESC
+          LIMIT 1
+          `;
+        
+          const { ClientID, ActionTypeID } = req.query; // Extract query parameters from the URL
+        
+          const values = [ClientID, ActionTypeID];
+        
+          db.query(SignInOutLastUpdated, values, (err, result) => {
+            if (err) {
+              console.error('Database error:', err);
+              return res.status(500).json({
+                message: "Error",
+                error: err,
+              });
+            } else {
+              // Reorder the response data to match the expected order
+              const response = result.map(item => ({  
+                LastSignInOutLeaveDate: item.LastUpdatedInDays
+              }));
+        
+              return res.send(response);
+            }
+          });
+        });
+        
+      });
+
+      app.get("/CurrentNumberOfLeaveRequests", (req, res) => {
+        const CurrentNumberOfLeaveRequests = `
+        SELECT 
+        COUNT(CASE WHEN LeaveTypeID = 1 THEN 1 END) AS NumberOfHolidayRequests,
+        COUNT(CASE WHEN LeaveTypeID = 2 THEN 1 END) AS NumberOfSickRequests,
+        COUNT(CASE WHEN LeaveTypeID NOT IN (1, 2) THEN 1 END) AS NumberOfMiscellaneousRequests
+        FROM leave_request a
+        LEFT JOIN user b ON b.UserID = a.UserID
+        WHERE b.ClientID = ?;
+        `;
+      
+        const { ClientID } = req.query; // Extract query parameters from the URL
+
+        const values = [ClientID];
+      
+        db.query(CurrentNumberOfLeaveRequests, values, (err, result) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            // Extract the aggregated values from the result
+            const { NumberOfHolidayRequests, NumberOfSickRequests, NumberOfMiscellaneousRequests } = result[0];
+      
+            const response = {
+              NumberOfHolidayRequests,
+              NumberOfSickRequests,
+              NumberOfMiscellaneousRequests
+            };
+      
+            return res.send(response);
+          }
+        });
+      });
+
+
+      app.get("/CurrentNumberOfLeaveRequestsByMonth", (req, res) => {
+        const CurrentNumberOfLeaveRequestsByMonth = `
+          SELECT 
+            MONTH(a.CreatedDate) as 'Month Number',
+            SUM(CASE WHEN a.LeaveTypeID = 1 THEN 1 ELSE 0 END) AS NumberOfHolidayRequests,
+            SUM(CASE WHEN a.LeaveTypeID = 2 THEN 1 ELSE 0 END) AS NumberOfSickRequests,
+            SUM(CASE WHEN a.LeaveTypeID NOT IN (1, 2) THEN 1 ELSE 0 END) AS NumberOfMiscellaneousRequests
+          FROM leave_request a
+          LEFT JOIN user b ON b.UserID = a.UserID
+          WHERE b.ClientID = ?
+          GROUP BY MONTH(a.CreatedDate)
+        `;
+      
+        const { ClientID } = req.query; // Extract query parameters from the URL
+      
+        const values = [ClientID];
+      
+        db.query(CurrentNumberOfLeaveRequestsByMonth, values, (err, result) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            // Create an object to store counts for each month
+            const monthCounts = {};
+      
+            // Initialize counts for all months to 0
+            for (let i = 1; i <= 12; i++) {
+              monthCounts[i] = {
+                NumberOfHolidayRequests: 0,
+                NumberOfSickRequests: 0,
+                NumberOfMiscellaneousRequests: 0,
+              };
+            }
+      
+            // Process the query result and populate the monthCounts object
+            result.forEach((row) => {
+              const { 'Month Number': month, NumberOfHolidayRequests, NumberOfSickRequests, NumberOfMiscellaneousRequests } = row;
+      
+              monthCounts[month] = {
+                NumberOfHolidayRequests,
+                NumberOfSickRequests,
+                NumberOfMiscellaneousRequests,
+              };
+            });
+      
+            return res.send(monthCounts);
+          }
+        });
+      });
+
+
+      app.get("/staffOnLeave", (req, res) => {
+        const DateRange = req.query.DateRange || '0'; // Get the DateRange from query parameters, default to '0' if not provided
+        const values = [req.query.ClientID, DateRange]; // Retrieve ClientID from query parameters
+      
+        const totalStaffOfClient = `
+          SELECT u.UserID,
+            CONCAT(FirstName, ' ', LastName) as 'FullName',
+            CONCAT(
+              WorkingDays,
+              IF(WorkingDays > 1 OR WorkingDays = 0, ' days, ', ' day, '),
+              WorkingHours,
+              IF(WorkingHours > 1 OR WorkingHours = 0, ' hours', ' hour')
+            ) as LeaveDuration,
+            CONCAT(
+              HolidayEntitelementLeftDays,
+              IF(HolidayEntitelementLeftDays > 1 OR HolidayEntitelementLeftDays = 0, ' days, ', ' day, '),
+              HolidayEntitelementLeftDays,
+              IF(HolidayEntitelementLeftHours > 1 OR HolidayEntitelementLeftHours = 0, ' hours', ' hour')
+            ) as HolidayEntitlement,
+            DATE_FORMAT(lr.StartDateTime, '%d/%m/%Y') as StartDateTime,
+            DATE_FORMAT(lr.EndDateTime, '%d/%m/%Y') as EndDateTime,
+            lety.LeaveTypeName,
+            st.StatusName
+          FROM leave_request lr
+          LEFT JOIN user u ON u.UserID = lr.UserID
+          LEFT JOIN leave_type lety on lety.LeaveTypeID = lr.LeaveTypeID
+          LEFT JOIN status st on st.StatusID = lr.StatusID
+          WHERE lr.EndDateTime >= CURDATE()
+          AND u.ClientID = ?
+          AND lr.StartDateTime <= DATE_ADD(CURDATE(), INTERVAL ? DAY)`; // Include the DateRange condition in the SQL query if DateRange is not '0'
+      
+        db.query(totalStaffOfClient, values, (err, result) => {
+          if (err) {
+            return res.send({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            const response = result.map(item => ({  
+              UserID: item.UserID,
+              FullName: item.FullName,
+              LeaveDuration: item.LeaveDuration,
+              HolidayEntitlement: item.HolidayEntitlement,
+              StartDateTime : item.StartDateTime,
+              EndDateTime : item.EndDateTime,
+              LeaveTypeName : item.LeaveTypeName,
+              StatusName : item.StatusName
+            }));
+      
+            return res.send(response);
+          }
+        });
+      });
+      
+      
+      
+
+      
 
 app.listen(8800, () => {
     console.log("Connected to backend")
