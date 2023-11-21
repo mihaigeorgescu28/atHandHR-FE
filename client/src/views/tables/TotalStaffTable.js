@@ -10,7 +10,6 @@ import {
   Col
 } from "reactstrap";
 import ReactTable from "components/ReactTable/ReactTable.js";
-import UserForm from "views/forms/User.js";
 import { useNavigate, Link } from "react-router-dom";
 
 
@@ -108,7 +107,7 @@ function TotalStaffTable() {
         <div className="fixed-width-table-chart-container">
             <Card>
               <CardHeader>
-                <CardTitle tag="h4">Total Staff</CardTitle>
+                <CardTitle tag="h5">Total Staff</CardTitle>
               </CardHeader>
               <CardBody>
                 <ReactTable

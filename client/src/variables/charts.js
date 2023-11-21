@@ -877,7 +877,9 @@ const chartExample12 = {
         "Jul",
         "Aug",
         "Sep",
-        "Oct"
+        "Oct",
+        "Nov",
+        "Dec"
       ],
       datasets: [
         {
@@ -888,7 +890,7 @@ const chartExample12 = {
           borderWidth: 3,
           tension: 0.4,
           fill: true,
-          data: [300, 310, 316, 322, 330, 326, 333, 345, 338, 354]
+          data: [300, 310, 316, 322, 330, 326, 333, 345, 338, 354, 330, 345]
         },
         {
           borderColor: "#f17e5d",
@@ -898,7 +900,7 @@ const chartExample12 = {
           borderWidth: 3,
           tension: 0.4,
           fill: true,
-          data: [320, 340, 365, 360, 370, 385, 390, 384, 408, 420]
+          data: [320, 340, 365, 360, 370, 385, 390, 384, 408, 420, 480, 500]
         },
         {
           borderColor: "#fcc468",
@@ -908,7 +910,7 @@ const chartExample12 = {
           borderWidth: 3,
           tension: 0.4,
           fill: true,
-          data: [370, 394, 415, 409, 425, 445, 460, 450, 478, 484]
+          data: [370, 394, 415, 409, 425, 445, 460, 450, 478, 484, 450, 650]
         }
       ]
     };

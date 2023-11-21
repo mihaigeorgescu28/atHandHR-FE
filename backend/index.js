@@ -615,15 +615,15 @@ app.post("/currentClient", (req, res) =>
               SELECT COUNT(*) 
               FROM leave_request lr
               LEFT JOIN user u ON u.UserID = lr.UserID
-              WHERE lr.EndDateTime >= CURDATE()
+              WHERE DATE(lr.EndDateTime) >= CURDATE()
               AND u.ClientID = u.ClientID
-              AND lr.StartDateTime <= DATE_ADD(CURDATE(), INTERVAL 0 DAY)
+              AND DATE(lr.StartDateTime) <= DATE_ADD(CURDATE(), INTERVAL 0 DAY)
             ) AS StaffOnLeave,
             (
               SELECT COUNT(*) 
               FROM leave_request lr
               LEFT JOIN user u ON u.UserID = lr.UserID
-              WHERE lr.EndDateTime >= CURDATE()
+              WHERE DATE(lr.EndDateTime) >= CURDATE()
               AND lr.StartDateTime <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
               AND u.ClientID = u.ClientID
             ) AS StaffOnLeaveNext30Days
@@ -643,7 +643,7 @@ app.post("/currentClient", (req, res) =>
       });
       
 
-      app.get("/leaveRequestsReport", (req, res) => {
+      app.get("/leaveRequestsStatus", (req, res) => {
         const LeaveRequestsGroupedByStatus = `
         SELECT s.StatusName, IFNULL(subquery.NoOfLeaveRequests, 0) AS NoOfLeaveRequests
         FROM status s
@@ -652,18 +652,19 @@ app.post("/currentClient", (req, res) =>
             FROM leave_request a
             LEFT JOIN leave_type b ON a.LeaveTypeID = b.LeaveTypeID
             LEFT JOIN user c ON c.UserID = a.UserID
+            LEFT JOIN leave_type_group d on d.LeaveTypeGroupID = b.LeaveTypeGroupID
             WHERE YEAR(a.StartDateTime) = YEAR(NOW())
             AND c.ClientID = ?
-            AND b.LeaveTypeID = ?
+            AND d.LeaveTypeGroupID = ?
             GROUP BY a.StatusID
         ) subquery ON s.StatusID = subquery.StatusID
         ORDER BY s.StatusID;
         
         `;
       
-        const { ClientID, LeaveTypeID } = req.query; // Extract query parameters from the URL
+        const { ClientID, LeaveTypeGroupID } = req.query; // Extract query parameters from the URL
       
-        const values = [ClientID, LeaveTypeID];
+        const values = [ClientID, LeaveTypeGroupID];
 
         db.query(LeaveRequestsGroupedByStatus, values, (err, result) => {
           if (err) {
@@ -674,11 +675,58 @@ app.post("/currentClient", (req, res) =>
             });
           } else {
             // Reorder the response data to match the expected order
+            if(LeaveTypeGroupID == 1)
+            {
+              
+            }
             const reorderedResponse = [
               result.find(item => item.StatusName === "Declined").NoOfLeaveRequests,
               result.find(item => item.StatusName === "Approved").NoOfLeaveRequests,
               result.find(item => item.StatusName === "Requested").NoOfLeaveRequests,
             ];
+      
+            return res.send(reorderedResponse);
+          }
+        });
+      });
+
+      app.get("/leaveRequestsType", (req, res) => {
+        const LeaveRequestsGroupedByStatus = `
+        SELECT ly.LeaveTypeName, IFNULL(subquery.NoOfLeaveTypeRequests, 0) AS NoOfLeaveTypeRequests
+        FROM leave_type ly
+        LEFT JOIN (
+            SELECT a.LeaveTypeID, COUNT(*) AS NoOfLeaveTypeRequests
+            FROM leave_request a
+            LEFT JOIN leave_type b ON a.LeaveTypeID = b.LeaveTypeID
+            LEFT JOIN user c ON c.UserID = a.UserID
+            LEFT JOIN leave_type_group d on d.LeaveTypeGroupID = b.LeaveTypeGroupID
+            WHERE YEAR(a.StartDateTime) = YEAR(NOW())
+            AND c.ClientID = ?
+            AND d.LeaveTypeGroupID = ?
+            AND a.StatusID = ?
+            GROUP BY a.LeaveTypeID
+        ) subquery ON ly.LeaveTypeID = subquery.LeaveTypeID
+        left join client_leave_type clt on clt.LeaveTypeID = ly.LeaveTypeID
+        where clt.RequiresApproval = 1
+        ORDER BY ly.LeaveTypeID;
+        `;
+      
+        const { ClientID, LeaveTypeGroupID, StatusID } = req.query; // Extract query parameters from the URL
+      
+        const values = [ClientID, LeaveTypeGroupID, StatusID];
+
+        db.query(LeaveRequestsGroupedByStatus, values, (err, result) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            const reorderedResponse = result.map(item => ({
+              LeaveTypeName: item.LeaveTypeName,
+              NoOfLeaveTypeRequests: item.NoOfLeaveTypeRequests,
+          }));
       
             return res.send(reorderedResponse);
           }
@@ -931,9 +979,9 @@ app.post("/currentClient", (req, res) =>
           LEFT JOIN user u ON u.UserID = lr.UserID
           LEFT JOIN leave_type lety on lety.LeaveTypeID = lr.LeaveTypeID
           LEFT JOIN status st on st.StatusID = lr.StatusID
-          WHERE lr.EndDateTime >= CURDATE()
+          WHERE DATE(lr.EndDateTime) >= CURDATE()
           AND u.ClientID = ?
-          AND lr.StartDateTime <= DATE_ADD(CURDATE(), INTERVAL ? DAY)`; // Include the DateRange condition in the SQL query if DateRange is not '0'
+          AND DATE(lr.StartDateTime) <= DATE_ADD(CURDATE(), INTERVAL ? DAY)`; // Include the DateRange condition in the SQL query if DateRange is not '0'
       
         db.query(totalStaffOfClient, values, (err, result) => {
           if (err) {
@@ -957,6 +1005,212 @@ app.post("/currentClient", (req, res) =>
           }
         });
       });
+
+
+      app.get("/LeaveRequestStatusBreakDown", (req, res) => {
+        const { ClientID, LeaveTypeGroupID, LeaveStatusID, LeaveTypeID } = req.query; // Extract query parameters from the URL
+      
+        // Initialize an array to store the conditions
+        const conditions = [];
+        const values = [ClientID];
+      
+        if (LeaveTypeGroupID !== '') {
+          conditions.push('lety.LeaveTypeGroupID = ?');
+          values.push(LeaveTypeGroupID);
+        }
+      
+        if (LeaveTypeID !== '') {
+          conditions.push('lr.LeaveTypeID = ?');
+          values.push(LeaveTypeID);
+        }
+      
+        // Build the SQL query dynamically based on the conditions
+        const conditionString = conditions.length > 0 ? `AND ${conditions.join(' AND ')}` : '';
+      
+        const LeaveRequestStatusBreakDown = `
+          SELECT u.UserID,
+            CONCAT(FirstName, ' ', LastName) as 'FullName',
+            CONCAT(
+              WorkingDays,
+              IF(WorkingDays > 1 OR WorkingDays = 0, ' days, ', ' day, '),
+              WorkingHours,
+              IF(WorkingHours > 1 OR WorkingHours = 0, ' hours', ' hour')
+            ) as LeaveDuration,
+            CONCAT(
+              HolidayEntitelementLeftDays,
+              IF(HolidayEntitelementLeftDays > 1 OR HolidayEntitelementLeftDays = 0, ' days, ', ' day, '),
+              HolidayEntitelementLeftDays,
+              IF(HolidayEntitelementLeftHours > 1 OR HolidayEntitelementLeftHours = 0, ' hours', ' hour')
+            ) as HolidayEntitlement,
+            DATE_FORMAT(lr.StartDateTime, '%d/%m/%Y') as StartDateTime,
+            DATE_FORMAT(lr.EndDateTime, '%d/%m/%Y') as EndDateTime,
+            lety.LeaveTypeName,
+            st.StatusName,
+            st.ClosedStatus
+          FROM leave_request lr
+          LEFT JOIN user u ON u.UserID = lr.UserID
+          LEFT JOIN leave_type lety on lety.LeaveTypeID = lr.LeaveTypeID
+          LEFT JOIN status st on st.StatusID = lr.StatusID
+          WHERE u.ClientID = ?
+          ${conditionString}
+          AND lr.StatusID = ?;
+        `;
+      
+        values.push(LeaveStatusID);
+      
+        db.query(LeaveRequestStatusBreakDown, values, (err, result) => {
+          if (err) {
+            return res.send({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            const response = result.map((item) => ({
+              UserID: item.UserID,
+              FullName: item.FullName,
+              LeaveDuration: item.LeaveDuration,
+              HolidayEntitlement: item.HolidayEntitlement,
+              StartDateTime: item.StartDateTime,
+              EndDateTime: item.EndDateTime,
+              LeaveTypeName: item.LeaveTypeName,
+              StatusName: item.StatusName,
+              ClosedStatus: item.ClosedStatus,
+            }));
+      
+            return res.send(response);
+          }
+        });
+      });
+      
+      
+      
+      
+      app.get("/SignInOutMonthlyReport", (req, res) => {
+        const SignInOutMonthlyReport = `
+        SELECT
+  LEFT(MONTHNAME(usshti.DateTime), 3) AS "Month",
+  COUNT(DISTINCT usshti.UserID) AS "NumberOfSignInsOuts"
+FROM
+  user_shift_times usshti
+LEFT JOIN
+  user us ON usshti.UserID = us.UserID
+WHERE
+  us.ClientID = ?
+  AND usshti.ActionTypeID = ?
+GROUP BY
+  MONTH(usshti.DateTime);
+
+        `;
+      
+        const { ClientID, ActionTypeID } = req.query; // Extract query parameters from the URL
+      
+        const values = [ClientID, ActionTypeID];
+      
+        db.query(SignInOutMonthlyReport, values, (err, result) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            return res.send(result);
+          }
+        });
+
+      });
+
+
+      app.get("/TimeManagementBreakDown", (req, res) => {
+        const { ClientID, ActionTypeID, TimeManagementStatus, DateRangeStart, DateRangeEnd } = req.query;
+      
+        let dateRangeCondition = "";  // Initialize an empty string for the date range condition
+      
+        // Check if DateRangeStart is defined, otherwise set it to the current date
+const startDate = DateRangeStart ? db.escape(DateRangeStart) : db.escape(new Date().toISOString().split('T')[0]);
+
+// Check if DateRangeEnd is defined, otherwise set it to the current date
+const endDate = DateRangeEnd ? db.escape(DateRangeEnd) : db.escape(new Date().toISOString().split('T')[0]);
+
+// Include the date range condition
+dateRangeCondition = `
+  AND DATE(usshti.DateTime) >= ${startDate}
+  AND DATE(usshti.DateTime) <= ${endDate}
+`;
+      
+        let timeManagementBreakDown = `
+          SELECT
+            us.UserID,
+            CONCAT(FirstName, ' ', LastName) AS 'FullName',
+            IFNULL(
+              DATE_FORMAT(
+                (SELECT DateTime FROM user_shift_times usshti 
+                  WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
+                    ${dateRangeCondition}  -- Include the date range condition here
+                  ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
+                '%d/%m/%Y (%H:%i)'
+              ),
+              'Pending'
+            ) AS 'SignedInOut',  
+            CONCAT(IFNULL(us.WorkingShiftHours, 8), ' Hours') AS 'ExpectedShiftDurationHours',
+            TIMEDIFF(
+              (SELECT DateTime FROM user_shift_times usshti 
+                WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = 2 
+                  ${dateRangeCondition}  -- Include the date range condition here
+                ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
+              (SELECT DateTime FROM user_shift_times usshti 
+                WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = 1 
+                  ${dateRangeCondition}  -- Include the date range condition here
+                ORDER BY usshti.UserShiftTimeID DESC LIMIT 1)
+            ) AS 'ActualShiftDuration'
+          FROM
+            user us
+          WHERE
+            us.ClientID = ${db.escape(ClientID)} AND
+            (
+              (${db.escape(TimeManagementStatus)} = 'Pending' AND 'Pending' = IFNULL(
+                DATE_FORMAT(
+                  (SELECT DateTime FROM user_shift_times usshti 
+                    WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
+                      ${dateRangeCondition}  -- Include the date range condition here
+                    ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
+                  '%d/%m/%Y (%H:%i)'
+                ),
+                'Pending'
+              )) OR
+              (${db.escape(TimeManagementStatus)} = 'OnTime' AND 'OnTime' <> IFNULL(
+                DATE_FORMAT(
+                  (SELECT DateTime FROM user_shift_times usshti 
+                    WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
+                      ${dateRangeCondition}  -- Include the date range condition here
+                    ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
+                  '%d/%m/%Y (%H:%i)'
+                ),
+                'OnTime'
+              ))
+            );
+        `;
+      
+        db.query(timeManagementBreakDown, (err, result) => {
+          if (err) {
+            return res.send({
+              message: "Error",
+              error: err,
+            });
+          } else {
+            const response = result.map((item) => ({
+              UserID: item.UserID,
+              FullName: item.FullName,
+              SignedInOut: item.SignedInOut,
+              ActualShiftDuration: item.ActualShiftDuration,
+              ExpectedShiftDurationHours: item.ExpectedShiftDurationHours,
+            }));
+      
+            return res.send(response);
+          }
+        });
+      });
+      
       
       
       

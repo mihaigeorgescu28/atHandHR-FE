@@ -1,12 +1,14 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useRef } from "react";
 // react plugin used to create charts
 import { Line, Bar, Doughnut,Pie } from "react-chartjs-2";
 
-// react plugin for creating vector maps
-import { VectorMap } from "react-jvectormap";
-
 import TotalStaffTable from "./tables/TotalStaffTable.js";
 import StaffOnLeaveTable from "./tables/StaffOnLeave.js";
+import LeaveRequestsTable from "./tables/LeaveRequestsTable.js";
+import TimeManagementTable from "./tables/TimeManagementTable.js";
+import CustomPieChart from './CustomPieChart'; 
+import CustomDoughnutChart from "./CustomDoughnutChart.js";
+import CustomLineChart from "./CustomLineChart.js";
 import axios from 'axios';
 
 // reactstrap components
@@ -28,6 +30,8 @@ import {
 } from "reactstrap";
 
 
+
+
 function Dashboard() {
 
   const [openDrilldown, setOpenDrilldown] = useState(null);
@@ -42,7 +46,12 @@ function Dashboard() {
   const [numberOfSickRequests, setNumberOfSickRequests] = useState(null);
   const [numberOfMiscellaneousRequests, setNumberOfMiscellaneousRequests] = useState(null);
   const [leaveRequestData, setLeaveRequestData] = useState({});
-  const [tableDateRange, setTableDateRange] = useState({});
+  const [tableDateRange, setTableDateRange] = useState("");
+  const [leaveStatusID, setLeaveStatusID] = useState({});
+  const [leaveTypeGroupID, setLeaveTypeGroupID] = useState({});
+  const [leaveType, setLeaveType] = useState({});
+  const [actionTypeID, setActionTypeID] = useState({});
+  const [timeManagementStatus, setTimeManagementStatus] = useState({});
 
   const apiUrl = process.env.REACT_APP_APIURL;
 
@@ -95,14 +104,125 @@ const createChartData = () => {
 
 
 
-  const handleToggleDrilldown = (drilldownName, dateRange) => {
-    if (openDrilldown === drilldownName) {
+  const handleToggleDrilldown = (chartType, drilldownName, dateRange, leaveTypeGroupID, responseType, response) => {
+
+    if ( 
+      (openDrilldown === drilldownName && chartType == 'count')
+       ) {
       setOpenDrilldown(null); // Close the currently open drilldown
-      console.log("closing: ", drilldownName)
-    } else {
+    } else if (chartType == 'pie' || chartType == 'count') {
       setOpenDrilldown(drilldownName); // Open the requested drilldown
       setTableDateRange(dateRange);
-      console.log("opening: ", drilldownName)
+
+      if(responseType == 'Status')
+      {
+        
+        if(response == 'Requested')
+      {
+        setLeaveStatusID(1);
+      }
+      else if(response == 'Approved')
+      {
+        setLeaveStatusID(2);
+      }
+      else if(response == 'Declined')
+      {
+        setLeaveStatusID(3);
+      }
+
+      if(leaveTypeGroupID == 'Holiday')
+      {
+        setLeaveTypeGroupID(2);
+      }
+      else if(leaveTypeGroupID == 'Sick')
+      {
+        setLeaveTypeGroupID(1);
+      }
+
+      setLeaveType('');
+
+      }
+      else if(responseType == 'Leave Type Pending')
+      {
+
+        setLeaveStatusID(1);
+        setLeaveTypeGroupID('');
+        
+        if(response == 'Holiday')
+      {
+        setLeaveType(1);
+
+      }
+      else if(response == 'Unpaid')
+      {
+        setLeaveType(4);
+      }
+
+      }
+      else if(responseType == 'Leave Type Approved')
+      {
+
+        setLeaveStatusID(2);
+        setLeaveTypeGroupID('');
+        
+        if(response == 'Holiday')
+      {
+        setLeaveType(1);
+
+      }
+      else if(response == 'Unpaid')
+      {
+        setLeaveType(4);
+      }
+
+      }
+    }
+    else if (chartType == 'doughnut')
+    {
+      setOpenDrilldown(drilldownName); // Open the requested drilldown
+
+      setTableDateRange(dateRange);
+      if(drilldownName == 'signIn')
+      {
+        setActionTypeID(1);
+
+        if(response == 'Signed In')
+        {
+          setTimeManagementStatus("OnTime")
+        }
+        else if(response == 'Pending')
+        {
+          setTimeManagementStatus("Pending")
+        }
+      }
+      else if(drilldownName == 'signOut')
+      {
+        setActionTypeID(2);
+
+        if(response == 'Signed Out')
+        {
+          setTimeManagementStatus("OnTime")
+        }
+        else if(response == 'Pending')
+        {
+          setTimeManagementStatus("Pending")
+        }
+      }
+    }
+    else if (chartType == 'line')
+    {
+      if(drilldownName == 'signIn')
+      {
+        setActionTypeID(1);
+      }
+      else if(drilldownName == 'signOut')
+      {
+        setActionTypeID(2);
+      }
+
+      setTableDateRange(dateRange);
+      setOpenDrilldown('timeManagementReport'); // Open the requested drilldown
+      setTimeManagementStatus('OnTime');
     }
   };
 
@@ -110,7 +230,7 @@ const createChartData = () => {
     labels: ['Declined', 'Approved', 'Outstanding'],
     datasets: [
       {
-        label: 'Emails',
+        label: 'Holiday',
         pointRadius: 0,
         pointHoverRadius: 0,
         backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
@@ -125,7 +245,7 @@ const createChartData = () => {
     labels: ['Declined', 'Approved', 'Outstanding'],
     datasets: [
       {
-        label: 'Emails',
+        label: 'Sick',
         pointRadius: 0,
         pointHoverRadius: 0,
         backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
@@ -136,13 +256,43 @@ const createChartData = () => {
     ],
   });
 
+  const [pendingApproval, setPendingApproval] = useState({
+    labels: ['Holiday', 'Unpaid', 'Appointment', 'Maternity'],
+    datasets: [
+      {
+        label: 'Pending Approval',
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        backgroundColor: ['#f17e5d', '#4acccd', '#fcc468', '#fcc268'],
+        borderWidth: 0,
+        barPercentage: 1.6,
+        data: [542, 480, 430, 0], // Initialize with static data
+      },
+    ],
+  });
+
+  const [approvedLeaves, setApprovedLeaves] = useState({
+    labels: ['Holiday', 'Unpaid', 'Appointment', 'Maternity'],
+    datasets: [
+      {
+        label: 'Approved Leaves',
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        backgroundColor: ['#f17e5d', '#4acccd', '#fcc468', '#fcc268'],
+        borderWidth: 0,
+        barPercentage: 1.6,
+        data: [542, 480, 430, 0], // Initialize with static data
+      },
+    ],
+  });
+
 
   const [signOutChart, setSignOutChart] = useState({
     data: {
       labels: ['Signed In', 'Pending'],
       datasets: [
         {
-          label: "Emails",
+          label: "Signed In",
           pointRadius: 0,
           pointHoverRadius: 0,
           backgroundColor: ["#66615b", "#f4f3ef"],
@@ -196,64 +346,69 @@ const createChartData = () => {
     }
   });
 
-    const [signInChart, setSignInChart] = useState({
-      data: {
-        labels: ['Signed In', 'Pending'],
-        datasets: [
-          {
-            label: "Emails",
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            backgroundColor: ["#66615b", "#f4f3ef"],
-            borderWidth: 0,
-            barPercentage: 1.6,
-            data: [82, 18]
-          }
-        ]
-      },
-      options: {
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltips: {
-            enabled: false
-          },
-          title: {
-            display: true,
-            text: "82%",
-            position: "bottom",
-            color: "#66615c",
-            font: {
-              weight: 400,
-              size: 30
-            }
-          }
+  const [signInChart, setSignInChart] = useState({
+    data: {
+      labels: ['Signed In', 'Pending'],
+      datasets: [
+        {
+          label: "Signed In",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          backgroundColor: ["#66615b", "#f4f3ef"],
+          borderWidth: 0,
+          barPercentage: 1.6,
+          data: [82, 18]
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: false
         },
-        maintainAspectRatio: false,
-        cutout: "90%",
-        scales: {
-          y: {
-            ticks: {
-              display: false
-            },
-            grid: {
-              drawBorder: false,
-              display: false
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false
-            },
-            ticks: {
-              display: false
-            }
+        tooltips: {
+          enabled: false
+        },
+        title: {
+          display: true,
+          text: "82%",
+          position: "bottom",
+          color: "#66615c",
+          font: {
+            weight: 400,
+            size: 30
           }
         }
+      },
+      maintainAspectRatio: false,
+      cutout: "90%",
+      scales: {
+        y: {
+          ticks: {
+            display: false
+          },
+          grid: {
+            drawBorder: false,
+            display: false
+          }
+        },
+        x: {
+          grid: {
+            drawBorder: false,
+            display: false
+          },
+          ticks: {
+            display: false
+          }
+        }
+      },
+      onClick: (event, elements) => {
+        if (elements.length > 0) {
+          const segment = signInChart.data.labels[elements[0].index];
+        }
       }
-    });
+    }
+  })
 
     const [holidayMonthlyChart, setHolidayMonthlyChart] = useState({
       labels: [
@@ -331,6 +486,7 @@ const createChartData = () => {
         "Dec"
       ],
       datasets: [
+        
         {
           label: "Active Users",
           borderColor: "#6bd098",
@@ -341,6 +497,17 @@ const createChartData = () => {
           barPercentage: 1.6,
           tension: 0.4,
           data: [0, 2, 3, 1, 5, 2, 6, 7, 3, 1,3,5]
+        },
+        {
+          label: "Active Users",
+          borderColor: "#6bd098",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          fill: false,
+          borderWidth: 3,
+          barPercentage: 1.6,
+          tension: 0.4,
+          data: [0, 6, 7, 3, 10, 4, 12, 14, 6, 2,6,10]
         }
       ]
     });
@@ -349,12 +516,10 @@ const createChartData = () => {
   const optionsMonthlyChart = {
       plugins: {
         legend: {
-          display: false
+          display: true, // Set to true to display the legend
+          position: 'top', // You can change the legend position to 'top', 'bottom', etc.
         },
-  
-        tooltips: {
-          enabled: false
-        }
+        tooltip: { enabled: true,  mode: 'nearest' }
       },
   
       scales: {
@@ -389,7 +554,7 @@ const createChartData = () => {
         display: false,
       },
       tooltips: {
-        enabled: false,
+        enabled: true,
       },
     },
     maintainAspectRatio: false,
@@ -416,6 +581,109 @@ const createChartData = () => {
       },
     },
   };
+
+  const [timeManagementChart, setTimeManagementChart] = useState({
+    data: {
+      labels: [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ],
+      datasets: [
+        {
+          label: "Sign In",
+          borderColor: "#6bd098",
+          backgroundColor: "#6bd098",
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          data: Array(12).fill(0), // Initialize with zeros for all months
+        },
+        {
+          label: "Sign Out",
+          borderColor: "#f17e5d",
+          backgroundColor: "#f17e5d",
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          data: Array(12).fill(0), // Initialize with zeros for all months
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+        },
+        tooltip: { enabled: true, mode: 'nearest' }
+      },
+      scales: {
+        y: {
+          ticks: {
+            stepSize: 1,
+            color: "#9f9f9f",
+            beginAtZero: true,
+            maxTicksLimit: 6
+          },
+          grid: {
+            drawBorder: true,
+            display: true
+          },
+          max: 10
+        },
+        x: {
+          barPercentage: 1.6,
+          grid: {
+            drawBorder: true,
+            display: true
+          },
+          ticks: {
+            padding: 20,
+            color: "#9f9f9f"
+          }
+        }
+      },
+      elements: {
+        point: {
+          radius: 0.1,
+          hitRadius: 30,
+        },
+      },
+    }
+  });
+  
+
+
+  const handlePieChartClick = (label, leaveTypeGroupID, responseType) => {
+    // Handle the pie chart click with the label received from CustomPieChart
+    handleToggleDrilldown('pie','leaveRequests', 0, leaveTypeGroupID, responseType, label);
+  };
+
+  const handleDoughnutChartClick = (label, chartName) => {
+    // Add your custom logic here to handle the click event for the selected option.
+    if(chartName == 'Sign In')
+    {
+      handleToggleDrilldown('doughnut','signIn', 0, 0, 0, label);
+  }
+  else if(chartName == 'Sign Out')
+    {
+      handleToggleDrilldown('doughnut','signOut', 0, 0, 0, label);
+    }
+
+  }
+
+  const handleLineChartClick = (label, chartName) => {
+    // Add your custom logic here to handle the click event for the selected option.
+    if(chartName == 'Sign In')
+    {
+      handleToggleDrilldown('line','signIn', label, 0, 0, label);
+  }
+  else if(chartName == 'Sign Out')
+    {
+      handleToggleDrilldown('line','signOut', label, 0, 0, label);
+    }
+
+  }
+
 
  
 // updated X days ago 
@@ -470,14 +738,14 @@ const createChartData = () => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
   
-    axios.get(`${apiUrl}/leaveRequestsReport?ClientID=${clientID}&LeaveTypeID=1`)
+    axios.get(`${apiUrl}/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=2`)
       .then((response) => {
         if (response.data.length > 0) {
           const newData = {
             labels: ['Declined', 'Approved', 'Requested'],
             datasets: [
               {
-                label: 'Emails',
+                label: 'Holiday',
                 pointRadius: 0,
                 pointHoverRadius: 0,
                 backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
@@ -499,14 +767,14 @@ const createChartData = () => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
   
-    axios.get(`${apiUrl}/leaveRequestsReport?ClientID=${clientID}&LeaveTypeID=2`)
+    axios.get(`${apiUrl}/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=1`)
       .then((response) => {
         if (response.data.length > 0) {
           const newData = {
             labels: ['Declined', 'Approved', 'Requested'],
             datasets: [
               {
-                label: 'Emails',
+                label: 'Sick',
                 pointRadius: 0,
                 pointHoverRadius: 0,
                 backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
@@ -516,6 +784,7 @@ const createChartData = () => {
               },
             ],
           };
+          
           setSickRequestPieChart(newData);
         }
       })
@@ -523,6 +792,75 @@ const createChartData = () => {
         console.error('Error fetching data:', error);
       });
   }, []);
+
+  useEffect(() => {
+    // Get the ClientID from local storage
+    const clientID = localStorage.getItem('ClientID');
+  
+    axios.get(`${apiUrl}/leaveRequestsType?ClientID=${clientID}&LeaveTypeGroupID=2&StatusID=1`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          // Extract LeaveTypeName values from the response data
+          const leaveTypeNames = response.data.map(item => item.LeaveTypeName);
+          const leaveTypeRequests = response.data.map(item => item.NoOfLeaveTypeRequests);
+  
+          const newData = {
+            labels: leaveTypeNames, // Set labels as an array
+            datasets: [
+              {
+                label: 'Pending',
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
+                borderWidth: 0,
+                barPercentage: 1.6,
+                data: leaveTypeRequests, // Use the extracted leaveTypeRequests
+              },
+            ],
+          };
+  
+          setPendingApproval(newData);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    // Get the ClientID from local storage
+    const clientID = localStorage.getItem('ClientID');
+  
+    axios.get(`${apiUrl}/leaveRequestsType?ClientID=${clientID}&LeaveTypeGroupID=2&StatusID=2`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          // Extract LeaveTypeName values from the response data
+          const leaveTypeNames = response.data.map(item => item.LeaveTypeName);
+          const leaveTypeRequests = response.data.map(item => item.NoOfLeaveTypeRequests);
+  
+          const newData = {
+            labels: leaveTypeNames, // Set labels as an array
+            datasets: [
+              {
+                label: 'Pending',
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
+                borderWidth: 0,
+                barPercentage: 1.6,
+                data: leaveTypeRequests, // Use the extracted leaveTypeRequests
+              },
+            ],
+          };
+  
+          setApprovedLeaves(newData);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+  
 
 
   // total staff, staff on leave (today), staff on leave (next 30 days)
@@ -565,7 +903,7 @@ useEffect(() => {
             labels: ['Signed Out', 'Pending'],
             datasets: [
               {
-                label: "Emails",
+                label: "Sign Out",
                 pointRadius: 0,
                 pointHoverRadius: 0,
                 backgroundColor: ["#66615b", "#f4f3ef"],
@@ -643,7 +981,7 @@ useEffect(() => {
             labels: ['Signed In', 'Pending'],
             datasets: [
               {
-                label: "Emails",
+                label: "Sign In",
                 pointRadius: 0,
                 pointHoverRadius: 0,
                 backgroundColor: ["#66615b", "#f4f3ef"],
@@ -693,6 +1031,11 @@ useEffect(() => {
                   display: false
                 }
               }
+            }
+          },
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const segment = signInChart.data.labels[elements[0].index];
             }
           }
         };
@@ -775,6 +1118,69 @@ useEffect(() => {
 
 }, [leaveRequestData]);
 
+useEffect(() => {
+  const clientID = localStorage.getItem('ClientID'); // Modify this as needed
+
+  const signInEndpoint = `${apiUrl}/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=1`;
+  const signOutEndpoint = `${apiUrl}/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=2`;
+
+  // Fetch data for ActionTypeID 1
+axios.get(signInEndpoint)
+  .then((response) => {
+    if (Array.isArray(response.data)) {
+      setTimeManagementChart(prevState => {
+        const updatedData = { ...prevState };
+
+        // Extract the maximum value from the fetched data
+        const maxDataValue = Math.max(
+          ...response.data.map(item => item.NumberOfSignInsOuts)
+        );
+
+        // Add 1 to the maximum value on y axis to look better for user
+        const newMaxValue = maxDataValue + 1;
+
+        // Set the new maximum value on the y-axis
+        updatedData.options.scales.y.max = newMaxValue;
+
+        response.data.forEach((item) => {
+          const monthIndex = updatedData.data.labels.indexOf(item.Month);
+          if (monthIndex !== -1) {
+            updatedData.data.datasets[0].data[monthIndex] = item.NumberOfSignInsOuts;
+          }
+        });
+
+        return { ...updatedData };
+      });
+    }
+  })
+  .catch((error) => {
+    console.error('Error fetching data for ActionTypeID 1:', error);
+  });
+
+
+
+  // Fetch data for ActionTypeID 2
+axios.get(signOutEndpoint)
+.then((response) => {
+  if (Array.isArray(response.data)) {
+    setTimeManagementChart((prevChart) => {
+      const updatedData = { ...prevChart.data };
+      response.data.forEach((item) => {
+        const monthIndex = updatedData.labels.indexOf(item.Month);
+        if (monthIndex !== -1) {
+          updatedData.datasets[1].data[monthIndex] = item.NumberOfSignInsOuts;
+        }
+      });
+      return { data: updatedData, options: prevChart.options };
+    });
+  }
+})
+.catch((error) => {
+  console.error('Error fetching data for ActionTypeID 2:', error);
+});
+}, []);
+
+
 
 
   return (
@@ -816,7 +1222,7 @@ useEffect(() => {
                         
                       >
                         <i className="nc-icon nc-button-play"
-                        onClick={() => handleToggleDrilldown('totalStaff', 0)} />
+                        onClick={() => handleToggleDrilldown('count','totalStaff', 0, 0 , '')} />
                       </Button>
                     </div>
                   </Col>
@@ -860,7 +1266,7 @@ useEffect(() => {
                         
                       >
                         <i className="nc-icon nc-button-play"
-                        onClick={() => handleToggleDrilldown('staffOnLeave', 0)} />
+                        onClick={() => handleToggleDrilldown('count','staffOnLeave', 0, 0, '')} />
                       </Button>
                     </div>
                   </Col>
@@ -902,7 +1308,7 @@ useEffect(() => {
                         size="sm"
                       >
                         <i className="nc-icon nc-button-play"
-                         onClick={() => handleToggleDrilldown('staffOnLeave30Days', 30)} />
+                         onClick={() => handleToggleDrilldown('count', 'staffOnLeave30Days', 30, 0, '')} />
                       </Button>
                     </div>
                   </Col>
@@ -911,57 +1317,29 @@ useEffect(() => {
             </Card>
           </Col>
 
-          <Row>
-          {openDrilldown === 'totalStaff' ? (
-  <TotalStaffTable />
-) : openDrilldown === 'staffOnLeave' ? (
-  <StaffOnLeaveTable TableDateRange={tableDateRange} />
-) : openDrilldown === 'staffOnLeave30Days' ? (
-  <StaffOnLeaveTable TableDateRange={tableDateRange} />
-)
-:  null}
+        <Row>
+        {openDrilldown === 'totalStaff' ? (
+        <TotalStaffTable />
+        ) : openDrilldown === 'staffOnLeave' ? (
+        <StaffOnLeaveTable TableDateRange={tableDateRange} />
+        ) : openDrilldown === 'staffOnLeave30Days' ? (
+        <StaffOnLeaveTable TableDateRange={tableDateRange} />
+        ) :  null}
+        </Row>
 
-</Row>
-
-        
-
-<Col md="3">
+        <Col md="3">
     <Card>
       <CardHeader>
-        <CardTitle>Holiday Requests</CardTitle>
+        <CardTitle>Pending Approval</CardTitle>
         <p className="card-category">Year to date</p>
       </CardHeader>
       <CardBody style={{ height: "250px" }}>
-        <Pie
-          data={chartData}
-          options={optionsPieChart}
-          width={456}
-          height={300}
-        />
-      </CardBody>
-      <CardFooter>
-        <hr />
-        <div className="stats">
-          <i className="fa fa-clock-o" />
-          Updated  {lastHolidayLeaveUpdated !== null ? lastHolidayLeaveUpdated : 'Loading...'} ago
-        </div>
-      </CardFooter>
-    </Card>
-  </Col>
-
-  <Col md="3">
-    <Card>
-      <CardHeader>
-        <CardTitle>Sick Requests</CardTitle>
-        <p className="card-category">Year to date</p>
-      </CardHeader>
-      <CardBody style={{ height: "250px" }}>
-        <Pie
-          data={sickRequestPieChart}
-          options={optionsPieChart}
-          width={456}
-          height={300}
-        />
+          <CustomPieChart
+            chartData={pendingApproval}
+            optionsPieChart={optionsPieChart}
+            handlePieChartClick={handlePieChartClick}
+            responseType={"Leave Type Pending"}
+          />
       </CardBody>
       <CardFooter>
         <hr />
@@ -973,36 +1351,111 @@ useEffect(() => {
     </Card>
   </Col>
 
-  
-
-
   <Col md="3">
     <Card>
       <CardHeader>
-        <CardTitle>Staff Signed In Today</CardTitle>
-        <p className="card-category">Out of total number</p>
+        <CardTitle>Approved Leaves</CardTitle>
+        <p className="card-category">Year to date</p>
       </CardHeader>
-      <CardBody style={{ height: "253px" }}>
-        <Doughnut
-          data={signInChart.data}
-          options={signInChart.options}
-          className="ct-chart ct-perfect-fourth"
-          height={300}
-          width={456}
-        />
+      <CardBody style={{ height: "250px" }}>
+          <CustomPieChart
+            chartData={approvedLeaves}
+            optionsPieChart={optionsPieChart}
+            handlePieChartClick={handlePieChartClick}
+            responseType={"Leave Type Approved"}
+            
+          />
       </CardBody>
       <CardFooter>
-
-        
-
         <hr />
         <div className="stats">
           <i className="fa fa-clock-o" />
-          Updated {lastSignInUpdated !== null ? lastSignInUpdated : 'Loading...'} ago
+          Updated  {lastSickLeaveUpdated !== null ? lastSickLeaveUpdated : 'Loading...'} ago
         </div>
       </CardFooter>
     </Card>
   </Col>
+
+        <Col md="3">
+      <Card>
+        <CardHeader>
+          <CardTitle>Holiday Requests</CardTitle>
+          <p className="card-category">Year to date</p>
+        </CardHeader>
+        <CardBody style={{ height: "250px" }}>
+          <CustomPieChart
+            chartData={chartData}
+            optionsPieChart={optionsPieChart}
+            handlePieChartClick={handlePieChartClick}
+            responseType={"Status"}
+          />
+        </CardBody>
+        <CardFooter>
+          <hr />
+          <div className="stats">
+            <i className="fa fa-clock-o" />
+            Updated {lastHolidayLeaveUpdated !== null ? lastHolidayLeaveUpdated : 'Loading...'} ago
+          </div>
+        </CardFooter>
+      </Card>
+    </Col>
+
+  <Col md="3">
+    <Card>
+      <CardHeader>
+        <CardTitle>Absence Log</CardTitle>
+        <p className="card-category">Year to date</p>
+      </CardHeader>
+      <CardBody style={{ height: "250px" }}>
+          <CustomPieChart
+            chartData={sickRequestPieChart}
+            optionsPieChart={optionsPieChart}
+            handlePieChartClick={handlePieChartClick}
+            responseType={"Status"}
+          />
+      </CardBody>
+      <CardFooter>
+        <hr />
+        <div className="stats">
+          <i className="fa fa-clock-o" />
+          Updated  {lastSickLeaveUpdated !== null ? lastSickLeaveUpdated : 'Loading...'} ago
+        </div>
+      </CardFooter>
+    </Card>
+  </Col>
+
+  <Row>
+  {openDrilldown === 'leaveRequests' ? (
+    <LeaveRequestsTable leaveTypeGroupID={leaveTypeGroupID} leaveStatusID={leaveStatusID} leaveTypeID={leaveType} />
+  ) : null}
+</Row>
+
+<Col md="3">
+  <Card>
+    <CardHeader>
+      <CardTitle>Staff Signed In Today</CardTitle>
+      <p className="card-category">Out of total number</p>
+    </CardHeader>
+    <CardBody style={{ height: "253px" }}>
+      <CustomDoughnutChart
+        signInChartData={signInChart.data} // Use consistent prop names here
+        signInChartOptions={signInChart.options} // Use consistent prop names here
+        handleDoughnutChartClick={handleDoughnutChartClick}
+        className="ct-chart ct-perfect-fourth"
+        height={300}
+        width={456}
+      />
+    </CardBody>
+    <CardFooter>
+      <hr />
+      <div className="stats">
+        <i className="fa fa-clock-o" />
+        Updated {lastSignInUpdated !== null ? lastSignInUpdated : 'Loading...'} ago
+      </div>
+    </CardFooter>
+  </Card>
+</Col>
+
 
   <Col md="3">
     <Card>
@@ -1011,13 +1464,14 @@ useEffect(() => {
         <p className="card-category">Out of total number</p>
       </CardHeader>
       <CardBody style={{ height: "253px" }}>
-        <Doughnut
-          data={signOutChart.data}
-          options={signOutChart.options}
-          className="ct-chart ct-perfect-fourth"
-          height={300}
-          width={456}
-        />
+      <CustomDoughnutChart
+        signInChartData={signOutChart.data} // Use consistent prop names here
+        signInChartOptions={signOutChart.options} // Use consistent prop names here
+        handleDoughnutChartClick={handleDoughnutChartClick}
+        className="ct-chart ct-perfect-fourth"
+        height={300}
+        width={456}
+      />
       </CardBody>
       <CardFooter>
 
@@ -1029,10 +1483,44 @@ useEffect(() => {
       </CardFooter>
     </Card>
   </Col>
+
+  <Col md="6">
+      <Card className="custom-chart-monthly-overview">
+        <CardHeader>
+          <CardTitle>Time Management Overview</CardTitle>
+          <p className="card-category">Annual Report</p>
+        </CardHeader>
+        <CardBody>
+          <CustomLineChart
+            timeManagementChartData={timeManagementChart.data}
+            timeManagementChartOptions={timeManagementChart.options}
+            handleLineChartClick={handleLineChartClick}
+            width={400}
+            height={200}
+          />
+        </CardBody>
+        <CardFooter>
+          <hr />
+          
+        </CardFooter>
+      </Card>
+    </Col>
+
+    <Row>
+  {openDrilldown === 'signIn' || openDrilldown === 'signOut' ? (
+    <TimeManagementTable actionTypeID={actionTypeID} timeManagementStatus={timeManagementStatus} />
+  ) : openDrilldown === 'timeManagementReport' ? (
+    <TimeManagementTable actionTypeID={actionTypeID} timeManagementStatus={timeManagementStatus} tableDateRange={tableDateRange} />
+  ) : null}
 </Row>
 
 
-        <Row>
+
+
+
+</Row>
+ {/*
+<Row>
     
           <Col lg="4" sm="6">
             <Card>
@@ -1167,7 +1655,7 @@ useEffect(() => {
           
         </Row>
         
- 
+*/}
       
       </div>
     </>

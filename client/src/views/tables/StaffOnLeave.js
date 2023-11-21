@@ -42,8 +42,8 @@ function StaffOnLeave({ TableDateRange }) {
           <Col md="12">
             <div className="fixed-width-table-chart-container">
               <Card>
-                <CardHeader>
-                  <CardTitle tag="h4">Staff On Leave (Today)</CardTitle>
+                <CardHeader tag="h5">
+                Staff On Leave ({TableDateRange == 0 ? "Today" : `Next ${TableDateRange} Days`})
                 </CardHeader>
                 <CardBody>
                   <ReactTable
