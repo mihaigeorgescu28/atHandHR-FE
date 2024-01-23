@@ -244,7 +244,6 @@ function SignInOut(props) {
               { !submit &&
               <Button
                 type = "submit"
-                className="btn-round"
                 color="default"
                 outline
                 style={{backgroundColor: '#50BCDA', color: 'white'}}

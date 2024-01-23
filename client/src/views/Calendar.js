@@ -802,7 +802,6 @@ function Calendar() {
             {disabled ? (<div title="Please fill in all required fields before submitting." style={{ display: 'inline-block', cursor: 'not-allowed', opacity: disabled ? 0.5 : 1 }}>
               <Button
                 type="submit"
-                className="btn-round"
                 color="info"
                 disabled={disabled}
                 style={{ position: 'relative', zIndex: 1 }}
@@ -813,7 +812,6 @@ function Calendar() {
             ) : (
               <Button
                 type="submit"
-                className="btn-round"
                 color="info"
                 disabled={disabled}
               >
@@ -823,7 +821,6 @@ function Calendar() {
 
 
             <Button
-              className="btn-round"
               type="submit"
               style={{ display: "inline-block", visibility: "visible" }}
               color="danger"

@@ -27,7 +27,8 @@ import Wizard from "views/forms/Wizard.js";
 import NotFound from "views/pages/NotFound.js"
 import NewsFeed from "views/pages/NewsFeed.js"
 import SignInOut from "views/pages/SignInOut.js";
-import EditUserForm from "views/helper/EditUserForm.js";
+import EditUserForm from "views/forms/EditUserForm.js";
+
 
 const routes = [
   {
@@ -36,7 +37,7 @@ const routes = [
     icon: "nc-icon nc-watch-time",
     component: EditUserForm,
     layout: "/admin",
-    sidebar: "false"
+    sidebar: "False"
   },
   {
     path: "/newsfeed",

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate, useLocation, useParams } from "react-router-dom";
 import AuthLayout from "layouts/Auth.js";
 import AdminLayout from "layouts/Admin.js";
 import "bootstrap/dist/css/bootstrap.css";
@@ -14,18 +14,21 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => { // <-- wrap navigate call inside useEffect hook
-    if (location.pathname === '/') {
+  
+
+  useEffect(() => {
+    // Allow access to authentication pages without being logged in
+    if (!isLoggedIn && !location.pathname.startsWith('/auth')) {
       navigate('/auth/login');
     }
   }, [location.pathname, navigate, isLoggedIn]);
+  
 
   if (isLoggedIn) {
     return (
       <Routes>
         <Route path="/auth/*" element={<AuthLayout />} />
-        <Route path="/admin/dashboard/totalStaff/:userId" element={<AdminLayout />} />
-        <Route path="/admin/dashboard" element={<AdminLayout />} />
+        <Route path="/admin/dashboard/*" element={<AdminLayout />} />
         <Route path="/admin/*" element={<AdminLayout />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

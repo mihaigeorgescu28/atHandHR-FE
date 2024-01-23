@@ -161,7 +161,7 @@ function Register() {
       setAgreementError("");
 
       axios.post(
-        `${apiUrl}/register`,
+        `${apiUrl}/user/register`,
         {
           firstName : inputs.firstName,
           lastName : inputs.lastName,

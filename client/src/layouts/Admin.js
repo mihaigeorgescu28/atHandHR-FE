@@ -1,9 +1,6 @@
-
 import React from "react";
-// javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
-import {Route, Routes, useLocation, Outlet, useNavigate} from "react-router-dom";
-
+import { Route, Routes, useLocation, Outlet } from "react-router-dom";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
@@ -11,17 +8,25 @@ import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 import routes from "routes.js";
 import NotFound from "views/pages/NotFound";
 
-
 var ps;
 
 function AuthAdmin(props) {
-
   const location = useLocation();
   const [backgroundColor, setBackgroundColor] = React.useState("black");
   const [activeColor, setActiveColor] = React.useState("info");
   const [sidebarMini, setSidebarMini] = React.useState(false);
   const mainPanel = React.useRef();
-  const navigate = useNavigate();
+  const [userId, setUserId] = React.useState(null);
+
+  const extractIdFromPathname = (pathname) => {
+    const match = pathname.match(/\/totalStaff\/(\d+)/);
+    return match ? match[1] : null;
+  };
+
+  React.useEffect(() => {
+    const extractedUserId = extractIdFromPathname(location.pathname);
+    setUserId(extractedUserId);
+  }, [location]);
 
   React.useEffect(() => {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -37,37 +42,51 @@ function AuthAdmin(props) {
       }
     };
   });
+
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     mainPanel.current.scrollTop = 0;
-  }, [location]);
+  }, [location, userId]);
 
+  const updatedRoutes = React.useMemo(() => {
+    return routes.map((route) => {
+      if (route.path === "/dashboard/totalStaff/:id") {
+        const extractedId = extractIdFromPathname(location.pathname);
+        setUserId(extractedId);
+        return {
+          ...route,
+          path: `/dashboard/totalStaff/${extractedId}`,
+        };
+      }
+      return route;
+    });
+  }, [location.pathname]);
 
   const nestedRoute = (routes) => {
     const { pathname } = location;
-  
-    const route = routes.find((route) => {
-      if (!route.layout || !route.path) {
-        const nestedRoute = route.views.find((nested) => {
+
+    const route = updatedRoutes.find((updatedRoute) => {
+      if (!updatedRoute.layout || !updatedRoute.path) {
+        const nestedRoute = updatedRoute.views.find((nested) => {
           if (!nested.layout || !nested.path) {
             return false;
           }
           const fullPath = nested.layout + nested.path;
           return pathname === fullPath;
         });
-  
+
         if (nestedRoute) {
           return true;
         }
-      } else if (route.collapse !== true) {
-        const fullPath = route.layout + route.path;
+      } else if (updatedRoute.collapse !== true) {
+        const fullPath = updatedRoute.layout + updatedRoute.path;
         return pathname === fullPath;
       }
-  
+
       return false;
     });
-  
+
     if (route) {
       if (route.views) {
         const nestedRoute = route.views.find((nested) => {
@@ -77,7 +96,7 @@ function AuthAdmin(props) {
           const fullPath = nested.layout + nested.path;
           return pathname === fullPath;
         });
-  
+
         if (nestedRoute) {
           return <nestedRoute.component />;
         }
@@ -85,16 +104,18 @@ function AuthAdmin(props) {
         return <route.component />;
       }
     }
-  
+
     return null;
   };
 
   const handleActiveClick = (color) => {
     setActiveColor(color);
   };
+
   const handleBgClick = (color) => {
     setBackgroundColor(color);
   };
+
   const handleMiniClick = () => {
     if (document.body.classList.contains("sidebar-mini")) {
       setSidebarMini(false);
@@ -104,36 +125,25 @@ function AuthAdmin(props) {
     document.body.classList.toggle("sidebar-mini");
   };
 
-  
   return (
     <div className="wrapper">
       <Sidebar
         {...props}
-        routes={routes}
+        routes={updatedRoutes}
         bgColor={backgroundColor}
         activeColor={activeColor}
       />
       <div className="main-panel" ref={mainPanel}>
         <AdminNavbar {...props} handleMiniClick={handleMiniClick} />
         <Routes>
-
-          <Route path="/" element={<Outlet />} 
-          />
-
+          <Route path="/" element={<Outlet />} />
         </Routes>
-        
-        {
-        // if user is not logged in and tries to access /admin layout then shows 404 page
-        // if user is logged in then call nestedRoute function
-        localStorage.getItem('isLoggedIn') == "true" ? nestedRoute(routes) : <NotFound/> } 
-        {
-          // we don't want the Footer to be rendered on full screen maps page
-          location.pathname.indexOf("full-screen-map") !== -1 ? null : (
-          
-            <Footer fluid />
-          )
-        }
-        
+        {localStorage.getItem("isLoggedIn") === "true"
+          ? nestedRoute(updatedRoutes)
+          : <NotFound />}
+        {location.pathname.indexOf("full-screen-map") !== -1
+          ? null
+          : <Footer fluid />}
       </div>
       <FixedPlugin
         bgColor={backgroundColor}

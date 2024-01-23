@@ -3,24 +3,55 @@ import mysql from "mysql"
 import cors from "cors"
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import multer from "multer";
+import path from "path";
+import bodyParser from 'body-parser';
+import nodemailer from 'nodemailer';
 
-dotenv.config({ path: 'C:/Users/mihai/source/repos/atHandHR/backend/.env' });
 
-const app = express()
+import app from "./app.js";
+import db from "./db.js";
+import emailController from "./controllers/emailController.js";
+import userController from "./controllers/userController.js";
+
+
+app.use('/emails', emailController);
+app.use('/user', userController);
+
+
+/*dotenv.config({ path: 'C:/Users/mihai/source/repos/atHandHR/backend/.env' });
+
+//const app = express()
+
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
+});*/
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "user_uploads/profile_pic"); // Specify the directory where files will be stored
+  },
+  filename: function (req, file, cb) {
+    const extension = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + Date.now() + extension);
+  },
 });
+
+const upload = multer({ storage: storage });
 
 
 // if auth problems run this -> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'ROOTPW';
 
-// new change
+// Middleware to parse JSON
 app.use(express.json())
+// Middleware for CORS
 app.use(cors()) 
+
 
 function generateRandomKey() {
     let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -32,7 +63,15 @@ function generateRandomKey() {
     return key;
   }
 
-app.post("/register", (req,res) =>
+  app.post("/upload", upload.single("file"), (req, res) => {
+    // Handle the uploaded file (e.g., save the file path in the database)
+    const filePath = req.file.path;
+    // Save the 'filePath' in the database or use it as needed
+    res.json({ filePath });
+  });
+  
+
+/*app.post("/register", (req,res) =>
 {
     const checkExistingEmailAddress = "SELECT COUNT(*) AS NumberOfUsersFound FROM user WHERE EmailAddress = ?"
 
@@ -84,7 +123,7 @@ app.post("/register", (req,res) =>
 
     })
     
-});
+});*/
 
 app.post("/login", (req,res) =>
 {
@@ -526,6 +565,7 @@ app.post("/currentClient", (req, res) =>
         FROM user
         LEFT JOIN position p on user.PositionID = p.PositionID
         WHERE user.ClientID = ?
+        and user.Status = 'Active'
       `;
       
         const values = [req.query.ClientID]; // Retrieve ClientID from query parameters
@@ -556,25 +596,44 @@ app.post("/currentClient", (req, res) =>
         });
       });
       
-      app.get("/getUserData/:userID", (req, res) => {
+     /* app.get("/getUserData/:userID", (req, res) => {
         const userData = `
           SELECT 
-            UserID,
-            CONCAT(FirstName, ' ', LastName) as 'FullName',
-            EmailAddress,
-            DATE_FORMAT(DOB, '%d/%m/%Y') as DateOfBirth,
-            WorkingShiftHours,
+          us.UserID,
+          us.FirstName,
+          us.LastName,
+          CONCAT(us.FirstName, ' ', us.LastName) as 'FullName',
+          us.EmailAddress,
+          us.CompanyEmailAddress,
+          us.PhoneNumber,
+          us.CompanyPhoneNumber,
+          DATE_FORMAT(us.DOB, '%d/%m/%Y') as DateOfBirth,
+          us.WorkingShiftHours,
             CONCAT(
-              HolidayEntitelementLeftDays,
-              IF(HolidayEntitelementLeftDays > 1 OR HolidayEntitelementLeftDays = 0, ' days, ', ' day, '),
-              HolidayEntitelementLeftDays,
-              IF(HolidayEntitelementLeftDays > 1 OR HolidayEntitelementLeftDays = 0, ' hours', ' hour')
+              us.HolidayEntitelementLeftDays,
+              IF(us.HolidayEntitelementLeftDays > 1 OR us.HolidayEntitelementLeftDays = 0, ' days, ', ' day, '),
+              us.HolidayEntitelementLeftDays,
+              IF(us.HolidayEntitelementLeftDays > 1 OR us.HolidayEntitelementLeftDays = 0, ' hours', ' hour')
             ) as HolidayEntitlement,
-            PositionName,
-            EmployeeNumber
-          FROM user
-          LEFT JOIN position p on user.PositionID = p.PositionID
-          WHERE user.UserID = ?
+            us.PositionID,
+            p.PositionName,
+            us.EmployeeNumber,
+            us.ExEmployee,
+            us.NINO,
+            us.LineManagerID,
+            CONCAT(us1.FirstName, ' ', us1.LastName) as 'LineManager',
+            DATE_FORMAT(us.JoinedDate, '%d/%m/%Y') as JoinedDate,
+            us.Salary,
+            us.BuildingNameNumber,
+            us.StreetName,
+            us.TownCity,
+            us.Country,
+            us.PostalCode,
+            us.ProfilePicture
+          FROM user us
+          LEFT JOIN position p on us.PositionID = p.PositionID
+          LEFT JOIN user us1 on us1.LineManagerID = us.LineManagerID
+          WHERE us.UserID = ?
         ` 
         const values = [req.params.userID]; // Retrieve UserID from URL params
       
@@ -587,19 +646,37 @@ app.post("/currentClient", (req, res) =>
           } else {
             const response = result.map((item) => ({
               UserID: item.UserID,
+              FirstName: item.FirstName,
+              LastName: item.LastName,
               FullName: item.FullName,
               EmailAddress: item.EmailAddress,
+              CompanyEmailAddress: item.CompanyEmailAddress,
+              PhoneNumber: item.PhoneNumber,
+              CompanyPhoneNumber: item.CompanyPhoneNumber,
               DOB: item.DateOfBirth,
               WorkingShiftHours: item.WorkingShiftHours,
               HolidayEntitlement: item.HolidayEntitlement,
+              PositionID : item.PositionID,
               Position : item.PositionName,
-              EmployeeNumber : item.EmployeeNumber
+              EmployeeNumber : item.EmployeeNumber,
+              ExEmployee: item.ExEmployee,
+              NINO: item.NINO,
+              LineManagerID: item.LineManagerID,
+              LineManager: item.LineManager,
+              JoinedDate: item.JoinedDate,
+              Salary: item.Salary,
+              BuildingNameNumber: item.BuildingNameNumber,
+              StreetName: item.StreetName,
+              TownCity: item.TownCity,
+              Country: item.Country,
+              PostalCode: item.PostalCode,
+              ProfilePicture: item.ProfilePicture
             }));
       
             return res.status(200).json(response);
           }
         });
-      });
+      });*/
 
       app.get("/countStaffData", (req, res) => {
         const clientID = req.query.ClientID;
@@ -610,6 +687,7 @@ app.post("/currentClient", (req, res) =>
               SELECT COUNT(*) 
               FROM user 
               WHERE ClientID = u.ClientID
+              AND user.Status = 'Active'
             ) AS TotalStaff,
             (
               SELECT COUNT(*) 
@@ -618,6 +696,7 @@ app.post("/currentClient", (req, res) =>
               WHERE DATE(lr.EndDateTime) >= CURDATE()
               AND u.ClientID = u.ClientID
               AND DATE(lr.StartDateTime) <= DATE_ADD(CURDATE(), INTERVAL 0 DAY)
+              AND Status = 'Active'
             ) AS StaffOnLeave,
             (
               SELECT COUNT(*) 
@@ -626,6 +705,7 @@ app.post("/currentClient", (req, res) =>
               WHERE DATE(lr.EndDateTime) >= CURDATE()
               AND lr.StartDateTime <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
               AND u.ClientID = u.ClientID
+              AND Status = 'Active'
             ) AS StaffOnLeaveNext30Days
           FROM user u
           WHERE u.ClientID = ?`;
@@ -1089,7 +1169,7 @@ app.post("/currentClient", (req, res) =>
         const SignInOutMonthlyReport = `
         SELECT
   LEFT(MONTHNAME(usshti.DateTime), 3) AS "Month",
-  COUNT(DISTINCT usshti.UserID) AS "NumberOfSignInsOuts"
+  COUNT(usshti.UserID) AS "NumberOfSignInsOuts"
 FROM
   user_shift_times usshti
 LEFT JOIN
@@ -1123,97 +1203,317 @@ GROUP BY
 
       app.get("/TimeManagementBreakDown", (req, res) => {
         const { ClientID, ActionTypeID, TimeManagementStatus, DateRangeStart, DateRangeEnd } = req.query;
-      
-        let dateRangeCondition = "";  // Initialize an empty string for the date range condition
-      
+    
+        // Initialize an empty string for the date range condition
+        let dateRangeCondition = "";
+    
         // Check if DateRangeStart is defined, otherwise set it to the current date
-const startDate = DateRangeStart ? db.escape(DateRangeStart) : db.escape(new Date().toISOString().split('T')[0]);
-
-// Check if DateRangeEnd is defined, otherwise set it to the current date
-const endDate = DateRangeEnd ? db.escape(DateRangeEnd) : db.escape(new Date().toISOString().split('T')[0]);
-
-// Include the date range condition
-dateRangeCondition = `
-  AND DATE(usshti.DateTime) >= ${startDate}
-  AND DATE(usshti.DateTime) <= ${endDate}
-`;
-      
-        let timeManagementBreakDown = `
-          SELECT
-            us.UserID,
-            CONCAT(FirstName, ' ', LastName) AS 'FullName',
-            IFNULL(
-              DATE_FORMAT(
-                (SELECT DateTime FROM user_shift_times usshti 
-                  WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
-                    ${dateRangeCondition}  -- Include the date range condition here
-                  ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
-                '%d/%m/%Y (%H:%i)'
-              ),
-              'Pending'
-            ) AS 'SignedInOut',  
-            CONCAT(IFNULL(us.WorkingShiftHours, 8), ' Hours') AS 'ExpectedShiftDurationHours',
-            TIMEDIFF(
-              (SELECT DateTime FROM user_shift_times usshti 
-                WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = 2 
-                  ${dateRangeCondition}  -- Include the date range condition here
-                ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
-              (SELECT DateTime FROM user_shift_times usshti 
-                WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = 1 
-                  ${dateRangeCondition}  -- Include the date range condition here
-                ORDER BY usshti.UserShiftTimeID DESC LIMIT 1)
-            ) AS 'ActualShiftDuration'
-          FROM
-            user us
-          WHERE
-            us.ClientID = ${db.escape(ClientID)} AND
-            (
-              (${db.escape(TimeManagementStatus)} = 'Pending' AND 'Pending' = IFNULL(
-                DATE_FORMAT(
-                  (SELECT DateTime FROM user_shift_times usshti 
-                    WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
-                      ${dateRangeCondition}  -- Include the date range condition here
-                    ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
-                  '%d/%m/%Y (%H:%i)'
-                ),
-                'Pending'
-              )) OR
-              (${db.escape(TimeManagementStatus)} = 'OnTime' AND 'OnTime' <> IFNULL(
-                DATE_FORMAT(
-                  (SELECT DateTime FROM user_shift_times usshti 
-                    WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
-                      ${dateRangeCondition}  -- Include the date range condition here
-                    ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
-                  '%d/%m/%Y (%H:%i)'
-                ),
-                'OnTime'
-              ))
-            );
+        const startDate = DateRangeStart ? db.escape(DateRangeStart) : db.escape(new Date().toISOString().split('T')[0]);
+    
+        // Check if DateRangeEnd is defined, otherwise set it to the current date
+        const endDate = DateRangeEnd ? db.escape(DateRangeEnd) : db.escape(new Date().toISOString().split('T')[0]);
+    
+        // Include the date range condition
+        dateRangeCondition = `
+            AND DATE(usshti.DateTime) >= ${startDate}
+            AND DATE(usshti.DateTime) <= ${endDate}
         `;
-      
+    
+        let timeManagementBreakDown;
+    
+        if (DateRangeStart && DateRangeEnd) {
+            // Execute a different SQL query if DateRangeStart and DateRangeEnd exist
+            timeManagementBreakDown = `
+                SELECT
+                    us.UserID,
+                    CONCAT(FirstName, ' ', LastName) AS 'FullName',
+                    DATE_FORMAT(usshti.DateTime,'%d/%m/%Y (%H:%i)') AS SignedInOut
+                FROM
+                    user_shift_times usshti
+                LEFT JOIN user us ON usshti.UserID = us.UserID
+                WHERE us.ClientID = ${db.escape(ClientID)}
+                    AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
+                    ${dateRangeCondition}
+            `;
+        } else {
+            // Keep the existing logic if DateRangeStart and DateRangeEnd do not exist
+            timeManagementBreakDown = `
+                SELECT
+                    us.UserID,
+                    CONCAT(FirstName, ' ', LastName) AS 'FullName',
+                    IFNULL(
+                        DATE_FORMAT(
+                            (SELECT DateTime FROM user_shift_times usshti 
+                            WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
+                                ${dateRangeCondition}  -- Include the date range condition here
+                            ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
+                            '%d/%m/%Y (%H:%i)'
+                        ),
+                        'Pending'
+                    ) AS 'SignedInOut',  
+                    CONCAT(IFNULL(us.WorkingShiftHours, 8), ' Hours') AS 'ExpectedShiftDurationHours',
+                    TIMEDIFF(
+                        (SELECT DateTime FROM user_shift_times usshti 
+                        WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = 2 
+                            ${dateRangeCondition}  -- Include the date range condition here
+                        ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
+                        (SELECT DateTime FROM user_shift_times usshti 
+                        WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = 1 
+                            ${dateRangeCondition}  -- Include the date range condition here
+                        ORDER BY usshti.UserShiftTimeID DESC LIMIT 1)
+                    ) AS 'ActualShiftDuration'
+                FROM
+                    user us
+                WHERE
+                    us.ClientID = ${db.escape(ClientID)} AND
+                    (
+                        (${db.escape(TimeManagementStatus)} = 'Pending' AND 'Pending' = IFNULL(
+                            DATE_FORMAT(
+                                (SELECT DateTime FROM user_shift_times usshti 
+                                WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
+                                    ${dateRangeCondition}  -- Include the date range condition here
+                                ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
+                                '%d/%m/%Y (%H:%i)'
+                            ),
+                            'Pending'
+                        )) OR
+                        (${db.escape(TimeManagementStatus)} = 'OnTime' AND 'OnTime' <> IFNULL(
+                            DATE_FORMAT(
+                                (SELECT DateTime FROM user_shift_times usshti 
+                                WHERE usshti.UserID = us.UserID AND usshti.ActionTypeID = ${db.escape(ActionTypeID)} 
+                                    ${dateRangeCondition}  -- Include the date range condition here
+                                ORDER BY usshti.UserShiftTimeID DESC LIMIT 1),
+                                '%d/%m/%Y (%H:%i)'
+                            ),
+                            'OnTime'
+                        ))
+                    );
+            `;
+        }
+    
         db.query(timeManagementBreakDown, (err, result) => {
-          if (err) {
-            return res.send({
-              message: "Error",
-              error: err,
-            });
-          } else {
-            const response = result.map((item) => ({
-              UserID: item.UserID,
-              FullName: item.FullName,
-              SignedInOut: item.SignedInOut,
-              ActualShiftDuration: item.ActualShiftDuration,
-              ExpectedShiftDurationHours: item.ExpectedShiftDurationHours,
-            }));
-      
-            return res.send(response);
-          }
+            if (err) {
+                return res.send({
+                    message: "Error",
+                    error: err,
+                });
+            } else {
+                const response = result.map((item) => ({
+                    UserID: item.UserID,
+                    FullName: item.FullName,
+                    SignedInOut: item.SignedInOut,
+                    ActualShiftDuration: item.ActualShiftDuration,
+                    ExpectedShiftDurationHours: item.ExpectedShiftDurationHours,
+                }));
+    
+                return res.send(response);
+            }
         });
+    });
+    
+      
+    app.post('/submitUserForm', upload.single('profilePicture'), (req, res) => {
+      const { UserID, ...fieldsToUpdate } = req.body;
+      const profilePicture = req.file;
+    
+      // Construct SQL UPDATE query
+      let updateQuery = 'UPDATE user SET';
+      const queryParams = [];
+    
+      // Add fields to SET clause dynamically based on availability
+      Object.entries(fieldsToUpdate).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          updateQuery += ` ${key} = ?,`;
+          queryParams.push(value);
+        } else {
+          updateQuery += ` ${key} = NULL,`; // Set to NULL if value is undefined or empty
+        }
       });
+    
+      // Remove the trailing comma
+      updateQuery = updateQuery.slice(0, -1);
+    
+      // Append profile picture update if available
+      if (profilePicture) {
+        updateQuery += ', ProfilePicture = ?';
+        queryParams.push(profilePicture.filename);
+      }
+    
+      // Add the WHERE clause
+      updateQuery += ' WHERE UserID = ?';
+      queryParams.push(UserID);
+    
+      console.log('Final update query:', updateQuery);
+      console.log('Final query parameters:', queryParams);
+    
+      // Check if there are fields to update
+      if (queryParams.length <= 1) {
+        return res.status(200).json({ message: 'No fields to update' });
+      }
+    
+      db.query(updateQuery, queryParams, (err, results) => {
+        if (err) {
+          console.error('Error updating user:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
+        } else {
+          res.status(200).json({ message: 'User updated successfully' });
+        }
+      });
+    });
+    
+    
+    
+    app.post('/getLineManagers', (req, res) => {
+      const { userId } = req.body;
+    
+      // Construct SQL SELECT query
+      const selectQuery = `
+        SELECT UserID, CONCAT(FirstName, ' ', LastName) AS FullName
+        FROM user
+        WHERE ClientID = (SELECT ClientID FROM user WHERE UserID = ?)
+      `;
+    
+      // Execute the query
+      db.query(selectQuery, [userId], (err, results) => {
+        if (err) {
+          console.error('Error fetching line managers:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
+        } else {
+          if (results.length > 0) {
+            const lineManagers = results.map(result => ({
+              value: result.UserID, // Assuming UserID is the ID property
+              label: result.FullName,
+            }));
+            res.status(200).json({ LineManagers: lineManagers });
+          } else {
+            res.status(404).json({ error: 'Line Managers not found' });
+          }
+        }
+      });
+    });
+    
+    
+    app.post('/getClientPositions', (req, res) => {
+      const { userId } = req.body;
+    
+      // Construct SQL SELECT query
+      const selectQuery = `
+        SELECT po.PositionID, po.PositionName
+        FROM client_position clpo
+        LEFT JOIN position po ON po.PositionID = clpo.PositionID
+        WHERE clpo.ClientID = (SELECT ClientID FROM user WHERE UserID = ?)
+      `;
+    
+      // Execute the query
+      db.query(selectQuery, [userId], (err, results) => {
+        if (err) {
+          console.error('Error fetching positions:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
+        } else {
+          if (results.length > 0) {
+            const positions = results.map(result => ({
+              value: result.PositionID,
+              label: result.PositionName,
+            }));
+    
+            res.status(200).json({ Positions: positions });
+          } else {
+            res.status(404).json({ error: 'Positions not found' });
+          }
+        }
+      });
+    });
+
+    
+    app.post('/disableEmployee', (req, res) => {
+      const { UserID } = req.body;
+    
+      // Validate userId
+      if (!UserID) {
+        return res.status(400).json({ message: 'User ID is required.' });
+      }
+    
+      // Perform SQL update to disable employee
+      const disableEmployeeQuery = 'UPDATE User SET Status = ? WHERE UserID = ?';
+      const values = ['In-Active', UserID];
+    
+      db.query(disableEmployeeQuery, values, (err, result) => {
+        if (err) {
+          console.error('Error updating employee status:', err);
+          return res.status(500).json({ message: 'Error updating employee status.' });
+        }
+    
+        return res.status(200).json({ message: 'Employee successfully disabled.' });
+      });
+    });
+    
+    /*app.post('/resetUserPassword', async (req, res) => {
+      try {
+          const { UserID } = req.body;
+  
+          // Check if the UserId is provided
+          if (!UserID) {
+              return res.status(400).json({ error: 'UserID is required for password reset' });
+          }
+  
+          // Fetch the email address from the database
+          const query = 'SELECT EmailAddress, CONCAT(FirstName, " ", LastName) AS FullName FROM user WHERE UserID = ?';
+          db.query(query, [UserID], async (error, results) => {
+              if (error) {
+                  console.error('Error fetching email from database:', error);
+                  return res.status(500).json({ error: 'Internal Server Error' });
+              }
+  
+              if (results.length === 0) {
+                  return res.status(404).json({ error: 'User not found' });
+              }
+  
+              const email = results[0].EmailAddress;
+              const fullName = results[0].FullName;
+  
+              
+  
+              var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+              sendSmtpEmail.to = [{
+                  email: email,
+                  name: fullName
+              }];
+              sendSmtpEmail.templateId = 2; // Replace with your templateId
+              sendSmtpEmail.params = {
+                  fullName: fullName
+              };
+              sendSmtpEmail.headers = {
+                  'X-Mailin-custom': 'custom_header_1:custom_value_1|custom_header_2:custom_value_2'
+              };
+  
+              // Send email through Breevo API
+              apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
+                  console.log('Breevo API called successfully. Returned data: ' + data);
+                  res.status(200).json({ message: 'User password successfully reset' });
+              }, function(error) {
+                  console.error('Error sending email through Breevo API:', error);
+                  res.status(500).json({ error: 'Failed to reset user password. Please try again later.' });
+              });
+          });
+      } catch (error) {
+          console.error('Error resetting user password:', error);
+          res.status(500).json({ error: 'Failed to reset user password. Please try again later.' });
+      }
+  });
+  */
+    
+    
+    
       
       
-      
-      
+// Serve static files
+const staticDirectory = path.join(process.cwd(), 'user_uploads', 'profile_pic');
+app.use('/user_uploads/profile_pic', express.static(staticDirectory, {
+  setHeaders: (res, path) => {
+    res.setHeader('Content-Security-Policy', "default-src 'self'");
+    // Other security headers...
+  },
+}));
 
       
 

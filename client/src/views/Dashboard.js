@@ -1211,7 +1211,7 @@ axios.get(signOutEndpoint)
                 <hr />
                 <Row>
                   <Col sm="7">
-                    <div className="footer-title">View all staff</div>
+                    <div className="footer-title">View/Edit staff</div>
                   </Col>
                   <Col sm="5">
                     <div className="pull-right">

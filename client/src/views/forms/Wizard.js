@@ -6,25 +6,25 @@ import ReactWizard from "react-bootstrap-wizard";
 import { Col } from "reactstrap";
 
 // wizard steps
-import Step1 from "./WizardSteps/Step1.js";
-import Step2 from "./WizardSteps/Step2.js";
-import Step3 from "./WizardSteps/Step3.js";
+import Step4 from "./WizardSteps/Wizard22/Step1.js";
+import Step5 from "./WizardSteps/Wizard22/Step2.js";
+import Step6 from "./WizardSteps/Wizard22/Step3.js";
 
 var steps = [
   {
     stepName: "About",
     stepIcon: "nc-icon nc-single-02",
-    component: Step1
+    component: Step4
   },
   {
     stepName: "Account",
     stepIcon: "nc-icon nc-touch-id",
-    component: Step2
+    component: Step5
   },
   {
     stepName: "Address",
     stepIcon: "nc-icon nc-pin-3",
-    component: Step3
+    component: Step6
   }
 ];
 
@@ -36,7 +36,6 @@ function Wizard() {
           <ReactWizard
             steps={steps}
             navSteps
-            validate
             title="Build Your Profile"
             description="This information will let us know more about you."
             headerTextCenter
