@@ -35,11 +35,10 @@ jobs:
       - name: Build Node assets
         env:
           CI: true
-          SITE_URL: ${{ inputs.site-url }}
+          SITE_URL: ${{ steps.project.outputs.site-url }}
         run: |
-          npm install --global yarn
-          yarn install --frozen-lockfile
-          yarn build
+          npm ci
+          npm run build
 
 # Please do not touch the following action
       - name: Store deployment content
