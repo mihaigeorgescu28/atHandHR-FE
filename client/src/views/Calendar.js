@@ -5,32 +5,27 @@ import {
   momentLocalizer
 } from "react-big-calendar";
 // dependency plugin for react-big-calendar
-import moment from "moment";
+import moment, { invalid } from "moment";
 import ReactDatetime from "react-datetime";
 import Select from "react-select";
 import axios from 'axios';
 import "../assets/css/paper-dashboard.css";
-import Modal from 'react-modal';
 import SweetAlert from 'react-bootstrap-sweetalert';
+
+
 // reactstrap components
 import {
   Button,
   Card,
-  CardHeader,
   CardBody,
-  CardFooter,
-  CardTitle,
   FormGroup,
   Input,
-  Container,
   Col,
   Row,
-  Form,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
   Label,
-  Tooltip
+  Modal,
+  ModalHeader,
+  ModalBody
 } from "reactstrap";
 
 
@@ -63,29 +58,47 @@ function Calendar() {
   const [workingWeekends, setWorkingWeekends] = useState("")
   const [showEventDetailsAlert, setShowEventDetailsAlert] = useState(false);
   const [formattedStart, setFormattedStart] = useState('');
+  const [leaveStatus, setLeaveStatus] = useState('');
   const [formattedEnd, setFormattedEnd] = useState('');
   const [titleAlert, setTitleAlert] = useState('');
   const apiUrl = process.env.REACT_APP_APIURL;
+  const UserID = localStorage.getItem("UserID");
+  const [invalidDate, setInvalidDate] = useState('');
   
-  Modal.setAppElement('#root');
+
+  // Define your status to color mapping
+  const statusColors = {
+    Approved: '#90EE90',
+    Requested: '#FFD700',
+    Declined: '#F08080',
+  };
+
+  // Function to get event style based on status
+  const eventPropGetter = (event) => {
+    const backgroundColor = statusColors[event.status] || 'defaultColor';
+    return {
+      style: { backgroundColor },
+    };
+  };
+
 
   function showEventDetails(event) {
-    const { title, allDay, start, end } = event;
-
+    const { title, allDay, start, end, status } = event;
+console.log("hereee ", event)
     const newFormattedStart = new Date(start).toLocaleString();
     const newFormattedEnd = new Date(end).toLocaleString();
     setFormattedStart(newFormattedStart);
     setFormattedEnd(newFormattedEnd);
     setTitleAlert(title);
+    setLeaveStatus(status);
     setShowEventDetailsAlert(true);
   }
 
   useEffect(() => {
     async function fetchLeaveType() {
-      const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-          `${apiUrl}/leaveType`,
+          `${apiUrl}/leave/leaveType`,
           {
             UserID: UserID
           }
@@ -110,6 +123,19 @@ function Calendar() {
 
     fetchLeaveType();
   }, []);
+
+  const getAlertMessage = (invalidDate) => {
+    switch (invalidDate) {
+      case "Weekend":
+        return "You are not allowed to start your leave on weekend days. Please contact your administrator for more information!";
+      case "Bank Holiday":
+        return "You are not allowed to start your leave on bank holidays. Please contact your administrator for more information!";
+        case "Duplicate Leave":
+          return "You already submitted a leave for this day. Please choose another day";  
+        default:
+        return "";
+    }
+  };
 
   async function diffInMsExcludeWeekends(start, end) {
     const startMs = new Date(start).getTime();
@@ -138,7 +164,7 @@ function Calendar() {
     try 
     {
         const result = await axios.post(
-        `${apiUrl}/WithinBankHoliday`,
+        `${apiUrl}/leave/WithinBankHoliday`,
         {
           start : start,
           end: end,
@@ -161,14 +187,13 @@ function Calendar() {
     const UserID = localStorage.getItem("UserID");
     try {
       const result = await axios.post(
-        `${apiUrl}/userHolidayInfo`,
+        `${apiUrl}/leave/userHolidayInfo`,
         {
           UserID: UserID,
         }
       );
       if (result.status === 200) {
         const data = result.data;
-        console.log("data is:", data)
         const userWorkingShiftDuration = data.WorkingShiftHours !== null ? data.WorkingShiftHours : 8;
         const workingWeekends = data.WorkingWeekends
         const userHolidayEntitelementLeftDays = data.HolidayEntitelementLeftDays == null ? 0 : data.HolidayEntitelementLeftDays;
@@ -256,6 +281,7 @@ function Calendar() {
     event.preventDefault();
     if (selectedSlot) {
       const UserID = localStorage.getItem("UserID");
+      const clientID = localStorage.getItem('ClientID');
       const fullDays = getDaysFromString(duration)
       const fullHours = getHoursFromString(duration);
       const startDateForm = formatTimestampForSQL(selectedDate)
@@ -263,7 +289,7 @@ function Calendar() {
 
     try {
       const result = await axios.post(
-        `${apiUrl}/submitLeave`,
+        `${apiUrl}/leave/submitLeave`,
         {
           UserID: UserID,
           LeaveTypeID: singleSelect,
@@ -284,6 +310,13 @@ function Calendar() {
       setDuration("");
       setShowAlert(true); // Show the SweetAlert
       }
+
+      const response = await axios.get(`${apiUrl}/leave/leaveRequests?ClientID=${clientID}`);
+      if (response.status === 200) {
+        const data = response.data;
+        setEventsState(data);
+      }
+
     } catch (error) {
     console.error(error);
   }
@@ -304,7 +337,8 @@ function Calendar() {
     title: event.title,
     allDay: event.allDay,
     start: new Date(event.start).toLocaleString(),
-    end: new Date(event.end).toLocaleString()
+    end: new Date(event.end).toLocaleString(),
+    status: event.status
   });
 
   const handleChange = (e) => {
@@ -326,29 +360,12 @@ function Calendar() {
     }
   }, [showModal]);
 
- /* function successAlert() {
-    Swal.fire({
-      title: 'Success',
-      text: 'Your request was submitted',
-      icon: 'success',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'OK'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        hideAlert(); // Hide the SweetAlert
-      }
-    });
-  }*/
 
   const hideAlert = () => {
     setShowAlert(false);
     setShowNotAllowedAlert(false);
     setShowEventDetailsAlert(false);
   };
-
-
-
-    
 
   function getDaysFromString(str) {
     const regex = /(\d+) day/;
@@ -412,9 +429,6 @@ function Calendar() {
     const updateDuration = async () => {
       if (selectedDate && endDate) {
         const duration = await calculateDurationEntitelementLeft(selectedDate, endDate);
-        console.log("selectedDate is: ", selectedDate);
-        console.log("selectedDate is: ", endDate);
-        console.log("duration is: ", duration)
         setDuration(duration);
       } else {
         setDuration("");
@@ -429,9 +443,14 @@ function Calendar() {
      (currentBalanceInHours - durationInHours) % workingShiftHours :
      (currentBalanceInHours % workingShiftHours) - durationInHours;
     const result = input + (input == 1 ? " day " : " days ")  + hoursLeft + (hoursLeft == 1 ? " hour" : " hours")
-    if(selectedDate < endDate && endDate > selectedDate)
+    if(selectedDate < endDate && endDate > selectedDate )
     {
       setBalanceAfterDuration(result)
+      if(hoursLeft <= 0 && singleSelect == 1 || singleSelect == '')
+        {
+          setDisabled(true);
+        }
+        else setDisabled(false);
     }
 
     }
@@ -444,7 +463,7 @@ function Calendar() {
     async function fetchEvents() {
       try {
         const clientID = localStorage.getItem('ClientID');
-        const response = await axios.get(`${apiUrl}/leaveRequests?ClientID=${clientID}`);
+        const response = await axios.get(`${apiUrl}/leave/leaveRequests?ClientID=${clientID}`);
         if (response.status === 200) {
           const data = response.data;
           setEventsState(data);
@@ -462,7 +481,7 @@ function Calendar() {
     const UserID = localStorage.getItem("UserID");
     try {
       const result = await axios.post(
-        `${apiUrl}/user`,
+        `${apiUrl}/user/user`,
         {
           UserID: UserID
         }
@@ -471,6 +490,7 @@ function Calendar() {
         const data = result.data;
         const fullName = data.FullName;
         const endDateTime = new Date(endDate);
+        const statusName = data.StatusName;
 
         if (slotInfo.start) {
           setEventsState(prevState => {
@@ -488,10 +508,6 @@ function Calendar() {
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    document.body.classList.remove("modal-open");
-  };
 
   function isWeekend(date) {
     const day = date.getDay(); // Get the day of the week (0-6, where 0 is Sunday)
@@ -500,7 +516,7 @@ function Calendar() {
 
   async function isBankHoliday(date) {
     try {
-      const result = await axios.post(`${apiUrl}/bankHoliday`, {
+      const result = await axios.post(`${apiUrl}/leave/bankHoliday`, {
         Date: date,
       });
   
@@ -517,21 +533,51 @@ function Calendar() {
     return true; // Default return value in case of error
   }
 
+  async function isSameDayExistingLeave(date) {
+    try {
+      const result = await axios.post(`${apiUrl}/leave/sameDayExistingLeave`, {
+        UserID: UserID,
+        Date: date,
+      });
+  
+      if (result.status === 200) {
+        const sameDayExistingLeaveCheck = result.data.SameDayRequest;
+        if (sameDayExistingLeaveCheck === 'No') {
+          return false;
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  
+    return true; // Default return value in case of error
+  }
+
   async function beforeLoadFormCheck(slotInfo) {
     try {
       const UserID = localStorage.getItem("UserID");
-      const clientResult = await axios.post(`${apiUrl}/currentClient`, {
+      const clientResult = await axios.post(`${apiUrl}/user/currentClient`, {
         UserID: UserID,
       });
   
       if (clientResult.status === 200) {
+
         const workingWeekends = clientResult.data.WorkingWeekends;
   
         if (workingWeekends === "No" && isWeekend(slotInfo.start)) {
+          setInvalidDate('Weekend');
           return false;
         }
+
         const bankHolidayCheck = await isBankHoliday(slotInfo.start);
         if (bankHolidayCheck) {
+          setInvalidDate('Bank Holiday');
+          return false;
+        }
+
+        const sameDayExistingLeaveCheck = await isSameDayExistingLeave(slotInfo.start);
+        if(sameDayExistingLeaveCheck) {
+          setInvalidDate('Duplicate Leave');
           return false;
         }
         
@@ -543,16 +589,6 @@ function Calendar() {
   
     return false; // Default return value in case of error
   }
-  
-  const eventColors = (event, start, end, isSelected) => {
-    /*var backgroundColor = "event-";
-    event.color
-      ? (backgroundColor = backgroundColor + event.color)
-      : (backgroundColor = backgroundColor + "default");
-    return {
-      className: backgroundColor
-    };*/
-  };
 
   
   return (
@@ -569,7 +605,7 @@ function Calendar() {
                   defaultView="month"
                   scrollToTime={new Date(1970, 1, 1, 6)}
                   defaultDate={new Date()}
-                  eventPropGetter={eventColors}
+                  eventPropGetter={eventPropGetter}
                   onSelectEvent={(event) => selectedEvent(event)}
                   onSelectSlot={async (slotInfo) => {
                     if (await beforeLoadFormCheck(slotInfo)) {
@@ -587,7 +623,7 @@ function Calendar() {
             </Card>
           </Col>
         </Row>
-      </div>
+   
 
 
       {showAlert && (
@@ -611,60 +647,58 @@ function Calendar() {
 >
 <p className="sweet-alert-title"></p>
   <p className="sweet-alert-title"><strong>Leave:</strong><strong> {titleAlert}</strong> </p>
+  <p><strong>Status:</strong> {leaveStatus}</p>
   <p><strong>Start:</strong> {formattedStart}</p>
   <p><strong>End:</strong> {formattedEnd}</p>
 </SweetAlert>
 )}
 
 
-{showNotAllowedAlert && (
-  <SweetAlert
-    info
-    title=''
-    onConfirm={hideAlert}
-    onCancel={hideAlert}
-  >
-    You are not allowed to start your leave on weekend days or bank holidays. Please contact your administrator for more information!
-  </SweetAlert>
-)}
+{showNotAllowedAlert && invalidDate && (
+      <SweetAlert
+        info
+        title=''
+        onConfirm={hideAlert}
+        onCancel={hideAlert}
+      >
+        {getAlertMessage(invalidDate)}
+      </SweetAlert>
+    )}
+    
 
       <Modal
         isOpen={showModal}
-        onRequestClose={handleCloseModal}
-        className="custom-modal"
+        toggle={() => setShowModal(!showModal)}
       >
-        <h5 className="ReactModal__Title custom-title">Leave Request Form</h5>
-
+      <ModalHeader>Request Leave</ModalHeader>
+      <ModalBody>
         
-        <Form onSubmit={handleFormSubmit} className="form-horizontal" method="">
-          <Row>
-            <Label md="3" style={{ marginTop: "10px" }}>Leave type</Label>
-            <Col md="9">
-              <FormGroup className="first-input-group">
+        <form onSubmit={handleFormSubmit}>
+          
+            <Label>Leave type</Label>
+              <div>
+              <FormGroup>
 
                 <Select
                   isRequired
-                  className="react-select primary"
-                  classNamePrefix="react-select"
                   name="singleSelect"
                   value={singleSelect.label}
                   onChange={(selectedOption) => { setSingleSelect(selectedOption.value); setSingleSelectLabel(selectedOption.label) }}
                   options={[
                     ...options,
                   ]}
-                  placeholder="Leave type"
+                  placeholder="Select From Dropdown"
                 />
               </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Label md="3">Start date</Label>
-            <Col md="9">
+              </div>
+         
+          
+            <Label>Start date</Label>
+              <div>
               <FormGroup>
                 <ReactDatetime
                   ref={datetimeRef}
                   inputProps={{
-                    className: "form-control",
                     placeholder: "Start Date Time",
                   }}
                   renderInput={(props, openCalendar) => (
@@ -700,16 +734,13 @@ function Calendar() {
                   }}
                 />
               </FormGroup>
-            </Col>
-          </Row>
-
-          <Row>
-            <Label md="3">End date</Label>
-            <Col md="9">
+              </div>
+         
+            <Label>End date</Label>
+              <div>
               <FormGroup>
                 <ReactDatetime
                   inputProps={{
-                    className: "form-control",
                     placeholder: "Select Date"
                   }}
                   value={endDate}
@@ -738,66 +769,54 @@ function Calendar() {
                 
                 />
               </FormGroup>
-
+              </div>
 
               <p style={{ color: "red"}}>
                   {errorMessage}
                 </p>
-
-
-            </Col>
-          </Row>
-
-          <Row>
-    <Label md="3">Notes</Label>
-    <Col md="9">
+         
+    <Label>Notes</Label>
+      <div>
       <FormGroup>
         <Input type="textarea" 
         name="notes"
         onChange={(event) => {setNotes(event.target.value)}} />
       </FormGroup>
-    </Col>
-  </Row>
+      </div>
+
 
           <hr />
 
 {showEntitelementFields &&
-          <Row>
-            <Label md="3">Leave balance</Label>
-            <Col md="9">
+          <div>
+            <Label>Leave balance</Label>
               <FormGroup>
                 <Input type="text" value={overallEntitelement} readOnly />
               </FormGroup>
-            </Col>
-          </Row>
+            </div>
         }
 
-          <Row>
-            <Label md="3">Duration</Label>
-            <Col md="9">
+          <div>
+            <Label>Duration</Label>
               <FormGroup>
                 <Input type="text" value={duration} readOnly />
               </FormGroup>
-            </Col>
-          </Row>
+          </div>
 
           <hr /> 
 
 
 {showEntitelementFields &&
-          <Row>
-            <Label md="3">Leave left</Label>
-            <Col md="9">
+          <div>
+            <Label>Leave left</Label>
               <FormGroup>
                 <Input type="text" value={balanceAfterDuration} readOnly />
               </FormGroup>
-            </Col>
-          </Row>
+</div> 
         }
+      
 
-              
-
-          <div className="button-container text-center">
+          <div className="d-flex justify-content-center">
 
             {disabled ? (<div title="Please fill in all required fields before submitting." style={{ display: 'inline-block', cursor: 'not-allowed', opacity: disabled ? 0.5 : 1 }}>
               <Button
@@ -821,7 +840,7 @@ function Calendar() {
 
 
             <Button
-              type="submit"
+              type="reset"
               style={{ display: "inline-block", visibility: "visible" }}
               color="danger"
               onClick={() => {
@@ -835,8 +854,10 @@ function Calendar() {
             </Button>
           </div>
 
-        </Form>
+        </form>
+        </ModalBody>
       </Modal>
+      </div>
     </>
   );
 }

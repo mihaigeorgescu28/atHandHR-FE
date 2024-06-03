@@ -6,8 +6,7 @@ import { Nav, Collapse } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
 import axios from 'axios';
 
-import avatar from "assets/img/default-avatar.png";
-import logo from "assets/img/react-logo.png";
+import Avatar from 'react-avatar';
 import { useLocation } from "react-router-dom";
 
 var ps;
@@ -19,6 +18,7 @@ function Sidebar(props) {
   const [collapseStates, setCollapseStates] = React.useState({});
   const [userFullName, setUserFullName] = useState('');
   const sidebar = React.useRef();
+  const [profilePic, setProfilePic] = React.useState(profilePic);
   
   // this creates the intial state of this component based on the collapse routes
   // that it gets through props.routes
@@ -34,7 +34,9 @@ function Sidebar(props) {
       }
       return null;
     });
+    
     return initialState;
+
   };
   // this verifies if any of the collapses should be default opened on a rerender of this component
   // for example, on the refresh of the page,
@@ -51,13 +53,16 @@ function Sidebar(props) {
   };
   // this function creates the links and collapses that appear in the sidebar (left menu)
   const createLinks = (routes) => {
+    
+    let RoleID = localStorage.getItem("RoleID");
+
     return routes.map((prop, key) => {
       if (prop.redirect) {
         return null;
       }
-      if (prop.sidebar == 'True' )
-      {
-      
+
+        // Admin can see everything
+      if ((parseInt(RoleID) === 1 || parseInt(prop.roleId) === parseInt(RoleID)) && prop.sidebar == 'True') {
       if (prop.collapse) {
         var st = {};
         st[prop["state"]] = !collapseStates[prop.state];
@@ -100,6 +105,8 @@ function Sidebar(props) {
           </li>
         );
       }
+
+    
       
         return (
 
@@ -128,13 +135,14 @@ function Sidebar(props) {
       const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-          `${apiUrl}/user`,
+          `${apiUrl}/user/getUserDetails`,
           {
             UserID: UserID,
           }
         );
         if (result.status === 200) {
           setUserFullName(result.data.FullName);
+          setProfilePic(`${apiUrl}/user_uploads/profile_pic/${result.data.ProfilePic}`);
         }
       } catch (error) {
         console.error(error);
@@ -143,6 +151,7 @@ function Sidebar(props) {
 
     fetchUserFullName();
   }, []);
+
 
   
   // verifies if routeName is the one active (in browser input)
@@ -175,52 +184,10 @@ function Sidebar(props) {
       data-color={props.bgColor}
       data-active-color={props.activeColor}
     >
-      <div className="logo">
-        <a
-          href="https://athandhr.com"
-          className="simple-text logo-mini"
-        >
-          <div className="logo-img">
-            <img src={logo} alt="react-logo" />
-          </div>
-        </a>
-        <a
-          href="https://athandhr.com"
-          className="simple-text logo-normal"
-        >
-          At Hand HR
-        </a>
-      </div>
+
 
       <div className="sidebar-wrapper" ref={sidebar}>
-        <div className="user">
-          <div className="photo">
-            <img src={avatar} alt="Avatar" />
-          </div>
-          <div className="info">
-            <a
-              href="#pablo"
-              data-toggle="collapse"
-              aria-expanded={openAvatar}
-              onClick={() => setOpenAvatar(!openAvatar)}
-            >
-              <span>
-                {userFullName}
-                <b className="caret" />
-              </span>
-            </a>
-            <Collapse isOpen={openAvatar}>
-              <ul className="nav">
-                <li>
-                  <NavLink to="/admin/user-profile" >
-                    <span className="sidebar-mini-icon">MP</span>
-                    <span className="sidebar-normal">My Profile</span>
-                  </NavLink>
-                </li>
-              </ul>
-            </Collapse>
-          </div>
-        </div>
+        
         <Nav>{createLinks(props.routes)}</Nav>
         
       </div>
@@ -229,3 +196,18 @@ function Sidebar(props) {
 }
 
 export default Sidebar;
+
+/*
+
+<div className="user">
+          <div className="photo">
+            <img src={profilePic} alt="Avatar" />
+          </div>
+          <div className="info">
+            <NavLink to="/admin/user-profile" >
+            My Account
+            </NavLink>
+          </div>
+        </div>
+
+        */

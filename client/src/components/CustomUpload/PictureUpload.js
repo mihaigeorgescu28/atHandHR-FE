@@ -8,7 +8,10 @@ function PictureUpload(props) {
   const [fileState, setFileState] = useState(null);
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
 
+  
+
   const handleImageChange = (e) => {
+
     e.preventDefault();
     let reader = new FileReader();
     let file = e.target.files[0];
@@ -46,7 +49,7 @@ function PictureUpload(props) {
         <img src={imageUrl} className="picture-src" alt="..." />
         <input type="file" accept="image/*" onChange={(e) => handleImageChange(e)} />
       </div>
-      <h6 className="description">Choose Picture</h6>
+     
 
       {/* Error alert */}
       {showErrorAlert && (

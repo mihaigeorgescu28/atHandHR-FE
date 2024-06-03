@@ -1,19 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios"; // Import axios for making HTTP requests
 
 // reactstrap components
 import {
   Badge,
   Card,
   CardBody,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
   Row,
   Col
 } from "reactstrap";
 
 function NewsFeed() {
+  const [latestNews, setLatestNews] = useState([]);
+  const apiUrl = process.env.REACT_APP_APIURL;
+  const clientId = localStorage.getItem('ClientID');
+
+  useEffect(() => {
+    // Function to fetch latest news
+    const fetchLatestNews = async () => {
+      try {
+        const response = await axios.post(`${apiUrl}/user/viewLatestNews`, { clientId: clientId }); // Adjust the endpoint as per your backend route
+        if (response.data.success) {
+          setLatestNews(response.data.news);
+        } else {
+          console.error('Failed to fetch latest news');
+        }
+      } catch (error) {
+        console.error('Error fetching latest news:', error);
+      }
+    };
+
+    fetchLatestNews(); // Call the function to fetch latest news when component mounts
+  }, []); // Empty dependency array ensures this effect runs only once, similar to componentDidMount
+
   return (
     <>
       <div className="content">
@@ -25,94 +44,27 @@ function NewsFeed() {
             <Card className="card-timeline card-plain">
               <CardBody>
                 <ul className="timeline">
-                  <li className="timeline-inverted">
-                    <div className="timeline-badge danger">
-                      <i className="nc-icon nc-single-copy-04" />
-                    </div>
-                    <div className="timeline-panel">
-                      <div className="timeline-heading">
-                        <Badge color="danger" pill>
-                          Company Meeting
-                        </Badge>
+                  {latestNews.map((newsItem, index) => (
+                    <li key={index} className={index % 2 === 0 ? "" : "timeline-inverted"}>
+                      <div className={`timeline-badge ${newsItem.Colour}`}>
+                        <i className={`nc-icon ${newsItem.IconName}`} />
                       </div>
-                      <div className="timeline-body">
-                        <p>
-                        We wanted to inform you that there will be a company-wide meeting next Monday at 10 am. Attendance is mandatory for all staff.
-                        </p>
+                      <div className="timeline-panel">
+                        <div className="timeline-heading">
+                          <Badge color={newsItem.Colour} pill>
+                            {newsItem.Title}
+                          </Badge>
+                        </div>
+                        <div className="timeline-body">
+                          <p>{newsItem.Content}</p>
+                        </div>
+                        <h6>
+                          <i className="fa fa-clock-o" />
+                          {newsItem.DaysSinceModified}
+                        </h6>
                       </div>
-                      <h6>
-                        <i className="fa fa-clock-o" />
-                        11 hours ago
-                      </h6>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="timeline-badge success">
-                      <i className="nc-icon nc-sun-fog-29" />
-                    </div>
-                    <div className="timeline-panel">
-                      <div className="timeline-heading">
-                        <Badge color="success" pill>
-                          Benefit Package
-                        </Badge>
-                      </div>
-                      <div className="timeline-body">
-                        <p>
-                        We are pleased to announce that the company has decided to offer a new benefit package starting next month. Please review the details provided in the email we sent to you earlier today.
-                        </p>
-                      </div>
-
-                      <h6>
-                        <i className="fa fa-clock-o" />
-                        5 days ago
-                      </h6>
-                    </div>
-                  </li>
-                  <li className="timeline-inverted">
-                    <div className="timeline-badge info">
-                      <i className="nc-icon nc-world-2" />
-                    </div>
-                    <div className="timeline-panel">
-                      <div className="timeline-heading">
-                        <Badge color="info" pill>
-                          Work Anniversary
-                        </Badge>
-                      </div>
-                      <div className="timeline-body">
-                        <p>
-                        Let's all congratulate Adam on his 2nd work anniversary! We appreciate your hard work and dedication to the company and look forward to many more years of working together.
-                        </p>
-                       
-                      </div>
-
-                      <h6>
-                        <i className="fa fa-clock-o" />
-                        2 weeks ago
-                      </h6>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="timeline-badge warning">
-                      <i className="nc-icon nc-istanbul" />
-                    </div>
-                    <div className="timeline-panel">
-                      <div className="timeline-heading">
-                        <Badge color="warning" pill>
-                          Flexible Work
-                        </Badge>
-                      </div>
-                      <div className="timeline-body">
-                        <p>
-                        We would like to remind our staff that we have a flexible work policy, which allows for remote work arrangements, flexible schedules, and job sharing. Please speak to your manager if you would like to explore these options.
-                        </p>
-                      </div>
-
-                      <h6>
-                        <i className="fa fa-clock-o" />
-                        1 month ago
-                      </h6>
-                    </div>
-                  </li>
+                    </li>
+                  ))}
                 </ul>
               </CardBody>
             </Card>

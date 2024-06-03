@@ -140,7 +140,6 @@ function ReactTables() {
                     // here you should add some custom code so you can delete the data
                     // from this component and from your server as well
                     data.splice(i, 1);
-                    console.log(data);
                     return true;
                   }
                   return false;

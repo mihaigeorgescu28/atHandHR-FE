@@ -17,6 +17,7 @@ function AuthAdmin(props) {
   const [sidebarMini, setSidebarMini] = React.useState(false);
   const mainPanel = React.useRef();
   const [userId, setUserId] = React.useState(null);
+  const RoleID = localStorage.getItem("RoleID");
 
   const extractIdFromPathname = (pathname) => {
     const match = pathname.match(/\/totalStaff\/(\d+)/);
@@ -27,6 +28,7 @@ function AuthAdmin(props) {
     const extractedUserId = extractIdFromPathname(location.pathname);
     setUserId(extractedUserId);
   }, [location]);
+
 
   React.useEffect(() => {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -68,6 +70,7 @@ function AuthAdmin(props) {
 
     const route = updatedRoutes.find((updatedRoute) => {
       if (!updatedRoute.layout || !updatedRoute.path) {
+
         const nestedRoute = updatedRoute.views.find((nested) => {
           if (!nested.layout || !nested.path) {
             return false;
@@ -80,14 +83,22 @@ function AuthAdmin(props) {
           return true;
         }
       } else if (updatedRoute.collapse !== true) {
+        // Admin can see everything
+      if ((parseInt(RoleID) === 1 || (parseInt(updatedRoute.roleId) === parseInt(RoleID) ) && updatedRoute.sidebar === 'True'))
+         {
+          
         const fullPath = updatedRoute.layout + updatedRoute.path;
         return pathname === fullPath;
       }
 
       return false;
+
+    }
+
     });
 
     if (route) {
+      
       if (route.views) {
         const nestedRoute = route.views.find((nested) => {
           if (!nested.layout || !nested.path) {

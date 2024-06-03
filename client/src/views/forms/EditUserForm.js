@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import UserForm from "views/forms/User.js"; // Update the import path
-import Wizard from "views/forms/Wizard.js"; // Update the import path
+import UserForm from "views/forms/User.js";
 import { useLocation } from "react-router-dom";
 
 

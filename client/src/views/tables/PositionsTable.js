@@ -1,0 +1,317 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  CardTitle,
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormGroup,
+  Label,
+  Input
+} from "reactstrap";
+import ReactTable from "components/ReactTable/ReactTable.js";
+import { confirmationDeleteRecord, deleteRecordSuccess, updateRecordSuccess, insertRecordSuccess } from '../components/SweetAlert';
+
+
+
+const apiUrl = process.env.REACT_APP_APIURL;
+
+function PositionsTable() {
+  const clientID = localStorage.getItem('ClientID');
+  const userID = localStorage.getItem('UserID');
+  const [showDeleteRecordAlert, setShowDeleteRecordAlert] = React.useState(false);
+  const [deleteRecordSuccessAlert, setdeleteRecordSuccesstAlert] = React.useState(false);
+  const [updateRecordSuccessAlert, setUpdateRecordSuccessAlert] = React.useState(false);
+  const [insertRecordSuccessAlert, setInsertRecordSuccessAlert] = React.useState(false);
+  const [objToDelete, setObjToDelete] = useState(null); 
+  const [dataState, setDataState] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [formType, setFormType] = useState('new');
+  const [formData, setFormData] = useState({
+    PositionID: "",
+    PositionName: "",
+    LastModifiedUser: ""
+  });
+
+
+    // Function to handle changes in the new record form fields
+    const handleInputChange = (e) => {
+      
+      const { name, value } = e.target;
+      
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+
+    };
+
+
+    const handleAddRecord = async () => {
+      event.preventDefault();
+      try {
+        // Append ClientID to formData
+        const dataToSend = {
+          ...formData,
+          ClientID: clientID,
+          UserID: userID
+        };
+    
+        // Make a POST request to the endpoint with formData and ClientID in the request body
+        await axios.post(`${apiUrl}/sitemap/InsertPositionRecord`, dataToSend);
+        
+        // After successful addition, close the modal and fetch updated data
+        setModalOpen(false);
+        fetchData(); // Call fetchData to update the records in the table
+        setInsertRecordSuccessAlert(true);
+        
+      } catch (error) {
+        console.error('Error adding record:', error);
+      }
+    };
+
+    const handleEditRecord = async () => {
+      event.preventDefault();
+      try {
+        // Append ClientID to formData
+        const dataToSend = {
+          ...formData,
+          ClientID: clientID,
+          UserID: userID
+        };
+    
+        // Make a POST request to the endpoint with formData and ClientID in the request body
+        await axios.post(`${apiUrl}/sitemap/EditPositionRecord`, dataToSend);
+        
+        // After successful addition, close the modal and fetch updated data
+        setModalOpen(false);
+        fetchData(); // Call fetchData to update the records in the table
+        setUpdateRecordSuccessAlert(true);
+      } catch (error) {
+        console.error('Error adding record:', error);
+      }
+    };
+
+    const handleEditClick = async (obj) => {
+      try {
+        // Fetch the data for the record to be edited
+        const response = await axios.post(`${apiUrl}/sitemap/EmployeePositionData`, {
+          PositionID: obj.PositionID,
+          ClientID: clientID
+        });
+    
+        if (response.status === 200) {
+          // Set the fetched data to the state
+          setFormData(prevState => ({
+            ...prevState,  
+            PositionID: response.data.result[0].PositionID,
+            PositionName: response.data.result[0].PositionName
+          }));
+          setFormType("edit");
+          // Open the modal for editing
+          setModalOpen(true);
+        } else {
+          console.error('Error fetching record for edit. Unexpected status:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching record for edit:', error);
+      }
+    };
+
+    
+
+    const handleDeleteClick = (obj) => {
+      setObjToDelete(obj); // Set the object to delete
+      setShowDeleteRecordAlert(true);
+    };
+    
+
+    const confirmDelete = async () => {
+      try {
+        // Make sure objToDelete contains the necessary data
+        if (!objToDelete || !objToDelete.PositionID) {
+          console.error('Invalid object:', objToDelete);
+          return;
+        }
+    
+        const response = await axios.post(`${apiUrl}/sitemap/DeletePositionRecord`, { PositionID: objToDelete.PositionID, UserID: userID });
+    
+        // Check if the response status is 200
+        if (response.status === 200) {
+          fetchData(); // update records in table
+    
+          // Set deleteRecordSuccessAlert to true since the deletion was successful
+          setdeleteRecordSuccesstAlert(true);
+        } else {
+          // If the response status is not 200, log an error
+          console.error('Error deleting post. Unexpected status:', response.status);
+        }
+      } catch (error) {
+        console.error('Error deleting post:', error);
+      } finally {
+        // Close the delete post confirmation dialog regardless of success or failure
+        setShowDeleteRecordAlert(false);
+      }
+    };
+    
+    const hideAlert = () => {
+      setShowDeleteRecordAlert(false);
+      setdeleteRecordSuccesstAlert(false);
+      setUpdateRecordSuccessAlert(false);
+      setInsertRecordSuccessAlert(false);
+    };
+    
+
+  const renderActions = (actionsID) => {
+    const obj = dataState.find((o) => o.PositionID === actionsID); 
+
+    return (
+      
+      <div className="actions-right">
+        <Button
+          onClick={() => handleEditClick(obj)}
+          color="warning"
+          size="sm"
+          className="btn-icon btn-link edit"
+          title="Edit Record"
+        >
+          <i className="fa fa-edit" />
+        </Button>
+        <Button
+          onClick={() => handleDeleteClick(obj)} // Pass obj to handleDeleteClick
+          color="danger"
+          size="sm"
+          className="btn-icon btn-link remove"
+          title="Delete Record"
+        >
+          <i className="fa fa-times" />
+        </Button>
+      </div>
+    );
+  };
+
+  useEffect(() => {  
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const result = await axios.post(`${apiUrl}/sitemap/EmployeePositionData`, {
+        ClientID: clientID,
+        UserID: userID
+      });
+      
+      if (result.status === 200) {
+        setDataState(result.data.result);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const renderContent = (content) => {
+    if (content && content.length > 100) {
+      return content.slice(0, 50) + '...';
+    } else {
+      return content;
+    }
+  };
+  
+
+  let columns = [
+    {
+      Header: "Name",
+      accessor: "PositionName",
+      Cell: ({ value }) => renderContent(value)
+    },
+    {
+      Header: "Last Modified By",
+      accessor: "LastModifiedUser"
+    },
+    {
+      sortable: false,
+      filterable: false,
+      Header: "Actions",
+      accessor: "PositionID",
+      Cell: ({ value }) => renderActions(value)
+    }
+  ];
+
+  return (
+    <div className="content">
+      <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)}>
+      <ModalHeader>{formType == 'edit' ? 'Edit Position' : 'Add Position'}</ModalHeader>
+      <ModalBody>
+      <form onSubmit={formType === 'new' ? handleAddRecord : handleEditRecord}>
+      <div>
+      <FormGroup>
+        <Label for="title">Position Name *</Label>
+        <Input type="text" id="title" name="PositionName" value={formData.PositionName} onChange={handleInputChange} required maxLength={100}/>
+      </FormGroup>
+    </div>
+
+    <div className="d-flex justify-content-center">
+    <Button type="submit" color="primary">Save</Button>{' '}
+    <Button type="reset" color="danger" onClick={() => setModalOpen(!modalOpen)}>Cancel</Button>
+  </div>
+  </form>
+  </ModalBody>
+ 
+</Modal>
+    <Col lg="12" md="12" sm="12">
+      <div className="content d-flex justify-content-center align-items-center">
+        <Row>
+          <Col md="12">
+            
+            <div className="fixed-width-table-chart-container">
+              <Card>
+              <CardHeader>
+  <div className="d-flex justify-content-between">
+    <div>
+      <CardTitle tag="h5">Employee Positions</CardTitle>
+    </div>
+    <div>
+    <Button
+  style={{ backgroundColor: "#007bff", color: "#fff" }}
+  size="sm"
+  onClick={() => {
+    setModalOpen(true);
+    setFormType("new");
+  }}
+>
+  Add Record
+</Button>
+    </div>
+  </div>
+</CardHeader>
+                <CardBody>
+                  <ReactTable
+                    data={dataState}
+                    columns={columns}
+                    className="-striped -highlight primary-pagination"
+                  />
+                </CardBody>
+              </Card>
+            </div>
+          </Col>
+        </Row>
+      </div>
+
+      {showDeleteRecordAlert && confirmationDeleteRecord(hideAlert, confirmDelete)}
+      {deleteRecordSuccessAlert && deleteRecordSuccess(hideAlert, confirmDelete)}
+      {updateRecordSuccessAlert && updateRecordSuccess(hideAlert, hideAlert)}
+      {insertRecordSuccessAlert && insertRecordSuccess(hideAlert, hideAlert)}
+
+    </Col>
+    </div>
+  );
+}
+
+export default PositionsTable;

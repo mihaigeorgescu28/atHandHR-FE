@@ -120,7 +120,7 @@ function Table({ columns, data }) {
   return (
     <>
       <div className="ReactTable -striped -highlight primary-pagination">
-        
+      <div className="table-container">
         <table {...getTableProps()} className="rt-table custom-table">
           <thead className="rt-thead -header">
             {headerGroups.map((headerGroup) => (
@@ -193,6 +193,7 @@ function Table({ columns, data }) {
             })}
           </tbody>
         </table>
+        </div>
         <div className="pagination-top">
           <div className="-pagination">
             <div className="-previous">

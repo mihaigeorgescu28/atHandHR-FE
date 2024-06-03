@@ -1,19 +1,4 @@
-/*!
 
-=========================================================
-* Paper Dashboard PRO React - v1.3.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import classnames from "classnames";
 import { NavLink } from "react-router-dom";
@@ -49,8 +34,8 @@ function AuthNavbar(props) {
     >
       <Container>
         <div className="navbar-wrapper">
-          <NavbarBrand href="#pablo" onClick={(e) => e.preventDefault()}>
-            At Hand HR
+          <NavbarBrand href="#pablo" onClick={(e) => e.preventDefault()} >
+            AT HAND HR
           </NavbarBrand>
         </div>
         <button
@@ -67,21 +52,7 @@ function AuthNavbar(props) {
           <span className="navbar-toggler-bar navbar-kebab" />
         </button>
         <Collapse isOpen={collapseOpen} className="justify-content-end" navbar>
-          <Nav navbar>
-            <NavItem>
-              <NavLink to="/auth/register" className="nav-link">
-                <i className="nc-icon nc-book-bookmark" />
-                Register
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/auth/login" className="nav-link">
-                <i className="nc-icon nc-tap-01" />
-                Login
-              </NavLink>
-            </NavItem>
-
-          </Nav>
+          
         </Collapse>
       </Container>
     </Navbar>

@@ -10060,15 +10060,7 @@ img {
     color: #FFFFFF; }
 
 .full-page .full-page-background {
-  position: absolute;
-  z-index: 1;
-  height: 100%;
-  width: 100%;
-  display: block;
-  top: 0;
-  left: 0;
-  background-size: cover;
-  background-position: center center; }
+   }
 
 .full-page:after {
   position: absolute;
@@ -11491,17 +11483,25 @@ img {
   cursor: pointer;
   text-align: center; }
 
-.picture {
-  width: 106px;
-  height: 106px;
-  background-color: #999999;
-  border: 1px solid #E3E3E3;
-  color: #FFFFFF;
-  border-radius: 50%;
-  margin: 5px auto;
-  overflow: hidden;
-  transition: all 0.2s;
-  -webkit-transition: all 0.2s; }
+  .picture {
+    width: 150px; /* Adjust width as needed */
+    height: 150px; /* Adjust height as needed */
+    border: 2px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+  
+  .picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  
+  
   .picture:hover {
     border-color: #2ca8ff; }
 
@@ -16184,3 +16184,34 @@ This file was modified entirely by Creative Tim for React-Select v2.0.0
     .react-wizard-form {
       margin-bottom: -50px;
     }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .rt-table {
+      width: 100%;
+      min-width: max-content; /* Ensure the table doesn't shrink */
+      border-collapse: collapse;
+    }
+    
+    .rt-th, .rt-td {
+      text-align: center;
+      padding: 8px;
+      border: 1px solid #ddd;
+    }
+    
+    .rt-th {
+      background-color: #f8f8f8;
+    }
+    
+    .rt-thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    
+    .rt-thead .rt-th, .rt-tbody .rt-td {
+      white-space: nowrap; /* Prevent text from wrapping */
+    }
+    

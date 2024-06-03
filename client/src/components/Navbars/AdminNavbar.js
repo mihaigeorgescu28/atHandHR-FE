@@ -84,7 +84,7 @@ function AdminNavbar(props) {
       const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-          `${apiUrl}/currentClient`,
+          `${apiUrl}/user/currentClient`,
           {
             UserID: UserID,
           }
@@ -92,6 +92,7 @@ function AdminNavbar(props) {
         if (result.status === 200) {
           setClientName(result.data.ClientName);
           localStorage.setItem('ClientID', result.data.ClientID);
+          localStorage.setItem('ClientName', result.data.ClientName);
         }
       } catch (error) {
         console.error(error);
@@ -119,6 +120,7 @@ function AdminNavbar(props) {
                 color="default"
                 id="minimizeSidebar"
                 onClick={props.handleMiniClick}
+                type="submit"
               >
                 <i className="nc-icon nc-minimal-right text-center visible-on-sidebar-mini" />
                 <i className="nc-icon nc-minimal-left text-center visible-on-sidebar-regular" />

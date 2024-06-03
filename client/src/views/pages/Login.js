@@ -43,7 +43,7 @@ function Login() {
     if(field == 'password')
     {
       const name = event.target.name;
-      const value = event.target.value;
+      const value = event.target.value.trim();
       const valueEncrypted = bcrypt.hashSync(value, '$2a$10$CwTycUXWue0Thq9StjUM0u')
       setInputs(values => ({...values, [name]: valueEncrypted}))
       
@@ -60,7 +60,7 @@ function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
       axios.post(
-        `${apiUrl}/login`,
+        `${apiUrl}/user/login`,
         {
           email: inputs.email,
           password: inputs.password
@@ -73,16 +73,23 @@ function Login() {
           {
           setMessage(result.data.message);
 
-          if(result.data.message == "Success")
+          if(result.data.success == true)
           {
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('UserID', result.data.UserID);
+            localStorage.setItem('RoleID', result.data.RoleID);
+           
             setSubmit(true);
             setSuccess(true);
+            if( result.data.temporaryPasswordFound == true)
+            {
+              navigate(`/auth/temporaryPassword/${result.data.UserID}`);
+            }
+            else
             navigate("/admin/newsfeed");
 
           }
-          else if(result.data.message == 'The email address and/or the password selected are not valid. Please try different credentials.')
+          else if(result.data.success == false)
           {
             localStorage.setItem('isLoggedIn', 'false');
             setBackgroundRed(true);
@@ -102,20 +109,19 @@ function Login() {
       document.body.classList.toggle("login-page");
     };
   });
+  
   return (
     <div className="login-page">
   <Container>
         <Row>
-
           <Col className="ml-auto mr-auto" lg="4" md="6">
             <Card className="card-signin text-center">
               <CardHeader>
                 <CardTitle tag="h4">Login</CardTitle>
-
               </CardHeader>
               <CardBody>
               
-                <Form onSubmit={handleSubmit} className="form" method="">
+                <form onSubmit={handleSubmit} className="form" method="">
                   
                   
                   <InputGroup>
@@ -145,9 +151,6 @@ function Login() {
                     id = "pw1"
                     name="password" 
                     onChange={(e) => handleChange(e, "password")}
-                    onPaste={(e)=>{e.preventDefault()
-                      return false;
-                      }}
                     required/>
                   </InputGroup>
 
@@ -166,7 +169,7 @@ function Login() {
                   Login
                   </Button>
                 
-                  </Form> 
+                  </form> 
               </CardBody>
               <CardFooter>
                 
@@ -178,7 +181,7 @@ function Login() {
       <div
         className="full-page-background"
         style={{
-          backgroundImage: `url(${require("assets/img/bg/fabio-mangione.jpg")})`
+          backgroundImage: `url(${require("assets/img/bg/pexels-jill-burrow.jpg")})`
         }}
       />
     </div>

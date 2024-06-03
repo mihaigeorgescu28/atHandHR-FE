@@ -1,12 +1,8 @@
-import React from "react";
-import Datetime from 'react-datetime';
-import { useState } from 'react';
-import ReactDOM from 'react-dom/client';
+import { React, useState, useEffect } from 'react';
+import {useNavigate} from "react-router-dom";
 import moment from "moment";
 import bcrypt from 'bcryptjs';
 import axios from 'axios';
-// react plugin used to create datetimepicker
-import ReactDatetime from "react-datetime";
 
 // reactstrap components
 import {
@@ -18,7 +14,6 @@ import {
   CardTitle,
   Label,
   FormGroup,
-  Form,
   Input,
   InputGroupAddon,
   InputGroupText,
@@ -30,10 +25,11 @@ import {
 
 
 function Register() {
-  React.useEffect(() => {
-    document.body.classList.toggle("register-page");
+  
+  useEffect(() => {
+    document.body.classList.toggle("login-page");
     return function cleanup() {
-      document.body.classList.toggle("register-page");
+      document.body.classList.toggle("login-page");
     };
   });
 
@@ -49,6 +45,8 @@ function Register() {
   const [agreementError, setAgreementError] = useState("");
   const apiUrl = process.env.REACT_APP_APIURL;
 
+  const navigate = useNavigate();
+
   var yesterday = moment().subtract(1, "day");
 
   const handlecheck = (event) => {
@@ -56,6 +54,11 @@ function Register() {
     setAgreement(event.target.checked);
 
   }
+
+  const handleLoginButtonClick = () => {
+    // Navigate to the login page
+    navigate("/auth/login");
+  };
 
   // called for each field on the form
   const handleChange = (event, field) => {
@@ -154,7 +157,17 @@ function Register() {
   // called on submitting form
   const handleSubmit = (event) => {
     event.preventDefault();
-     console.log(inputs);
+    
+    
+  // Extract UID from the URL
+  const urlParts = window.location.pathname.split('/');
+  const uidIndex = urlParts.indexOf('register') + 1; // Assuming UID is right after 'register'
+  const uidFromUrl = uidIndex < urlParts.length ? urlParts[uidIndex] : null;
+
+  if (!uidFromUrl) {
+    console.error('UID not found in the URL');
+    return;
+  }
 
      if(agreement == true)
     {
@@ -163,6 +176,7 @@ function Register() {
       axios.post(
         `${apiUrl}/user/register`,
         {
+          uid: uidFromUrl,
           firstName : inputs.firstName,
           lastName : inputs.lastName,
           email: inputs.email,
@@ -176,12 +190,12 @@ function Register() {
           {
           setMessage(result.data.message);
 
-          if(result.data.message == "Your registration was successful! Please check your email to activate your account!")
+          if(result.data.success == true)
           {
             setSubmit(true);
             setSuccess(true);
           }
-          else if(result.data.message == 'The selected email address exists already on our system. Please try a different one or contact your administrator!')
+          else if(result.data.success == false)
           {
             setBackgroundRed(true);
           }
@@ -205,17 +219,17 @@ function Register() {
   }
 
   return (
-    <div className="register-page">
+    <div className="login-page">
       <Container >
         <Row>
           <Col className="ml-auto mr-auto" lg="4" md="6">
-            <Card className="card-signup text-center" >
+            <Card className="card-signin text-center" >
               <CardHeader>
                 <CardTitle tag="h4">Register</CardTitle>
               </CardHeader>
               <CardBody>
               
-                <Form onSubmit={handleSubmit} className="form" method="">
+              <form onSubmit={handleSubmit} className="form" method="">
                  
                 {!submit && (
                   <InputGroup>
@@ -323,9 +337,10 @@ function Register() {
                       
                       <span className="form-check-sign" />I agree to the{" "}
                       
-                      <a>
+                      <a href="/auth/terms-and-conditions" target="_blank">
                         terms and conditions
                       </a>
+                      
                       .
                     </Label>
                   </FormGroup>
@@ -352,11 +367,12 @@ function Register() {
 
                 {success &&
                 (<Button
-                type = "submit"
-                className="btn-round"
-                color="info"
+                  type="reset"
+                  className="btn-round"
+                  color="info"
+                  onClick={handleLoginButtonClick}
                 >
-                Login
+                  Login
                 </Button>)
                 }
 
@@ -371,7 +387,7 @@ function Register() {
                   </Button>
                   )}
 
-                  </Form> 
+                  </form> 
               </CardBody>
               <CardFooter>
                 
@@ -383,13 +399,18 @@ function Register() {
       <div
         className="full-page-background"
         style={{
-          backgroundImage: `url(${require("assets/img/bg/luke-chesser.jpg")})`
+          backgroundImage: `url(${require("assets/img/bg/pexels-jill-burrow.jpg")})`
         }}
       />
     </div>
+
+    
+
+
 
 
 
   );
 }
 export default Register;
+

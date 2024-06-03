@@ -12,39 +12,114 @@ import {
 } from "reactstrap";
 import ReactTable from "components/ReactTable/ReactTable.js";
 import { useNavigate} from "react-router-dom";
-import * as XLSX from "xlsx"; // Import xlsx library
+import * as XLSX from "xlsx";
+import { disableEmployeeSuccess, confirmationDisableEmployee, resetPasswordSuccess, confirmationResetPassword } from '../components/SweetAlert';
+
 
 const apiUrl = process.env.REACT_APP_APIURL;
 
-function TotalStaffTable() {
+function TotalStaffTable({ fetchUpdatedData }) {
+  const [showAlert, setShowAlert] = useState(false);
+  const [objToDelete, setObjToDelete] = useState(null); 
   const [dataState, setDataState] = useState([]);
   const clientId = localStorage.getItem("ClientID");
   const [selectedUserId, setSelectedUserId] = useState(null);
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [isLoadingUserData, setIsLoadingUserData] = useState(false);
-  
+  const [obj, setObj] = useState('');
+  const [showResetPasswordAlert, setShowResetPasswordAlert] = React.useState(false);
+  const [showResetPasswordSuccess, setShowResetPasswordSuccess] = React.useState(false);
+  const [showDisableEmployeeAlert, setShowDisableEmployeeAlert] = React.useState(false);
+  const [showDisableEmployeeSuccess, setShowDisableEmployeeSuccess] = React.useState(false);
+  const [showErrorAlert, setShowErrorAlert] = React.useState(false);
+
+  const fetchData = async () => {
+    try {
+      const result = await axios.get(`${apiUrl}/user/totalStaffOfClient`, {
+        params: { ClientID: clientId },
+      });
+
+      if (result.status === 200) {
+        setDataState(result.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const result = await axios.get(
-          `${apiUrl}/totalStaffOfClient`,
-          {
-            params: { ClientID: clientId }
-          }
-        );
-
-        if (result.status === 200) {
-          setDataState(result.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
     fetchData();
   }, []);
+
+  const handleDeleteClick = (obj) => {
+    setObjToDelete(obj); // Set the object to delete
+    setShowDisableEmployeeAlert(true); // Show the disable employee confirmation dialog
+  };
+  
+
+  const handleResetPasswordClick = (obj) => {
+    setObj(obj); // Set the selected user object
+    setShowResetPasswordAlert(true); // Show the reset password confirmation dialog
+  };
+
+  const confirmResetPassword = async () => {
+    try {
+      // Make sure obj contains the necessary data
+      if (!obj || !obj.UserID) {
+        console.error('Invalid object:', obj);
+        return;
+      }
+  
+      // Make an API call to reset user password with UserID
+      const response = await axios.post(`${apiUrl}/emails/resetUserPassword`, { UserID: obj.UserID });
+      
+      if (response.status === 200) {
+        // Show success message for resetting password
+        setShowResetPasswordSuccess(true);
+      } else {
+        // Show error alert if the reset password request fails
+        setShowErrorAlert(true);
+      }
+    } catch (error) {
+      console.error('Error resetting user password:', error);
+      // Show error alert if an error occurs during the reset password process
+      setShowErrorAlert(true);
+    } finally {
+      // Close the reset password confirmation dialog regardless of the outcome
+      setShowResetPasswordAlert(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    try {
+      // Make sure objToDelete contains the necessary data
+      if (!objToDelete || !objToDelete.UserID) {
+        console.error('Invalid object:', objToDelete);
+        return;
+      }
+  
+      // Call the API to disable the employee using objToDelete.UserID
+      await axios.post(`${apiUrl}/user/disableEmployee`, { UserID: objToDelete.UserID });
+  
+      // Call the fetchUpdatedData function to update the data
+      await fetchUpdatedData(); // update dashboard chart
+      fetchData(); // update records in table
+    } catch (error) {
+      console.error('Error disabling employee:', error);
+    } finally {
+      // Close the disable employee confirmation dialog regardless of success or failure
+      setShowDisableEmployeeAlert(false);
+    }
+  };
+
+  const hideAlert = () => {
+    setShowAlert(false); 
+    setShowResetPasswordAlert(false);
+    setShowResetPasswordSuccess(false);
+    setShowDisableEmployeeSuccess(false);
+    setShowDisableEmployeeAlert(false);
+  };
 
   useEffect(() => {
     if (selectedUserId !== null) {
@@ -63,6 +138,10 @@ function TotalStaffTable() {
     }
   }, [selectedUserId]);
 
+  const handleAddEmployee = () => {
+    navigate(`/admin/dashboard/totalStaff/new`);
+  };
+
   const renderActions = (actionsID) => {
     const obj = dataState.find((o) => o.UserID === actionsID); 
 
@@ -70,18 +149,9 @@ function TotalStaffTable() {
       const userId = encodeURIComponent(obj.UserID);
       navigate(`/admin/dashboard/totalStaff/${userId}`);
     };
-    
-
+  
     return (
       <div className="actions-right">
-        <Button
-          onClick={handleEditClick}
-          color="green"
-          size="sm"
-          className="btn-icon btn-link edit nc-icon nc-key-25"
-          title="Reset Password"
-        >
-        </Button>
         <Button
           onClick={handleEditClick}
           color="warning"
@@ -92,10 +162,15 @@ function TotalStaffTable() {
           <i className="fa fa-edit" />
         </Button>
         <Button
-          onClick={() => {
-            const updatedData = dataState.filter((o) => o.UserID !== actionsID);
-            setDataState(updatedData);
-          }}
+          onClick={() => handleResetPasswordClick(obj)}
+          color="green"
+          size="sm"
+          className="btn-icon btn-link edit nc-icon nc-key-25"
+          title="Reset Password"
+        >
+        </Button>
+        <Button
+          onClick={() => handleDeleteClick(obj)} // Pass obj to handleDeleteClick
           color="danger"
           size="sm"
           className="btn-icon btn-link remove"
@@ -141,8 +216,6 @@ function TotalStaffTable() {
     XLSX.writeFile(workbook, fileName);
   };
   
-  
-
   return (
     <Col lg="12" md="12" sm="12">
       <div className="content d-flex justify-content-center align-items-center">
@@ -159,6 +232,7 @@ function TotalStaffTable() {
     <Button
         style={{ backgroundColor: "#007bff", color: "#fff" }}
         size="sm"
+        onClick={handleAddEmployee}
       >
         Add Employee
       </Button>
@@ -174,6 +248,7 @@ function TotalStaffTable() {
   </div>
 </CardHeader>
                 <CardBody>
+                  
                   <ReactTable
                     data={dataState}
                     columns={[
@@ -218,6 +293,15 @@ function TotalStaffTable() {
           </Col>
         </Row>
       </div>
+
+      {showDisableEmployeeAlert && confirmationDisableEmployee(hideAlert, confirmDelete)}
+      {showDisableEmployeeSuccess && disableEmployeeSuccess(hideAlert, hideAlert)}
+
+
+    {showResetPasswordAlert && confirmationResetPassword(hideAlert, confirmResetPassword)}
+
+    {showResetPasswordSuccess && resetPasswordSuccess(hideAlert, hideAlert)}
+      
     </Col>
   );
 }

@@ -12,79 +12,178 @@ import {
   Label,
 } from "reactstrap";
 
+
 const apiUrl = process.env.REACT_APP_APIURL;
 
-const Step2 = forwardRef((props, ref) => {
+const Step2 = forwardRef(({ formType, formData, updateFormData, handleSubmit }, ref)  => {
   const navigate = useNavigate();
 
   const {
     userId,
-    companyEmailAddress,
-    companyPhoneNumber,
-    workingShiftHours,
-    holidayEntitlement,
-    positionID,
+    CompanyEmailAddress,
+    CompanyPhoneNumber,
+    WorkingShiftHours,
+    HolidayEntitelementLeftDays,
+    HolidayEntitelementLeftHours,
+    PositionID,
     position,
-    employeeNumber,
-    lineManagerID,
+    EmployeeNumber,
+    LineManagerID,
     lineManager,
-    joinedDate,
-    salary
-  } = props;
+    JoinedDate,
+    Salary,
+    RoleID,
+    role,
+  } = formData;
+
 
   const [UserID, setUserID] = useState(userId || "");
-  const [companyemailaddress, setcompanyemailaddress] = useState(companyEmailAddress || "");
+  const [companyemailaddress, setcompanyemailaddress] = useState(CompanyEmailAddress || "");
   const [companyemailaddressValidation, setcompanyemailaddressValidation] = useState("");
 
-  const [companyphonenumber, setcompanyphonenumber] = useState(companyPhoneNumber || "");
+  const [companyphonenumber, setcompanyphonenumber] = useState(CompanyPhoneNumber || "");
   const [companyphonenumberValidation, setcompanyphonenumberValidation] = useState("");
 
-  const [workingshifthours, setworkingshifthours] = useState(workingShiftHours || "");
+  const [workingshifthours, setworkingshifthours] = useState(WorkingShiftHours || "");
   const [workingshifthoursValidation, setworkingshifthoursValidation] = useState("");
 
-  const [holidayentitlement, setholidayentitlement] = useState(holidayEntitlement || "");
+  const [holidayentitelementleftdays, setholidayentitlementdays] = useState(HolidayEntitelementLeftDays || "");
+  const [holidayDaysValidation, setHolidayDaysValidation] = useState("");
+
+  const [holidayentitelementlefthours, setholidayentitlementhours] = useState(HolidayEntitelementLeftHours || "");
+  const [holidayHoursValidation, setHolidayHoursValidation] = useState("");
+  
   const [Position, setPosition] = useState(position || "");
 
-  const [employeenumber, setemployeenumber] = useState(employeeNumber || "");
+  const [employeenumber, setemployeenumber] = useState(EmployeeNumber || "");
   const [employeenumberValidation, setemployeenumberValidation] = useState("");
 
-  const [joineddate, setjoineddate] = useState(joinedDate || "");
+  const [joineddate, setjoineddate] = useState(JoinedDate || "");
 
-  const [Salary, setSalary] = useState(salary || "");
+  const [salary, setSalary] = useState(Salary || "");
   const [salaryValidation, setsalaryValidation] = useState("");
-
-
 
   // Use an array to initialize state
   const [linemanagers, setLinemanagers] = useState([]);
-  const [selectedLineManager, setSelectedLineManager] = useState(lineManagerID !== null ? {
-    value: lineManagerID,
+  const [selectedLineManager, setSelectedLineManager] = useState(LineManagerID !== null ? {
+    value: LineManagerID,
     label: lineManager,
   } : {});
 
+
+    const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(RoleID !== null ? {
+    value: RoleID,
+    label: role,
+  } : {});
+
   const [positions, setPositions] = useState([]);
-  const [selectedPositions, setSelectedPositions] = useState(positionID !== null
+  const [selectedPositions, setSelectedPositions] = useState(PositionID !== null
     ? {
-    value: positionID,
+    value: PositionID,
     label: Position,
   } : {});
 
 
-  
-  const [showAlert, setShowAlert] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  // Get the ClientID from local storage
+  const clientID = localStorage.getItem('ClientID');
 
-  const hideAlert = () => {
-    setShowAlert(false);
-    setShowErrorAlert(false);
+
+  const handleSave = async (e) => {
+    event.preventDefault();
+  
+     handleSubmit();
   };
+  
+  const handleChange = (field, value) => {
+    // Update the corresponding state variable
+    switch (field) {
+      case 'CompanyEmailAddress':
+        setcompanyemailaddress(value);
+        break;
+      case 'CompanyPhoneNumber':
+        setcompanyphonenumber(value);
+        break;
+      case 'WorkingShiftHours':
+        setworkingshifthours(value);
+        break;
+      case 'HolidayEntitelementLeftDays':
+          setholidayentitlementdays(value);
+          break;
+      case 'HolidayEntitelementLeftHours':
+          setholidayentitlementhours(value);
+          break;
+      case 'PositionID':
+          setSelectedPositions(value);
+          break;
+      case 'EmployeeNumber':
+        setemployeenumber(value);
+        break;
+      case 'JoinedDate':
+        setjoineddate(value);
+        break;
+      case 'LineManagerID':
+        setSelectedLineManager(value);
+        break;
+      case 'Salary':
+          setSalary(value);
+          break;
+      case 'RoleID':
+        setSelectedRole(value);
+        break;
+      default:
+        break;
+    }
+  
+    // Update the formData state in the parent component
+    updateFormData({ [field]: value });
+  };
+  
+
   useEffect(() => {
+
     const fetchData = async () => {
+
       try {
         // Fetch line managers
+        const rolesResponse = await axios.post(
+          `${apiUrl}/user/getRoles`,
+          { clientId: clientID },
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+
+  
+        if (rolesResponse.data && rolesResponse.data.Roles) {
+          const rolesArray = rolesResponse.data.Roles.map(role => ({
+            value: role.value,
+            label: role.label,
+          }));
+  
+          // Set the default value based on props
+const defaultRole = RoleID !== null ? {
+  value: RoleID,
+  label: role,
+} : null;
+
+
+// Filter out null or undefined values
+const filteredRolesArray = rolesArray.filter(role => role.value != null);
+
+// Check if the default value is not already in the array before adding it
+const updatedRoles = defaultRole
+  ? [...filteredRolesArray]
+  : [...filteredRolesArray, defaultRole];
+
+  setRoles(updatedRoles);
+
+        } else {
+          console.error('Invalid response format for line managers:', rolesResponse.data);
+        }
+
+        // Fetch line managers
         const lineManagersResponse = await axios.post(
-          `${apiUrl}/getLineManagers`,
-          { userId: userId },
+          `${apiUrl}/user/getLineManagers`,
+          { clientId: clientID },
           { headers: { 'Content-Type': 'application/json' } }
         );
   
@@ -95,8 +194,8 @@ const Step2 = forwardRef((props, ref) => {
           }));
   
           // Set the default value based on props
-const defaultLineManager = lineManagerID !== null ? {
-  value: lineManagerID,
+const defaultLineManager = LineManagerID !== null ? {
+  value: LineManagerID,
   label: lineManager,
 } : null;
 
@@ -116,8 +215,8 @@ setLinemanagers(updatedLineManagers);
   
         // Fetch positions
         const positionsResponse = await axios.post(
-          `${apiUrl}/getClientPositions`,
-          { userId: userId },
+          `${apiUrl}/user/getClientPositions`,
+          { clientId: clientID },
           { headers: { 'Content-Type': 'application/json' } }
         );
   
@@ -141,132 +240,13 @@ setLinemanagers(updatedLineManagers);
     };
   
     fetchData();
-  }, [userId, lineManagerID, lineManager, Position, positionID]);
+  }, [userId, LineManagerID, lineManager, Position, PositionID, RoleID, role]);
   
-  
-
-  
-
-  const getFormData = () => ({
-    UserID,
-    companyemailaddress,
-    companyphonenumber,
-    workingshifthours,
-    PositionID: selectedPositions ? selectedPositions.value : '',
-    LineManagerID: selectedLineManager ? selectedLineManager.value : '',
-    employeenumber,
-    joineddate: formatDOB(joineddate),
-    Salary
-  });
-
-  const formatDOB = (dateString) => {
-    // Assuming dateString is in the format 'DD/MM/YYYY'
-    if (dateString) {
-      const [day, month, year] = dateString.split('/');
-      return `${year}-${month}-${day}`;
-    } else {
-      return ""; // Return an empty string if dateString is undefined
-    }
-  };
-  
-  
-  React.useImperativeHandle(ref, () => ({
-    isValidated: undefined,
-    state: {
-      UserID,
-      companyemailaddress,
-      companyphonenumber,
-      workingshifthours,
-      holidayentitlement,
-      Position,
-      employeenumber,
-      joineddate,
-      Salary
-    },
-  }));
-
-  
-
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-  
-    // Validate email
-    const isValidEmail = verifyEmail(companyemailaddress);
-  
-    // Validate phone number
-const isValidPhoneNumber = verifyNumber(companyphonenumber);
-
-    // Validate working shift in hours
-const isValidWorkingShift = verifyNumber(workingshifthours);
-
-// Validate employee number
-const isValidEmployeeNumber = verifyNumber(employeenumber);
-
-// Validate salary
-const isValidSalary = verifyNumber(Salary);
-  
-    // If any validation fails, prevent form submission
-    if (!isValidEmail || !isValidPhoneNumber || !isValidWorkingShift || !isValidEmployeeNumber || !isValidSalary) {
-      // Handle validation failure (you can show an error message, etc.)
-      setcompanyemailaddressValidation(isValidEmail ? "has-success" : "is-invalid");
-      setcompanyphonenumberValidation(isValidPhoneNumber ? "has-success" : "is-invalid");
-      setworkingshifthoursValidation(isValidWorkingShift ? "has-success" : "is-invalid");
-      setemployeenumberValidation(isValidEmployeeNumber ? "has-success" : "is-invalid");
-      setsalaryValidation(isValidSalary ? "has-success" : "is-invalid");
-      return;
-    }
-  
-    try {
-      const formData = new FormData();
-      // Append other form fields
-      const currentFormData = getFormData();
-      Object.entries(currentFormData).forEach(([field, value]) => {
-        formData.append(field, value);
-      });
-  
-      const result = await axios.post(
-        `${apiUrl}/submitUserForm`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-  
-      if (result.status === 200) {
-        // Handle success
-        console.log('Form data with image saved successfully');
-        setShowAlert(true);
-      }
-    } catch (error) {
-      // Handle errors
-      console.error('Error saving form data with image:', error);
-      setShowErrorAlert(true)
-    }
-  };
-  
-
   // close button
   const handleGoToDashboard = () => {
     navigate('/admin/dashboard');
   };
 
-  // function that verifies if a string has a given length or not
-  const verifyLength = (value, length) => {
-    if (value.length >= length) {
-      return true;
-    }
-    return false;
-  };
-
-  const isNumericString = (value) => {
-    // Regular expression to match numbers (including an empty string)
-    const numericPattern = /^[0-9]*$/;
-  
-    return numericPattern.test(value);
-  };
-  
 
   const verifyEmail = (value) => {
     // Regular expression for email validation
@@ -285,7 +265,7 @@ const isValidSalary = verifyNumber(Salary);
   
     return false;
   };
-  
+
   const verifyNumber = (value) => {
     // Treat an empty string as valid for phone number
     if (value === '') {
@@ -300,12 +280,17 @@ const isValidSalary = verifyNumber(Salary);
     // If the string is not empty and contains non-numeric characters, treat as invalid
     return false;
   };
-  
-  
 
+  // Call verifyEmail once when the component mounts
+useEffect(() => {
+  const isValidEmail = verifyEmail(companyemailaddress);
+  setcompanyemailaddressValidation(isValidEmail ? "has-success" : "is-invalid");
+}, []);
+
+  
   return (
     <>
-      <form className="react-wizard-form">
+      <form  onSubmit={handleSave} className="react-wizard-form">
         <div className="d-flex align-items-center form-row">
         <FormGroup className="col-md-6">
   <Label for="email">Email Address</Label>
@@ -317,7 +302,7 @@ const isValidSalary = verifyNumber(Salary);
     className={`form-control ${companyemailaddressValidation}`}
     onChange={(e) => {
       const inputValue = e.target.value;
-      setcompanyemailaddress(inputValue);
+      handleChange('CompanyEmailAddress', e.target.value)
 
       // Validate email
       const isValidEmail = verifyEmail(inputValue);
@@ -344,7 +329,7 @@ const isValidSalary = verifyNumber(Salary);
   className={`form-control ${companyphonenumberValidation}`}
   onChange={(e) => {
     const inputValue = e.target.value;
-    setcompanyphonenumber(inputValue);
+    handleChange('CompanyPhoneNumber', e.target.value)
 
     // Validate phone number
     const isValidNumber = verifyNumber(inputValue);
@@ -364,7 +349,7 @@ const isValidSalary = verifyNumber(Salary);
 
         </div>
         <div className="form-row">
-          <FormGroup className="col-md-6">
+          <FormGroup className="col-md-4">
             <Label for="inputState">Working Shift (Hours)</Label>
             <Input
               name="Working Shift (Hours)"
@@ -374,7 +359,7 @@ const isValidSalary = verifyNumber(Salary);
               className={`form-control ${workingshifthoursValidation}`}
   onChange={(e) => {
     const inputValue = e.target.value;
-    setworkingshifthours(inputValue);
+    handleChange('WorkingShiftHours', e.target.value)
 
     // Validate phone number
     const isValidNumber = verifyNumber(inputValue);
@@ -389,14 +374,43 @@ const isValidSalary = verifyNumber(Salary);
   }}
             />
           </FormGroup>
-          <FormGroup className="col-md-6">
-            <Label for="inputState">Holiday Entitlement Left</Label>
+          <FormGroup className="col-md-4">
+            <Label for="inputState">Holiday Left (No. Of Days)</Label>
             <Input
               name="Holiday Entitlement"
               type="text"
-              value={holidayentitlement}
-              onChange={(e) => setholidayentitlement(e.target.value)}
-              readOnly
+              value={holidayentitelementleftdays}
+              className={`form-control ${holidayDaysValidation}`}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                handleChange('HolidayEntitelementLeftDays', e.target.value)
+            
+                // Validate phone number
+                const isValidNumber = verifyNumber(inputValue);
+            
+                // Update validation class
+                setHolidayDaysValidation(isValidNumber ? "has-success" : "is-invalid");
+              }}
+              
+            />
+          </FormGroup>
+          <FormGroup className="col-md-4">
+            <Label for="inputState">Holiday Left (No. Of Hours)</Label>
+            <Input
+              name="Holiday Entitlement"
+              type="text"
+              value={holidayentitelementlefthours}
+              className={`form-control ${holidayHoursValidation}`}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                handleChange('HolidayEntitelementLeftHours', e.target.value)
+            
+                // Validate phone number
+                const isValidNumber = verifyNumber(inputValue);
+            
+                // Update validation class
+                setHolidayHoursValidation(isValidNumber ? "has-success" : "is-invalid");
+              }}
             />
           </FormGroup>
         </div>
@@ -408,13 +422,54 @@ const isValidSalary = verifyNumber(Salary);
     placeholder="Select From Dropdown"
     value={selectedPositions && selectedPositions.value !== '' && selectedPositions.label !== '' ? selectedPositions : null}
     options={positions}
-    onChange={(selectedOption) => setSelectedPositions(selectedOption)}
+    onChange={(selectedOption) => {
+      handleChange('PositionID', selectedOption);
+      if (!selectedOption) { // Check if selectedOption is null (field has been cleared)
+        handleChange('PositionID', "");
+      }
+    }}
     isClearable={true}
   />
 </FormGroup>
 
-
           <FormGroup className="col-md-4">
+  <Label for="linemanagers">Line Manager</Label>
+  <Select
+    name="linemanagers"
+    placeholder="Select From Dropdown"
+    value={selectedLineManager && setSelectedLineManager.value !== '' && selectedLineManager.label !== '' ? linemanagers.find(manager => manager.value === selectedLineManager?.value) : null}
+    options={linemanagers}
+    onChange={(selectedOption) => {
+      handleChange('LineManagerID', selectedOption);
+      if (!selectedOption) { // Check if selectedOption is null (field has been cleared)
+        handleChange('LineManagerID', ""); // Call handleChange to handle clearing
+      }
+    }}
+    isClearable={true}
+  />
+</FormGroup>
+
+<FormGroup className="col-md-4">
+  <Label for="linemanagers">Role</Label>
+  <Select
+    name="roles"
+    placeholder="Select From Dropdown"
+    options={roles}
+    value={selectedRole && setSelectedRole.value !== '' && selectedRole.label !== '' ? roles.find(role => role.value === selectedRole?.value) : null}
+    onChange={(selectedOption) => {
+      handleChange('RoleID', selectedOption.value);
+      if (!selectedOption) { // Check if selectedOption is null (field has been cleared)
+        handleChange('RoleID', ""); // Call handleChange to handle clearing
+      }
+    }}
+    isClearable={true}
+  />
+</FormGroup>
+        </div>
+        <div className="form-row">
+        </div>
+        <div className="form-row">
+        <FormGroup className="col-md-4">
             <Label for="employeeNumber">Employee Number</Label>
             <Input
               name="employeenumber"
@@ -424,7 +479,7 @@ const isValidSalary = verifyNumber(Salary);
               className={`form-control ${employeenumberValidation}`}
   onChange={(e) => {
     const inputValue = e.target.value;
-    setemployeenumber(inputValue);
+    handleChange('EmployeeNumber', e.target.value)
 
     // Validate phone number
     const isValidNumber = verifyNumber(inputValue);
@@ -440,44 +495,29 @@ const isValidSalary = verifyNumber(Salary);
             />
           </FormGroup>
           <FormGroup className="col-md-4">
-  <Label for="linemanagers">Line Manager</Label>
-  <Select
-    name="linemanagers"
-    placeholder="Select From Dropdown"
-    value={selectedLineManager && setSelectedLineManager.value !== '' && selectedLineManager.label !== '' ? linemanagers.find(manager => manager.value === selectedLineManager?.value) : null}
-    options={linemanagers}
-    onChange={(selectedOption) => setSelectedLineManager(selectedOption)}
-    isClearable={true}
-  />
-</FormGroup>
-        </div>
-        <div className="form-row">
-        </div>
-        <div className="form-row">
-          <FormGroup className="col-md-6">
             <Label for="inputAddress">Joined Date</Label>
             <ReactDatetime
               inputProps={{
                 className: "form-control",
                 placeholder: "Select date",
               }}
-              value={joineddate}
+              value={joineddate && moment(joineddate).isValid() ? moment(joineddate).format("DD/MM/YYYY") : ""}
               dateFormat="DD/MM/YYYY"
               timeFormat={false}
-              onChange={(momentObj) => setjoineddate(momentObj.format("DD/MM/YYYY"))}
+              onChange={(momentObj) => handleChange("JoinedDate", momentObj.format("YYYY-MM-DD"))}
             />
           </FormGroup>
-          <FormGroup className="col-md-6">
+          <FormGroup className="col-md-4">
             <Label for="inputState">Annual Salary</Label>
             <Input
               name="Salary"
               placeholder="Type here"
               type="text"
-              value={Salary}
+              value={salary}
               className={`form-control ${salaryValidation}`}
   onChange={(e) => {
     const inputValue = e.target.value;
-    setSalary(inputValue);
+    handleChange('Salary', e.target.value)
 
     // Validate phone number
     const isValidNumber = verifyNumber(inputValue);
@@ -487,14 +527,16 @@ const isValidSalary = verifyNumber(Salary);
   }}
   onBlur={() => {
     // Re-validate and set validation class on blur
-    const isValidNumber = verifyNumber(Salary);
+    const isValidNumber = verifyNumber(salary);
     setsalaryValidation(isValidNumber ? "has-success" : "is-invalid");
   }}
             />
           </FormGroup>
+          
+          
         </div>
         <div className="text-center">
-          <Button type="submit" onClick={handleFormSubmit} color="primary">
+          <Button type="submit" color="primary">
             Save
           </Button>
           <Button type="submit" onClick={handleGoToDashboard} color="danger">
@@ -503,27 +545,9 @@ const isValidSalary = verifyNumber(Salary);
         </div>
       </form>
 
-      {showAlert && (
-        <SweetAlert
-          success
-          title="Success!"
-          onConfirm={hideAlert}
-          onCancel={hideAlert}
-        >
-          Details were successfully updated!
-        </SweetAlert>
-      )}
+      
 
-      {showErrorAlert && (
-        <SweetAlert
-          error
-          title="Error!"
-          onConfirm={hideAlert}
-          onCancel={hideAlert}
-        >
-          Something went wrong! Please contact IT!
-        </SweetAlert>
-      )}
+
     </>
   );
 });

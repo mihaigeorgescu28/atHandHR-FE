@@ -15,23 +15,29 @@ function App() {
   const navigate = useNavigate();
 
   
-
   useEffect(() => {
-    // Allow access to authentication pages without being logged in
+    // Redirect to /auth/login if not logged in and not already on an auth route
     if (!isLoggedIn && !location.pathname.startsWith('/auth')) {
       navigate('/auth/login');
     }
   }, [location.pathname, navigate, isLoggedIn]);
   
-
+  
   if (isLoggedIn) {
     return (
       <Routes>
-        <Route path="/auth/*" element={<AuthLayout />} />
-        <Route path="/admin/dashboard/*" element={<AdminLayout />} />
-        <Route path="/admin/*" element={<AdminLayout />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      {/* Auth Routes */}
+      <Route path="/auth/*" element={<AuthLayout />} />
+
+      {/* Admin Dashboard Routes */}
+      <Route path="/admin/dashboard/*" element={<AdminLayout />} />
+
+      {/* Admin Routes */}
+      <Route path="/admin/*" element={<AdminLayout />} />
+
+      {/* Catch-All (NotFound) Route */}
+      <Route path="*" element={<NotFound/>} />
+    </Routes>
     );
   } else {
     return (

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
 //import { Map, GoogleApiWrapper, Marker, InfoWindow  } from "google-maps-react";
+import Avatar from 'react-avatar';
+import { signInOutSuccess, errorsignInOut } from '../components/SweetAlert';
+
 
 // reactstrap components
 import {
@@ -33,6 +36,15 @@ function SignInOut(props) {
   const [buttonText, setButtonText] = useState('');
   const [extraValidation, setExtraValidation] = useState(false);
   const [extraValidationMessage, setextraValidationMessage] = useState('');
+  const [profilePic, setProfilePic] = React.useState(profilePic);
+  const [fileName, setFileName] = useState("");;
+  const [showSignInOutSuccessAlert, setShowSignInOutSuccessAlert] = useState(false);
+  const [errorWrongPasswordAlert, setErrorWrongPasswordAlert] = useState(false);
+
+  const hideAlert = () => {
+    setShowSignInOutSuccessAlert(false);
+    setErrorWrongPasswordAlert(false);
+  };
 
 
 /*   const [infoWindowVisible, setInfoWindowVisible] = useState(false);
@@ -80,28 +92,30 @@ function SignInOut(props) {
       const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-        `${apiUrl}/user`,
+          `${apiUrl}/user/getUserDetails`, 
           {
             UserID: UserID,
           }
         );
         if (result.status === 200) {
           setUserFullName(result.data.FullName);
+          setFileName(result.data.ProfilePic);
+          setProfilePic(`${apiUrl}/user_uploads/profile_pic/${result.data.ProfilePic}`);
         }
       } catch (error) {
         console.error(error);
       }
     }
-
+    
     fetchUserFullName();
   }, []);
-
+  
   useEffect(() => {
     async function currentShift() {
       const UserID = localStorage.getItem("UserID");
       try {
         const result = await axios.post(
-          `${apiUrl}/currentShift`,
+          `${apiUrl}/timeManagement/currentShift`,
           {
             UserID: UserID,
           }
@@ -155,7 +169,7 @@ function SignInOut(props) {
   
         try {
           const result = axios.post(
-            `${apiUrl}/dailyShift`,
+            `${apiUrl}/timeManagement/dailyShift`,
             {
               UserID: UserID,
               password: inputs.password,
@@ -165,11 +179,17 @@ function SignInOut(props) {
           ).then((result) => {
             if (result.status === 200) {
               setMessage(result.data.message);
-              if (result.data.message == "You have already signed out for today! You will be able to sign in again tommorrow." || result.data.message == "The password you have entered does not seem to match the one previously used to login! Please try again.") {
-                setBackgroundRed(true);
+              if (result.data.message == "You have already signed out for today! You will be able to sign in again tommorrow." 
+              ||  result.data.message == "The password you have entered does not seem to match the one previously used to login! Please try again."
+              ||  result.data.message == "You have already signed in for today, please come back tomorrow."
+              || result.data.message == "You cannot sign in today as records show you are on leave."
+              || result.data.message == "You are not allowed to sign in on weekend days or bank holidays. Please contact your administrator for more information!"
+              )
+              {
+                setErrorWrongPasswordAlert(true);
                 setSubmit(false);
               } else {
-                setBackgroundRed(false);
+                setShowSignInOutSuccessAlert(true);
                 setSubmit(true);
               }
             }
@@ -192,10 +212,6 @@ function SignInOut(props) {
     
   }
 
-
-  
-
-
   return (
     <>
 <div className="content" style={{ 
@@ -205,18 +221,15 @@ function SignInOut(props) {
   minHeight: '90vh'
 }}>
       <Container >
-
-        
           <Col className="ml-auto mr-auto" md="5" >
           <Card className="card-lock text-center" >
-          
-            <CardHeader >
-              <img 
-                alt="..."
-                src={require("assets/img/default-avatar.png")}
-              />
-            </CardHeader>
-            <CardBody  >
+            <CardBody>
+
+            {fileName == '' || fileName == null ? (
+  <Avatar src={require("assets/img/default-avatar.png")} round={true} size="100"/>
+) : (
+  <Avatar src={profilePic} round={true} size="100"/>
+)}
 
             <Form onSubmit={handleSubmit} className="form" method="">
               <CardTitle tag="h4">{userFullName}</CardTitle>
@@ -233,13 +246,13 @@ function SignInOut(props) {
                   style={{textAlign: 'center', marginBottom: '1em'}}
                   required
                   onChange={(e) => handleChange(e, "password")}
-                  onPaste={(e)=>{e.preventDefault()
-                      return false;
-                      }}
+                  
                 />
               }
 
               {extraValidation == true && <p style={{color: 'orange', fontWeight: "bold"}}>{extraValidationMessage}</p>}
+              
+
 
               { !submit &&
               <Button
@@ -256,17 +269,15 @@ function SignInOut(props) {
             </CardBody>
             <CardFooter>
 
-              {((extraValidation == false && submit) || (extraValidation == false && message == "The password you have entered does not seem to match the one previously used to login! Please try again.")) &&
-              <p style={isBackgroundRed == true ? {color: "orange",fontWeight: "bold"} : {color:"green",fontWeight: "bold"}} >
-                  {message}
-                </p>
-              }
+             
 
             </CardFooter>
             
           </Card>
           </Col>
           
+      {errorWrongPasswordAlert && errorsignInOut(hideAlert, message)}
+      {showSignInOutSuccessAlert && signInOutSuccess(hideAlert, hideAlert, message)}
 
         </Container>
 

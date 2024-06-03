@@ -349,65 +349,62 @@
         @include sidebar-active-color($danger-color);
     }
 
-    .user{
-        padding-bottom: 20px;
-        margin:20px auto 0;
-        position: relative;
-
-        &:after{
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 15px;
-            height: 1px;
-            width: calc(100% - 30px);
-            background-color: rgba(255,255,255, .3);
-        }
-
-        .photo{
-            width: 34px;
-            height: 34px;
-            overflow: hidden;
-            float: left;
-            z-index: 5;
-            margin-right: 10px;
-            border-radius: 50%;
-            margin-left: 23px;
+    .user {
+      padding-bottom: 20px;
+      margin: 20px auto 0;
+      position: relative;
+    
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 15px;
+        height: 1px;
+        width: calc(100% - 30px);
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+    
+      .photo {
+        width: 50px; /* Increase width to prevent cutting off */
+        height: 50px; /* Increase height to prevent cutting off */
+        overflow: hidden;
+        float: left;
+        z-index: 5;
+        margin-right: 10px;
+        border-radius: 50%;
+        margin-left: 23px;
+        @extend .animation-transition-general;
+      }
+    
+      a {
+        color: $white-color;
+        text-decoration: none;
+        padding: $padding-base-vertical 15px;
+        white-space: nowrap;
+        @extend .animation-transition-general;
+      }
+    
+      .info {
+        > a {
+          display: block;
+          line-height: 18px;
+    
+          > span {
             @extend .animation-transition-general;
-
-            img{
-                width: 100%;
-            }
+            display: block;
+            position: relative;
+            opacity: 1;
+          }
         }
-
-        a{
-            color: $white-color;
-            text-decoration: none;
-            padding: $padding-base-vertical 15px;
-            white-space: nowrap;
-            @extend .animation-transition-general;
+    
+        .caret {
+          position: absolute;
+          top: 8px;
+          right: 18px;
         }
-
-        .info{
-            > a{
-               display: block;
-               line-height: 18px;
-
-                > span{
-                   @extend .animation-transition-general;
-                   display: block;
-                   position: relative;
-                   opacity: 1;
-                }
-            }
-
-            .caret{
-                position: absolute;
-                top: 8px;
-                right: 18px;
-            }
-        }
+      }
     }
+    
 }
 
 .visible-on-sidebar-regular{

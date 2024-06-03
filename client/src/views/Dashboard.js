@@ -52,6 +52,8 @@ function Dashboard() {
   const [leaveType, setLeaveType] = useState({});
   const [actionTypeID, setActionTypeID] = useState({});
   const [timeManagementStatus, setTimeManagementStatus] = useState({});
+  const [panelName, setPanelName] = useState(null);
+  const [datasetName, setDatasetName] = useState(null);
 
   const apiUrl = process.env.REACT_APP_APIURL;
 
@@ -101,11 +103,169 @@ const createChartData = () => {
     ],
   };
 };
+const fetchUpdatedData = async () => {
+  try {
+    const clientID = localStorage.getItem('ClientID');
+    const response = await axios.get(`${apiUrl}/leave/countStaffData?ClientID=${clientID}`);
+    
+    if (response.data) {
+      const {
+        TotalStaff,
+        StaffOnLeave,
+        StaffOnLeaveNext30Days
+      } = response.data;
+
+      setTotalStaffCount(TotalStaff);
+      setStaffOnLeaveCount(StaffOnLeave);
+      setStaffOnLeaveCountNext30Days(StaffOnLeaveNext30Days);
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};
+
+const fetchLeaveUpdatedData = async () => {
+  try {
+    // Get the ClientID from local storage
+    const clientID = localStorage.getItem('ClientID');
+  
+    axios.get(`${apiUrl}/leave/leaveRequestLastUpdated?ClientID=${clientID}&LeaveTypeID=1`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          setLastHolidayLeaveUpdated(response.data[0].LastUpdatedLeaveDate);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+
+    axios.get(`${apiUrl}/leave/leaveRequestLastUpdated?ClientID=${clientID}&LeaveTypeID=2`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          setLastSickLeaveUpdated(response.data[0].LastUpdatedLeaveDate);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+
+      axios.get(`${apiUrl}/leave/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=2`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          const newData = {
+            labels: ['Declined', 'Approved', 'Requested'],
+            datasets: [
+              {
+                label: 'Holiday',
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
+                borderWidth: 0,
+                barPercentage: 1.6,
+                data: response.data, // Use the response data directly
+              },
+            ],
+          };
+          setChartData(newData);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+
+      axios.get(`${apiUrl}/leave/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=1`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          const newData = {
+            labels: ['Declined', 'Approved', 'Requested'],
+            datasets: [
+              {
+                label: 'Sick',
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
+                borderWidth: 0,
+                barPercentage: 1.6,
+                data: response.data, // Use the response data directly
+              },
+            ],
+          };
+          
+          setSickRequestPieChart(newData);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+
+      axios.get(`${apiUrl}/leave/leaveRequestsType?ClientID=${clientID}&LeaveTypeGroupID=2&StatusID=1`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          // Extract LeaveTypeName values from the response data
+          const leaveTypeNames = response.data.map(item => item.LeaveTypeName);
+          const leaveTypeRequests = response.data.map(item => item.NoOfLeaveTypeRequests);
+  
+          const newData = {
+            labels: leaveTypeNames, // Set labels as an array
+            datasets: [
+              {
+                label: 'Pending',
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
+                borderWidth: 0,
+                barPercentage: 1.6,
+                data: leaveTypeRequests, // Use the extracted leaveTypeRequests
+              },
+            ],
+          };
+  
+          setPendingApproval(newData);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+
+      axios.get(`${apiUrl}/leave/leaveRequestsType?ClientID=${clientID}&LeaveTypeGroupID=2&StatusID=2`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          // Extract LeaveTypeName values from the response data
+          const leaveTypeNames = response.data.map(item => item.LeaveTypeName);
+          const leaveTypeRequests = response.data.map(item => item.NoOfLeaveTypeRequests);
+  
+          const newData = {
+            labels: leaveTypeNames, // Set labels as an array
+            datasets: [
+              {
+                label: 'Pending',
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                backgroundColor: ['#f17e5d', '#4acccd', '#fcc468'],
+                borderWidth: 0,
+                barPercentage: 1.6,
+                data: leaveTypeRequests, // Use the extracted leaveTypeRequests
+              },
+            ],
+          };
+  
+          setApprovedLeaves(newData);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+      
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};
 
 
 
-  const handleToggleDrilldown = (chartType, drilldownName, dateRange, leaveTypeGroupID, responseType, response) => {
-
+  const handleToggleDrilldown = (chartType, drilldownName, dateRange, leaveTypeGroupID, responseType, response, panelName) => {
     if ( 
       (openDrilldown === drilldownName && chartType == 'count')
        ) {
@@ -113,13 +273,17 @@ const createChartData = () => {
     } else if (chartType == 'pie' || chartType == 'count') {
       setOpenDrilldown(drilldownName); // Open the requested drilldown
       setTableDateRange(dateRange);
+      setDatasetName(response);
+      setPanelName(panelName);
 
       if(responseType == 'Status')
       {
         
+        
         if(response == 'Requested')
       {
         setLeaveStatusID(1);
+        
       }
       else if(response == 'Approved')
       {
@@ -180,6 +344,8 @@ const createChartData = () => {
     else if (chartType == 'doughnut')
     {
       setOpenDrilldown(drilldownName); // Open the requested drilldown
+      setPanelName(panelName)
+      setDatasetName(response);
 
       setTableDateRange(dateRange);
       if(drilldownName == 'signIn')
@@ -211,13 +377,17 @@ const createChartData = () => {
     }
     else if (chartType == 'line')
     {
+      setPanelName(panelName);
+      
       if(drilldownName == 'signIn')
       {
         setActionTypeID(1);
+        setDatasetName("Sign In " + "("+response+")");
       }
       else if(drilldownName == 'signOut')
       {
         setActionTypeID(2);
+        setDatasetName("Sign Out " + "("+response+")");
       }
 
       setTableDateRange(dateRange);
@@ -653,33 +823,33 @@ const createChartData = () => {
   
 
 
-  const handlePieChartClick = (label, leaveTypeGroupID, responseType) => {
+  const handlePieChartClick = (label, leaveTypeGroupID, responseType, panelName) => {
     // Handle the pie chart click with the label received from CustomPieChart
-    handleToggleDrilldown('pie','leaveRequests', 0, leaveTypeGroupID, responseType, label);
+    handleToggleDrilldown('pie','leaveRequests', 0, leaveTypeGroupID, responseType, label, panelName);
   };
 
-  const handleDoughnutChartClick = (label, chartName) => {
+  const handleDoughnutChartClick = (label, chartName, panelName) => {
     // Add your custom logic here to handle the click event for the selected option.
     if(chartName == 'Sign In')
     {
-      handleToggleDrilldown('doughnut','signIn', 0, 0, 0, label);
+      handleToggleDrilldown('doughnut','signIn', 0, 0, 0, label, panelName);
   }
   else if(chartName == 'Sign Out')
     {
-      handleToggleDrilldown('doughnut','signOut', 0, 0, 0, label);
+      handleToggleDrilldown('doughnut','signOut', 0, 0, 0, label, panelName);
     }
 
   }
 
-  const handleLineChartClick = (label, chartName) => {
+  const handleLineChartClick = (label, chartName, panelName) => {
     // Add your custom logic here to handle the click event for the selected option.
     if(chartName == 'Sign In')
     {
-      handleToggleDrilldown('line','signIn', label, 0, 0, label);
+      handleToggleDrilldown('line','signIn', label, 0, 0, label, panelName);
   }
   else if(chartName == 'Sign Out')
     {
-      handleToggleDrilldown('line','signOut', label, 0, 0, label);
+      handleToggleDrilldown('line','signOut', label, 0, 0, label, panelName);
     }
 
   }
@@ -691,7 +861,7 @@ const createChartData = () => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
   
-    axios.get(`${apiUrl}/leaveRequestLastUpdated?ClientID=${clientID}&LeaveTypeID=1`)
+    axios.get(`${apiUrl}/leave/leaveRequestLastUpdated?ClientID=${clientID}&LeaveTypeID=1`)
       .then((response) => {
         if (response.data.length > 0) {
           setLastHolidayLeaveUpdated(response.data[0].LastUpdatedLeaveDate);
@@ -701,7 +871,7 @@ const createChartData = () => {
         console.error('Error fetching data:', error);
       });
 
-    axios.get(`${apiUrl}/leaveRequestLastUpdated?ClientID=${clientID}&LeaveTypeID=2`)
+    axios.get(`${apiUrl}/leave/leaveRequestLastUpdated?ClientID=${clientID}&LeaveTypeID=2`)
       .then((response) => {
         if (response.data.length > 0) {
           setLastSickLeaveUpdated(response.data[0].LastUpdatedLeaveDate);
@@ -711,7 +881,7 @@ const createChartData = () => {
         console.error('Error fetching data:', error);
       });
 
-    axios.get(`${apiUrl}/SignInOutLastUpdated?ClientID=${clientID}&ActionTypeID=1`)
+    axios.get(`${apiUrl}/timeManagement/SignInOutLastUpdated?ClientID=${clientID}&ActionTypeID=1`)
       .then((response) => {
         if (response.data.length > 0) {
           setLastSignInUpdated(response.data[0].LastSignInOutLeaveDate);
@@ -721,7 +891,7 @@ const createChartData = () => {
         console.error('Error fetching data:', error);
       });
 
-    axios.get(`${apiUrl}/SignInOutLastUpdated?ClientID=${clientID}&ActionTypeID=2`)
+    axios.get(`${apiUrl}/timeManagement/SignInOutLastUpdated?ClientID=${clientID}&ActionTypeID=2`)
       .then((response) => {
         if (response.data.length > 0) {
           setLastSignOutUpdated(response.data[0].LastSignInOutLeaveDate);
@@ -738,7 +908,7 @@ const createChartData = () => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
   
-    axios.get(`${apiUrl}/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=2`)
+    axios.get(`${apiUrl}/leave/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=2`)
       .then((response) => {
         if (response.data.length > 0) {
           const newData = {
@@ -767,7 +937,7 @@ const createChartData = () => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
   
-    axios.get(`${apiUrl}/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=1`)
+    axios.get(`${apiUrl}/leave/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=1`)
       .then((response) => {
         if (response.data.length > 0) {
           const newData = {
@@ -797,7 +967,7 @@ const createChartData = () => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
   
-    axios.get(`${apiUrl}/leaveRequestsType?ClientID=${clientID}&LeaveTypeGroupID=2&StatusID=1`)
+    axios.get(`${apiUrl}/leave/leaveRequestsType?ClientID=${clientID}&LeaveTypeGroupID=2&StatusID=1`)
       .then((response) => {
         if (response.data.length > 0) {
           // Extract LeaveTypeName values from the response data
@@ -831,7 +1001,7 @@ const createChartData = () => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
   
-    axios.get(`${apiUrl}/leaveRequestsType?ClientID=${clientID}&LeaveTypeGroupID=2&StatusID=2`)
+    axios.get(`${apiUrl}/leave/leaveRequestsType?ClientID=${clientID}&LeaveTypeGroupID=2&StatusID=2`)
       .then((response) => {
         if (response.data.length > 0) {
           // Extract LeaveTypeName values from the response data
@@ -867,27 +1037,27 @@ const createChartData = () => {
   useEffect(() => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
-
-    // Make the API call using Axios for combined data
-    axios.get(`${apiUrl}/countStaffData?ClientID=${clientID}`)
-      .then(response => {
+  
+    // Function to fetch combined data
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/leave/countStaffData?ClientID=${clientID}`);
         if (response.data) {
-          const {
-            TotalStaff,
-            StaffOnLeave,
-            StaffOnLeaveNext30Days
-          } = response.data;
-
-          // Update the existing states with the API response data
+          const { TotalStaff, StaffOnLeave, StaffOnLeaveNext30Days } = response.data;
           setTotalStaffCount(TotalStaff);
           setStaffOnLeaveCount(StaffOnLeave);
           setStaffOnLeaveCountNext30Days(StaffOnLeaveNext30Days);
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching data:', error);
-      });
-  }, []);
+      }
+    };
+  
+    // Fetch data on component mount and whenever fetchUpdatedData is called
+    fetchData();
+  }, [fetchUpdatedData]); // Adding fetchUpdatedData as a dependency
+  
+  
 
 // SIGN OUT REPORT
 useEffect(() => {
@@ -895,7 +1065,7 @@ useEffect(() => {
   const clientID = localStorage.getItem('ClientID');
 
 
-  axios.get(`${apiUrl}/SignInOutReportToday?ClientID=${clientID}&ActionTypeID=2`)
+  axios.get(`${apiUrl}/timeManagement/SignInOutReportToday?ClientID=${clientID}&ActionTypeID=2`)
     .then((response) => {
       if (Object.keys(response.data).length > 0) {
         const SignOutChart = {
@@ -973,7 +1143,7 @@ useEffect(() => {
   const clientID = localStorage.getItem('ClientID');
 
 
-  axios.get(`${apiUrl}/SignInOutReportToday?ClientID=${clientID}&ActionTypeID=1`)
+  axios.get(`${apiUrl}/timeManagement/SignInOutReportToday?ClientID=${clientID}&ActionTypeID=1`)
     .then((response) => {
       if (Object.keys(response.data).length > 0) {
         const SignInChart = {
@@ -1056,7 +1226,7 @@ useEffect(() => {
   const clientID = localStorage.getItem('ClientID');
 
   // Make the API call using Axios to fetch all three values in one request
-  axios.get(`${apiUrl}/CurrentNumberOfLeaveRequests?ClientID=${clientID}`)
+  axios.get(`${apiUrl}/leave/CurrentNumberOfLeaveRequests?ClientID=${clientID}`)
     .then(response => {
       const {
         NumberOfHolidayRequests,
@@ -1079,7 +1249,7 @@ useEffect(() => {
   const clientID = localStorage.getItem('ClientID');
 
   // Make the API call using Axios to fetch all three values in one request
-  axios.get(`${apiUrl}/CurrentNumberOfLeaveRequestsByMonth?ClientID=${clientID}`)
+  axios.get(`${apiUrl}/leave/CurrentNumberOfLeaveRequestsByMonth?ClientID=${clientID}`)
     .then(response => {
       // Update the state with the API response data
       setLeaveRequestData(response.data);
@@ -1121,8 +1291,8 @@ useEffect(() => {
 useEffect(() => {
   const clientID = localStorage.getItem('ClientID'); // Modify this as needed
 
-  const signInEndpoint = `${apiUrl}/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=1`;
-  const signOutEndpoint = `${apiUrl}/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=2`;
+  const signInEndpoint = `${apiUrl}/timeManagement/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=1`;
+  const signOutEndpoint = `${apiUrl}/timeManagement/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=2`;
 
   // Fetch data for ActionTypeID 1
 axios.get(signInEndpoint)
@@ -1184,6 +1354,7 @@ axios.get(signOutEndpoint)
 
 
   return (
+    
     <>
       <div className="content">
         <Row>
@@ -1318,8 +1489,11 @@ axios.get(signOutEndpoint)
           </Col>
 
         <Row>
+
+          
         {openDrilldown === 'totalStaff' ? (
-        <TotalStaffTable />
+        <TotalStaffTable fetchUpdatedData={fetchUpdatedData}/>
+        
         ) : openDrilldown === 'staffOnLeave' ? (
         <StaffOnLeaveTable TableDateRange={tableDateRange} />
         ) : openDrilldown === 'staffOnLeave30Days' ? (
@@ -1339,6 +1513,7 @@ axios.get(signOutEndpoint)
             optionsPieChart={optionsPieChart}
             handlePieChartClick={handlePieChartClick}
             responseType={"Leave Type Pending"}
+            panelName={"Pending Approval"}
           />
       </CardBody>
       <CardFooter>
@@ -1363,6 +1538,7 @@ axios.get(signOutEndpoint)
             optionsPieChart={optionsPieChart}
             handlePieChartClick={handlePieChartClick}
             responseType={"Leave Type Approved"}
+            panelName={"Approved Leaves"}
             
           />
       </CardBody>
@@ -1388,6 +1564,7 @@ axios.get(signOutEndpoint)
             optionsPieChart={optionsPieChart}
             handlePieChartClick={handlePieChartClick}
             responseType={"Status"}
+            panelName={"Holiday Requests"}
           />
         </CardBody>
         <CardFooter>
@@ -1412,6 +1589,7 @@ axios.get(signOutEndpoint)
             optionsPieChart={optionsPieChart}
             handlePieChartClick={handlePieChartClick}
             responseType={"Status"}
+            panelName={"Absence Log"}
           />
       </CardBody>
       <CardFooter>
@@ -1426,7 +1604,7 @@ axios.get(signOutEndpoint)
 
   <Row>
   {openDrilldown === 'leaveRequests' ? (
-    <LeaveRequestsTable leaveTypeGroupID={leaveTypeGroupID} leaveStatusID={leaveStatusID} leaveTypeID={leaveType} />
+    <LeaveRequestsTable leaveTypeGroupID={leaveTypeGroupID} leaveStatusID={leaveStatusID} leaveTypeID={leaveType} panelName={panelName} datasetName={datasetName}  fetchLeaveUpdatedData={fetchLeaveUpdatedData}/>
   ) : null}
 </Row>
 
@@ -1441,6 +1619,7 @@ axios.get(signOutEndpoint)
         signInChartData={signInChart.data} // Use consistent prop names here
         signInChartOptions={signInChart.options} // Use consistent prop names here
         handleDoughnutChartClick={handleDoughnutChartClick}
+        panelName={"Staff Signed In Today"}
         className="ct-chart ct-perfect-fourth"
         height={300}
         width={456}
@@ -1468,6 +1647,7 @@ axios.get(signOutEndpoint)
         signInChartData={signOutChart.data} // Use consistent prop names here
         signInChartOptions={signOutChart.options} // Use consistent prop names here
         handleDoughnutChartClick={handleDoughnutChartClick}
+        panelName={"Staff Signed Out Today"}
         className="ct-chart ct-perfect-fourth"
         height={300}
         width={456}
@@ -1495,6 +1675,7 @@ axios.get(signOutEndpoint)
             timeManagementChartData={timeManagementChart.data}
             timeManagementChartOptions={timeManagementChart.options}
             handleLineChartClick={handleLineChartClick}
+            panelName={"Time Management Overview"}
             width={400}
             height={200}
           />
@@ -1508,9 +1689,9 @@ axios.get(signOutEndpoint)
 
     <Row>
   {openDrilldown === 'signIn' || openDrilldown === 'signOut' ? (
-    <TimeManagementTable actionTypeID={actionTypeID} timeManagementStatus={timeManagementStatus} />
+    <TimeManagementTable actionTypeID={actionTypeID} timeManagementStatus={timeManagementStatus} panelName={panelName} datasetName={datasetName}/>
   ) : openDrilldown === 'timeManagementReport' ? (
-    <TimeManagementTable actionTypeID={actionTypeID} timeManagementStatus={timeManagementStatus} tableDateRange={tableDateRange} />
+    <TimeManagementTable actionTypeID={actionTypeID} timeManagementStatus={timeManagementStatus} tableDateRange={tableDateRange} panelName={panelName} datasetName={datasetName}/>
   ) : null}
 </Row>
 
@@ -1654,8 +1835,12 @@ axios.get(signOutEndpoint)
           </Col>
           
         </Row>
+
         
-*/}
+        
+*/
+
+    }
       
       </div>
     </>

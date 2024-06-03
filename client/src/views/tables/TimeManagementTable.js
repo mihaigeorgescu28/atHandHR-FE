@@ -10,12 +10,80 @@ import {
   Col
 } from "reactstrap";
 import ReactTable from "components/ReactTable/ReactTable.js";
+import * as XLSX from "xlsx";
 
 const apiUrl = process.env.REACT_APP_APIURL;
 
-function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRange }) {
+function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRange, panelName, datasetName }) {
   const clientID = localStorage.getItem('ClientID');
   const [dataState, setDataState] = useState([]);
+
+  const exportToExcel = () => {
+    // Initialize columnMap with an empty array
+    let columnMap = [];
+
+    // Map the displayed column names to the API names and define the order
+    if (tableDateRange) {
+        if (actionTypeID === 1) {
+            columnMap = [
+                { key: "FullName", displayName: "Full Name" },
+                { key: "SignedInOut", displayName: "Signed In" },
+            ];
+        } else if (actionTypeID === 2) {
+            columnMap = [
+                { key: "FullName", displayName: "Full Name" },
+                { key: "SignedInOut", displayName: "Signed Out" },
+            ];
+        }
+    } else if (actionTypeID === 2 && timeManagementStatus === 'OnTime') {
+        columnMap = [
+            { key: "FullName", displayName: "Full Name" },
+            { key: "SignedInOut", displayName: "Signed Out" },
+            { key: "ExpectedShiftDurationHours", displayName: "Expected Shift Duration Hours" },
+            { key: "ActualShiftDuration", displayName: "Actual Shift Duration" }
+        ];
+    } else if (actionTypeID === 2 && timeManagementStatus === 'Pending') {
+        columnMap = [
+            { key: "FullName", displayName: "Full Name" },
+            { key: "SignedInOut", displayName: "Signed Out" },
+            { key: "ExpectedShiftDurationHours", displayName: "Expected Shift Duration Hours" },
+        ];
+    } else if (actionTypeID === 1) {
+        columnMap = [
+            { key: "FullName", displayName: "Full Name" },
+            { key: "SignedInOut", displayName: "Signed In" },
+            { key: "ExpectedShiftDurationHours", displayName: "Expected Shift Duration Hours" },
+        ];
+    }
+
+    // Ensure columnMap is not empty
+    if (columnMap.length === 0) {
+        console.error("No columns defined for the Excel export.");
+        return;
+    }
+
+    // Transform the dataState to use displayed column names and order
+    const transformedData = dataState.map((row) => {
+        const transformedRow = {};
+        columnMap.forEach(({ key, displayName }) => {
+            transformedRow[displayName] = row[key];
+        });
+        return transformedRow;
+    });
+
+    // Generate the file name with the current date
+    const currentDate = new Date().toLocaleDateString("en-GB").replace(/\//g, "");
+    const fileName = `time_management_${currentDate}.xlsx`;
+
+    // Create Excel file
+    const worksheet = XLSX.utils.json_to_sheet(transformedData, {
+        header: columnMap.map(({ displayName }) => displayName),
+    });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "TotalStaff");
+    XLSX.writeFile(workbook, fileName);
+};
+
 
   const mapMonthToNumber = (month) => {
     const monthToNumber = {
@@ -64,7 +132,7 @@ function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRang
   useEffect(() => {
     async function fetchData() {
       try {
-        let apiUrlWithParams = `${apiUrl}/TimeManagementBreakDown?ClientID=${clientID}&ActionTypeID=${actionTypeID}&TimeManagementStatus=${timeManagementStatus}`;
+        let apiUrlWithParams = `${apiUrl}/timeManagement/TimeManagementBreakDown?ClientID=${clientID}&ActionTypeID=${actionTypeID}&TimeManagementStatus=${timeManagementStatus}`;
       
         if (tableDateRange) {
           // Convert tableDateRange using mapMonthToNumber function
@@ -94,7 +162,6 @@ function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRang
 
   // Add additional columns if actionTypeID is equal to 2
   if (tableDateRange) {
-    console.log('no talbe range', tableDateRange)
     if (actionTypeID === 1)
     {
       columns.push(
@@ -141,7 +208,6 @@ function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRang
       },
     );
   } else if (actionTypeID === 1) {
-    console.log('action type id', tableDateRange)
     columns.push(
       {
         Header: "Signed In",
@@ -161,8 +227,23 @@ function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRang
           <Col md="12">
             <div className="fixed-width-table-chart-container">
               <Card>
-                <CardHeader tag="h5">
-                  {/* Add header content here if needed */}
+              <CardHeader>
+                <div className="d-flex justify-content-between">
+                <div>
+      <CardTitle tag="h5">{panelName} - {datasetName}</CardTitle>
+    </div>
+                
+                <div>
+                <Button
+        className="mr-2" // Add margin to separate the buttons
+        style={{ backgroundColor: "#28a745", color: "#fff" }}
+        size="sm"
+        onClick={exportToExcel}
+      >
+        Export as Excel
+      </Button>
+      </div>
+                </div>
                 </CardHeader>
                 <CardBody>
                   <ReactTable

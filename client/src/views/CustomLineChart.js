@@ -2,7 +2,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 
-function CustomLineChart({ timeManagementChartData, timeManagementChartOptions, handleLineChartClick}) {
+function CustomLineChart({ timeManagementChartData, timeManagementChartOptions, handleLineChartClick, panelName}) {
   const handleChartClick = (elements) => {
     if (elements.length > 0 && timeManagementChartData && timeManagementChartOptions) {
       const clickedElement = elements[0];
@@ -17,7 +17,7 @@ function CustomLineChart({ timeManagementChartData, timeManagementChartOptions, 
       }
       
       // Modify this line to access the correct property
-      handleLineChartClick(label, chartName);
+      handleLineChartClick(label, chartName, panelName);
       
     }
   };

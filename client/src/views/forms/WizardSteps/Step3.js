@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 import axios from 'axios';
-import SweetAlert from 'react-bootstrap-sweetalert';
+import { disableEmployeeSuccess, confirmationDisableEmployee, resetPasswordSuccess, confirmationResetPassword, errorAlert } from '../../components/SweetAlert';
+import SweetAlert from 'react-bootstrap-sweetalert'; // Import SweetAlert
 
 // reactstrap components
 import { Row, Col } from "reactstrap";
@@ -12,9 +13,10 @@ const Step3 = React.forwardRef((props, ref) => {
   const [design, setDesign] = React.useState(false);
   const [code, setCode] = React.useState(false);
   const [showResetPasswordAlert, setShowResetPasswordAlert] = React.useState(false);
+  const [showResetPasswordSuccess, setShowResetPasswordSuccess] = React.useState(false);
   const [showDisableEmployeeAlert, setShowDisableEmployeeAlert] = React.useState(false);
+  const [showDisableEmployeeSuccess, setShowDisableEmployeeSuccess] = React.useState(false);
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
-
   const [UserID, setUserID] = useState(props.userId || "");
 
   React.useImperativeHandle(ref, () => ({
@@ -26,51 +28,66 @@ const Step3 = React.forwardRef((props, ref) => {
   }));
 
   const handleResetPassword = async () => {
+    // Show confirmation dialog for resetting password
+    setShowResetPasswordAlert(true);
+  };
+  
+
+  const confirmResetPassword = async () => {
     try {
       // Make an API call to reset user password with UserID in the body
       const response = await axios.post(`${apiUrl}/emails/resetUserPassword`, { UserID });
-      console.log(response.data); // Handle the response as needed
-
+  
       if (response.status === 200) {
-        // Show SweetAlert for reset password success
-        setShowResetPasswordAlert(true);
+        // Show success message for resetting password
+        setShowResetPasswordSuccess(true); // Update state to show the success SweetAlert
       } else {
         // Show SweetAlert for reset password error
         setShowErrorAlert(true);
       }
     } catch (error) {
       console.error('Error resetting user password:', error);
-
+  
       // Show SweetAlert for reset password error
       setShowErrorAlert(true);
+    } finally {
+      // Hide the confirmation dialog after execution
+      setShowResetPasswordAlert(false);
     }
   };
+  
 
-  const handleDisableEmployee = async () => {
+  const confirmDisableEmployee = async () => {
     try {
       // Make an API call to disable employee with UserID in the body
-      const response = await axios.post(`${apiUrl}/disableEmployee`, { UserID });
-      console.log(response.data); // Handle the response as needed
-
+      const response = await axios.post(`${apiUrl}/user/disableEmployee`, { UserID });
+  
       if (response.status === 200) {
-        // Show SweetAlert for disable employee success
-        setShowDisableEmployeeAlert(true);
+        // Show success message for disabling employee
+        disableEmployeeSuccess(); // Display the success SweetAlert
       } else {
         // Show SweetAlert for disable employee error
         setShowErrorAlert(true);
       }
     } catch (error) {
       console.error('Error disabling employee:', error);
-
+  
       // Show SweetAlert for disable employee error
       setShowErrorAlert(true);
+    } finally {
+      // Hide the confirmation dialog after execution
+      setShowDisableEmployeeAlert(false);
+      setShowDisableEmployeeSuccess(true);
     }
   };
+  
 
   const hideAlerts = () => {
     setShowResetPasswordAlert(false);
     setShowDisableEmployeeAlert(false);
     setShowErrorAlert(false);
+    setShowDisableEmployeeSuccess(false);
+    setShowResetPasswordSuccess(false);
   };
 
   return (
@@ -107,7 +124,7 @@ const Step3 = React.forwardRef((props, ref) => {
                 data-toggle="wizard-checkbox"
                 onClick={() => {
                   setCode(!code);
-                  handleDisableEmployee();
+                  setShowDisableEmployeeAlert(true); // Show the confirmation dialog directly
                 }}
               >
                 <input
@@ -126,38 +143,16 @@ const Step3 = React.forwardRef((props, ref) => {
         </Col>
       </Row>
 
-      {/* SweetAlert for Reset Password */}
-      {showResetPasswordAlert && (
-        <SweetAlert
-          success
-          title="Success!"
-          onConfirm={hideAlerts}
-        >
-          User password was successfully reset!
-        </SweetAlert>
-      )}
+      {showResetPasswordAlert && confirmationResetPassword(hideAlerts, confirmResetPassword)}
+      {showResetPasswordSuccess && resetPasswordSuccess(hideAlerts, hideAlerts)}
 
-      {/* SweetAlert for Disable Employee */}
-      {showDisableEmployeeAlert && (
-        <SweetAlert
-          success
-          title="Success!"
-          onConfirm={hideAlerts}
-        >
-          Employee was successfully disabled!
-        </SweetAlert>
-      )}
+      {/* Confirmation dialog for disabling employee */}
+      {showDisableEmployeeAlert && confirmationDisableEmployee(hideAlerts, confirmDisableEmployee)}
+
+      {showDisableEmployeeSuccess && disableEmployeeSuccess(hideAlerts, hideAlerts)}
 
       {/* SweetAlert for Error */}
-      {showErrorAlert && (
-        <SweetAlert
-          error
-          title="Error!"
-          onConfirm={hideAlerts}
-        >
-          Something went wrong! Please try again.
-        </SweetAlert>
-      )}
+      {showErrorAlert && errorAlert(hideAlerts)}
     </>
   );
 });
