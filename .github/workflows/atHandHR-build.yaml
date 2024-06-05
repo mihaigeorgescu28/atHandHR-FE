@@ -38,25 +38,31 @@ jobs:
           echo "Current directory after setup-node: $(pwd)"
           ls -R
 
-      - name: Build Node assets
+      - name: Prepare client directory
+        run: |
+          echo "Removing package-lock.json to avoid conflicts"
+          rm -f package-lock.json
+          cd client
+          echo "Current directory before installing dependencies: $(pwd)"
+          echo "Contents of current directory:"
+          ls -R
+
+      - name: Install Dependencies and Build Node assets
+        working-directory: ./client
         env:
           CI: true
           SITE_URL: ${{ inputs.site-url }}
         run: |
-          echo "Current directory before build: $(pwd)"
-          echo "Contents of client/public before build:"
-          ls -R client/public || echo "Directory client/public does not exist"
-          
           npm install --global yarn
           yarn install --frozen-lockfile
-          cd client
           yarn build
 
       - name: Log current directory and contents after build
         run: |
+          cd client
           echo "Current directory after build: $(pwd)"
-          echo "Contents of client/public after build:"
-          ls -R client/public || echo "Directory client/public does not exist"
+          echo "Contents of public after build:"
+          ls -R public || echo "Directory public does not exist"
 
       - name: Store deployment content
         uses: ionos-deploy-now/artifact-action@v1
