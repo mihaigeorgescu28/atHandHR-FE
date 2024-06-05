@@ -49,6 +49,7 @@ jobs:
           
           npm install --global yarn
           yarn install --frozen-lockfile
+          cd client
           yarn build
 
       - name: Log current directory and contents after build
