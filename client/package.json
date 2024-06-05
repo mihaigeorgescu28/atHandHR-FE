@@ -34,6 +34,7 @@
     "@fortawesome/fontawesome-free": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "axios": "^1.2.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "4.5.3",
@@ -98,3 +99,4 @@
     "fs": false
   }
 }
+
