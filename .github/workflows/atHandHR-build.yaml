@@ -1,6 +1,3 @@
-# To better understand this file read this:
-# https://docs.ionos.space/docs/github-actions-customization/
-
 name: "Deploy Now: Execute Build"
 
 on:
@@ -17,31 +14,49 @@ env:
   DEPLOYMENT_FOLDER: client/public
 
 jobs:
-# Please do not rename this job
   build-project:
     name: build atHandHR
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+
+      - name: Log current directory and contents after checkout
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -R
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: v22.x
 
+      - name: Log current directory and contents after setup-node
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -R
+
       - name: Build Node assets
         env:
           CI: true
           SITE_URL: ${{ inputs.site-url }}
         run: |
+          echo "Current directory before build: $(pwd)"
+          echo "Contents of client/public before build:"
+          ls -R client/public || echo "Directory client/public does not exist"
+          
           npm install --global yarn
           yarn install --frozen-lockfile
           yarn build
 
-# Please do not touch the following action
+      - name: Log current directory and contents after build
+        run: |
+          echo "Current directory after build: $(pwd)"
+          echo "Contents of client/public after build:"
+          ls -R client/public || echo "Directory client/public does not exist"
+
       - name: Store deployment content
         uses: ionos-deploy-now/artifact-action@v1
         with:
@@ -49,6 +64,11 @@ jobs:
           service-host: api-eu.ionos.space
           project-id: 48ad8670-4c7d-4f02-bf4d-6a2ca2641aa8
           branch-id: ${{ inputs.branch-id }}
+          version: ${{ github.sha }}
+          folder: ${{ env.DEPLOYMENT_FOLDER }}
+          config-file: .deploy-now/atHandHR/config.yaml
+          action: upload
+
           version: ${{ github.sha }}
           folder: ${{ env.DEPLOYMENT_FOLDER }}
           config-file: .deploy-now/atHandHR/config.yaml
