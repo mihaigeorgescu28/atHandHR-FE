@@ -68,8 +68,3 @@ jobs:
           folder: ${{ env.DEPLOYMENT_FOLDER }}
           config-file: .deploy-now/atHandHR/config.yaml
           action: upload
-
-          version: ${{ github.sha }}
-          folder: ${{ env.DEPLOYMENT_FOLDER }}
-          config-file: .deploy-now/atHandHR/config.yaml
-          action: upload
