@@ -59,6 +59,7 @@ function AuthLayout() {
   const nestedRoute = () => {
     const { pathname } = location;
 
+
     if (pathname === "/auth/login") {
       return <Login />;
     } else if (pathname.startsWith("/auth/register/")) {
