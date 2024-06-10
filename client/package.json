@@ -5,9 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build && gulp licenses",
-    "test": "react-scripts test",
+    "start": "cross-env GENERATE_SOURCEMAP=false react-app-rewired start",
+    "build": "cross-env GENERATE_SOURCEMAP=false react-app-rewired build && gulp licenses",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
     "compile-sass": "sass src/assets/scss/paper-dashboard.scss src/assets/css/paper-dashboard.css",
@@ -32,6 +32,7 @@
   "homepage": "https://athandhr.com",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "axios": "^1.2.0",
@@ -39,7 +40,6 @@
     "bootstrap": "4.5.3",
     "chart.js": "3.4.1",
     "classnames": "2.3.1",
-    "crypto-browserify": "^3.12.0",
     "dotenv": "^16.3.1",
     "dotenv-safe": "^8.2.0",
     "fs": "^0.0.1-security",
@@ -48,9 +48,8 @@
     "match-sorter": "6.3.1",
     "moment": "^2.29.4",
     "mysql": "^2.18.1",
-    "mysql2": "^2.3.3",
+    "mysql2": "^3.10.0",
     "nouislider": "14.6.3",
-    "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "perfect-scrollbar": "1.5.5",
     "prop-types": "15.8.1",
@@ -61,7 +60,7 @@
     "react-bootstrap-switch": "15.5.3",
     "react-bootstrap-wizard": "^0.0.9",
     "react-chartjs-2": "3.0.4",
-    "react-data-export": "^0.6.0",
+    "react-data-export": "^0.4.2",
     "react-datetime": "3.1.1",
     "react-dom": "^18.2.0",
     "react-jvectormap": "0.0.16",
@@ -75,8 +74,10 @@
     "react-tagsinput": "3.19.0",
     "reactstrap": "8.7.1",
     "sass": "1.53.0",
-    "sweetalert2": "^11.7.5",
-    "xlsx": "^0.16.6"
+    "source-map-loader": "^5.0.0",
+    "sweetalert2": "^11.6.13",
+    "vm-browserify": "^1.1.2",
+    "xlsx": "^0.18.5"
   },
   "browserslist": [
     ">0.2%",
@@ -90,9 +91,21 @@
     "typescript": "4.7.4"
   },
   "devDependencies": {
+    "assert": "^2.1.0",
+    "buffer": "^6.0.3",
+    "cross-env": "^7.0.3",
+    "crypto-browserify": "^3.12.0",
     "dotenv-webpack": "^8.0.1",
-    "gulp": "^4.0.2",
-    "gulp-append-prepend": "1.0.9"
+    "gulp": "^5.0.0",
+    "gulp-append-prepend": "1.0.9",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "sass-math": "^1.0.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.3"
   },
   "browser": {
     "fs": false
