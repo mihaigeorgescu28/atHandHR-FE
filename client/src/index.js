@@ -20,6 +20,9 @@ function App() {
     if (!isLoggedIn && !location.pathname.startsWith('/auth')) {
       navigate('/auth/login');
     }
+
+    console.log("current location", location)
+
   }, [location.pathname, navigate, isLoggedIn]);
   
   

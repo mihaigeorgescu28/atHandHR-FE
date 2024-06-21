@@ -20,6 +20,8 @@ function AuthLayout() {
   const location = useLocation();
 
   React.useEffect(() => {
+
+
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(fullPages.current);
     }
@@ -29,6 +31,8 @@ function AuthLayout() {
       }
     };
   });
+
+  
 
   const extractIdFromPathname = (pathname, property) => {
     const match = pathname.match(new RegExp(`\/${property}\/([0-9a-fA-F-]+)$`));
@@ -59,6 +63,8 @@ function AuthLayout() {
   const nestedRoute = () => {
     const { pathname } = location;
 
+    
+    console.log("path here", pathname)
 
     if (pathname === "/auth/login") {
       return <Login />;
