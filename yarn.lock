@@ -1177,6 +1177,11 @@
   "resolved" "https://registry.npmjs.org/@eslint/js/-/js-8.39.0.tgz"
   "version" "8.39.0"
 
+"@fortawesome/fontawesome-free@^6.5.1":
+  "integrity" "sha512-CNy5vSwN3fsUStPRLX7fUYojyuzoEMSXPl7zSLJ8TgtRfjv24LOnOWKT2zYwaHZCJGkdyRnTmstR0P+Ah503Gw=="
+  "resolved" "https://registry.npmjs.org/@fortawesome/fontawesome-free/-/fontawesome-free-6.5.1.tgz"
+  "version" "6.5.1"
+
 "@humanwhocodes/config-array@^0.11.8":
   "integrity" "sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g=="
   "resolved" "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.8.tgz"
@@ -8891,6 +8896,11 @@
   "integrity" "sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg=="
   "resolved" "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz"
   "version" "8.3.2"
+
+"uuid@^9.0.1":
+  "integrity" "sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA=="
+  "resolved" "https://registry.npmjs.org/uuid/-/uuid-9.0.1.tgz"
+  "version" "9.0.1"
 
 "v8-to-istanbul@^8.1.0":
   "integrity" "sha512-FGtKtv3xIpR6BYhvgH8MI/y78oT7d8Au3ww4QIxymrCtZEh5b8gCw2siywE+puhEmuWKDtmfrvF5UlB298ut3w=="

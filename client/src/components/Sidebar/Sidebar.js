@@ -18,7 +18,7 @@ function Sidebar(props) {
   const [collapseStates, setCollapseStates] = React.useState({});
   const [userFullName, setUserFullName] = useState('');
   const sidebar = React.useRef();
-  const [profilePic, setProfilePic] = React.useState(profilePic);
+  const [profilePic, setProfilePic] = React.useState();
   
   // this creates the intial state of this component based on the collapse routes
   // that it gets through props.routes
