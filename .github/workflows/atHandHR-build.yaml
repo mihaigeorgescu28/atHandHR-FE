@@ -11,7 +11,7 @@ on:
         type: string
 
 env:
-  DEPLOYMENT_FOLDER: client/public
+  DEPLOYMENT_FOLDER: client/build
 
 jobs:
   build-project:
@@ -59,10 +59,9 @@ jobs:
 
       - name: Log current directory and contents after build
         run: |
-          cd client
           echo "Current directory after build: $(pwd)"
           echo "Contents of public after build:"
-          ls -R public || echo "Directory public does not exist"
+          ls -R build || echo "Directory build does not exist"  # Adjust if necessary
 
       - name: Store deployment content
         uses: ionos-deploy-now/artifact-action@v1
