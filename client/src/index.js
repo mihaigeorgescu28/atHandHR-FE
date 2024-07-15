@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes, useNavigate, useLocation, useParams } from "react-router-dom";
+import { HashRouter as Router, Route, Routes, useNavigate, useLocation, useParams } from "react-router-dom";
 import AuthLayout from "layouts/Auth.js";
 import AdminLayout from "layouts/Admin.js";
 import "bootstrap/dist/css/bootstrap.css";
@@ -14,7 +14,6 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  
   useEffect(() => {
     // Redirect to /auth/login if not logged in and not already on an auth route
     if (!isLoggedIn && !location.pathname.startsWith('/auth')) {
@@ -24,23 +23,22 @@ function App() {
     console.log("current location", location)
 
   }, [location.pathname, navigate, isLoggedIn]);
-  
-  
+
   if (isLoggedIn) {
     return (
       <Routes>
-      {/* Auth Routes */}
-      <Route path="/auth/*" element={<AuthLayout />} />
+        {/* Auth Routes */}
+        <Route path="/auth/*" element={<AuthLayout />} />
 
-      {/* Admin Dashboard Routes */}
-      <Route path="/admin/dashboard/*" element={<AdminLayout />} />
+        {/* Admin Dashboard Routes */}
+        <Route path="/admin/dashboard/*" element={<AdminLayout />} />
 
-      {/* Admin Routes */}
-      <Route path="/admin/*" element={<AdminLayout />} />
+        {/* Admin Routes */}
+        <Route path="/admin/*" element={<AdminLayout />} />
 
-      {/* Catch-All (NotFound) Route */}
-      <Route path="*" element={<NotFound/>} />
-    </Routes>
+        {/* Catch-All (NotFound) Route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     );
   } else {
     return (
@@ -54,7 +52,7 @@ function App() {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <BrowserRouter>
+  <Router>
     <App />
-  </BrowserRouter>
+  </Router>
 );
