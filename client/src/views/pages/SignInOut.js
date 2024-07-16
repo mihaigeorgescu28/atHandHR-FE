@@ -36,7 +36,7 @@ function SignInOut(props) {
   const [buttonText, setButtonText] = useState('');
   const [extraValidation, setExtraValidation] = useState(false);
   const [extraValidationMessage, setextraValidationMessage] = useState('');
-  const [profilePic, setProfilePic] = React.useState(profilePic);
+  const [profilePic, setProfilePic] = useState('');
   const [fileName, setFileName] = useState("");;
   const [showSignInOutSuccessAlert, setShowSignInOutSuccessAlert] = useState(false);
   const [errorWrongPasswordAlert, setErrorWrongPasswordAlert] = useState(false);

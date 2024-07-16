@@ -38,7 +38,17 @@ function AuthNavbar(props) {
             AT HAND HR
           </NavbarBrand>
         </div>
-        <button
+       
+        <Collapse isOpen={collapseOpen} className="justify-content-end" navbar>
+          
+        </Collapse>
+      </Container>
+    </Navbar>
+  );
+}
+
+/* three dots - previously after navbar-wrapper div
+ <button
           aria-controls="navigation-index"
           aria-expanded={false}
           aria-label="Toggle navigation"
@@ -51,12 +61,6 @@ function AuthNavbar(props) {
           <span className="navbar-toggler-bar navbar-kebab" />
           <span className="navbar-toggler-bar navbar-kebab" />
         </button>
-        <Collapse isOpen={collapseOpen} className="justify-content-end" navbar>
-          
-        </Collapse>
-      </Container>
-    </Navbar>
-  );
-}
+*/
 
 export default AuthNavbar;

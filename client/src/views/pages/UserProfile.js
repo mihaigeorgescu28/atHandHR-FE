@@ -109,7 +109,7 @@ function UserProfile() {
     townCity,
     country,
     postalCode,
-    dob: dob,
+    dob
   });
 
   const verifyEmail = (value) => {
@@ -144,6 +144,55 @@ function UserProfile() {
     // If the string is not empty and contains non-numeric characters, treat as invalid
     return false;
   };
+
+  const handleProfilePicSave = async (e) => {
+  
+    try {
+      const formData = new FormData();
+      const formType = 'edit'
+      formData.append('formType', formType);
+      formData.append('ClientID', clientID);
+  
+      // Append other form fields
+      const currentFormData = getFormData();
+      Object.entries(currentFormData).forEach(([field, value]) => {
+        formData.append(field, value);
+      });
+  
+      // Append the profile picture if available
+      if (fileName) {
+        // Ensure 'profilePic' is a File type
+        formData.append('ProfilePicture', fileName);
+      }
+  
+      const result = await axios.post(
+        `${apiUrl}/user/submitUserForm`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+  
+      if (result.status === 200 && formType == 'new') {
+        // Handle success
+        console.log('Form data with image inserted successfully');
+        setShowCreateNewUserSuccess(true);
+        setTemporaryPassword(result.data.temporaryPassword)
+      }
+      else {
+        // Handle success
+        console.log('Form data with image saved successfully');
+        setShowUserUpdatedSuccess(true);
+      }
+  
+    } catch (error) {
+      // Handle errors
+      console.error('Error saving form data with image:', error);
+      setShowErrorAlert(true);
+    }
+  };
   
 
   const handleFormSubmit = async (e) => {
@@ -154,7 +203,11 @@ function UserProfile() {
     
     // Validate phone number
     const isValidPhoneNumber = verifyPhoneNumber(phoneNumber);
-  
+
+
+
+
+   
     // If any validation fails, prevent form submission
     if (!isValidEmail || !isValidPhoneNumber) {
       // Handle validation failure (you can show an error message, etc.)
@@ -265,7 +318,7 @@ setFirstname(userData.FirstName !== 'null' ? userData.FirstName : '');
 setLastname(userData.LastName !== 'null' ? userData.LastName : '');
 setEmailAddress(userData.EmailAddress !== 'null' ? userData.EmailAddress : '');
 setPhoneNumber(userData.PhoneNumber !== 'null' ? userData.PhoneNumber : '');
-setDob(userData.DOB !== 'null' ? moment(userData.DOB).format("YYYY-MM-DD") : '');
+setDob(userData.DOB !== 'null' && userData.DOB !== ''  ? moment(userData.DOB).format("YYYY-MM-DD") : '');
 setHolidayEntitlement(userData.HolidayEntitlement !== 'null' ? userData.HolidayEntitlement : '');
 setPosition(userData.Position !== 'null' ? userData.Position : '');
 setNino(userData.NINO !== 'null' ? userData.NINO : '');
@@ -313,6 +366,21 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
       </div>
       <br />
 
+      {fileName && 
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Button
+        type="submit"
+        className="btn-round"
+        color="success"
+        onClick={() => {
+          handleProfilePicSave();
+        }}
+      >
+        Save Profile Picture
+      </Button>
+    </div>
+    }
+      
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Button
           type="submit"
@@ -368,7 +436,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
                       </FormGroup>
                     </Col>
                     
-                    <Col className="px-1" md="5">
+                    <Col className="pr-1" md="5">
                       <FormGroup>
                         <label htmlFor="exampleInputEmail1">
                           Email address
@@ -377,7 +445,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
                       </FormGroup>
                     </Col>
 
-                    <Col className="pl-1" md="3">
+                    <Col className="pr-1" md="3">
                       <FormGroup>
                         <label htmlFor="exampleInputEmail1">
                           Phone Number
@@ -416,7 +484,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-1" md="6">
+                    <Col className="pr-1" md="6">
                       <FormGroup>
                         <label>Last Name</label>
                         <Input
@@ -438,7 +506,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-1" md="6">
+                    <Col className="pr-1" md="6">
                       <FormGroup>
                         <label>Street Name</label>
                         <Input
@@ -460,7 +528,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="px-1" md="4">
+                    <Col className="pr-1" md="4">
                       <FormGroup>
                         <label>Country</label>
                         <Input
@@ -471,7 +539,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-1" md="4">
+                    <Col className="pr-1" md="4">
                       <FormGroup>
                         <label>Postal Code</label>
                         <Input type="text" defaultValue={postalCode} 
@@ -498,7 +566,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
 
                       </FormGroup>
                     </Col>
-                    <Col className="px-1" md="4">
+                    <Col className="pr-1" md="4">
                       <FormGroup>
                         <label>Position</label>
                         <Input
@@ -509,7 +577,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-1" md="4">
+                    <Col className="pr-1" md="4">
                       <FormGroup>
                         <label>Holiday Entitlement Left</label>
                         <Input defaultValue={holidayEntitlement} type="text" placeholder="N/A" disabled />
@@ -528,7 +596,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="px-1" md="4">
+                    <Col className="pr-1" md="4">
                       <FormGroup>
                         <label>Date Of Birth</label>
                         <ReactDatetime
@@ -536,7 +604,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
     className: "form-control",
     placeholder: "Select here",
   }}
-  value={dob && moment(dob).isValid() ? moment(dob).format("DD/MM/YYYY") : ""}
+  value={dob && moment(dob).isValid() ? moment(dob).format("DD/MM/YYYY") : null}
   dateFormat="DD/MM/YYYY"
   timeFormat={false}
   onChange={(momentObj) => {
@@ -546,13 +614,13 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
       // Handle the case where momentObj is not a valid moment.js object
       console.error("Invalid moment object:", momentObj);
       // Set a default value or handle the error gracefully
-      setDob(""); // You can set a default value or handle the error in a different way
+      setDob(null); // You can set a default value or handle the error in a different way
     }
   }}
 />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-1" md="4">
+                    <Col className="pr-1" md="4">
                     <FormGroup>
                         <label>Line Manager</label>
                         <Input
