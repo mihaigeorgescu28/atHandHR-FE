@@ -19,7 +19,7 @@ function NewsFeed() {
     // Function to fetch latest news
     const fetchLatestNews = async () => {
       try {
-        const response = await axios.post(`${apiUrl}/user/viewLatestNews`, { clientId: clientId }); // Adjust the endpoint as per your backend route
+        const response = await axios.post(`${apiUrl}/user/viewLatestNews`, { clientId: clientId }); 
         if (response.data.success) {
           setLatestNews(response.data.news);
         } else {
