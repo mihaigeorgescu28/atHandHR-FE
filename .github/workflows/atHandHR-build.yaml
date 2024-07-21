@@ -47,23 +47,37 @@ jobs:
           echo "Contents of current directory:"
           ls -R
 
-      - name: Install Dependencies and Build Node assets
+      - name: Install Dependencies
+        working-directory: ./client
+        run: |
+          npm install --global yarn
+          yarn install --frozen-lockfile
+
+      - name: Check `cross-env` Installation
+        working-directory: ./client
+        run: |
+          echo "Checking for cross-env"
+          if [ -f "node_modules/.bin/cross-env" ]; then
+            echo "cross-env found"
+          else
+            echo "cross-env not found"
+            ls node_modules/.bin
+            exit 1
+          fi
+
+      - name: Build Node assets
         working-directory: ./client
         env:
           CI: true
           SITE_URL: ${{ inputs.site-url }}
         run: |
-          npm install --global yarn
-          yarn install --frozen-lockfile
-          echo "Checking for cross-env"
-          ls node_modules/.bin | grep cross-env || echo "cross-env not found"
           yarn build
 
       - name: Log current directory and contents after build
         run: |
           echo "Current directory after build: $(pwd)"
           echo "Contents of public after build:"
-          ls -R build || echo "Directory build does not exist"  # Adjust if necessary
+          ls -R build || echo "Directory build does not exist"
 
       - name: Store deployment content
         uses: ionos-deploy-now/artifact-action@v1
@@ -76,4 +90,3 @@ jobs:
           folder: ${{ env.DEPLOYMENT_FOLDER }}
           config-file: .deploy-now/atHandHR/config.yaml
           action: upload
-
