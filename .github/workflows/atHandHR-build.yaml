@@ -55,6 +55,8 @@ jobs:
         run: |
           npm install --global yarn
           yarn install --frozen-lockfile
+          echo "Checking for cross-env"
+          ls node_modules/.bin | grep cross-env || echo "cross-env not found"
           yarn build
 
       - name: Log current directory and contents after build
