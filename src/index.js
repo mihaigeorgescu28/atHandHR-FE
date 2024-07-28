@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, useLocation } from "react-router-dom";
 import AuthLayout from "layouts/Auth.js";
 import AdminLayout from "layouts/Admin.js";
 import "bootstrap/dist/css/bootstrap.css";
@@ -20,33 +20,39 @@ function App() {
       navigate('/auth/login');
     }
 
-    console.log("current location", location)
+    console.log("current location", location);
 
+    // Redirect to /admin/newsfeed if user is logged in and on the root path
+    if (isLoggedIn && location.pathname === '/') {
+      navigate('/admin/newsfeed');
+    }
   }, [location.pathname, navigate, isLoggedIn]);
 
-  if (isLoggedIn) {
-    return (
-      <Routes>
-        {/* Auth Routes */}
-        <Route path="/auth/*" element={<AuthLayout />} />
+  return (
+    <Routes>
+      {isLoggedIn ? (
+        <>
+          {/* Auth Routes */}
+          <Route path="/auth/*" element={<AuthLayout />} />
 
-        {/* Admin Dashboard Routes */}
-        <Route path="/admin/dashboard/*" element={<AdminLayout />} />
+          {/* Admin Dashboard Routes */}
+          <Route path="/admin/dashboard/*" element={<AdminLayout />} />
 
-        {/* Admin Routes */}
-        <Route path="/admin/*" element={<AdminLayout />} />
+          {/* Admin Routes */}
+          <Route path="/admin/*" element={<AdminLayout />} />
 
-        {/* Catch-All (NotFound) Route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    );
-  } else {
-    return (
-      <Routes>
-        <Route path="/auth/*" element={<AuthLayout />} />
-      </Routes>
-    );
-  }
+          {/* Catch-All (NotFound) Route */}
+          <Route path="*" element={<NotFound />} />
+        </>
+      ) : (
+        <>
+          <Route path="/auth/*" element={<AuthLayout />} />
+          {/* Redirect all other paths to /auth/login */}
+          <Route path="*" element={<Navigate to="/auth/login" />} />
+        </>
+      )}
+    </Routes>
+  );
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
