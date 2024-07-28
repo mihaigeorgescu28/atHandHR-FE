@@ -154,21 +154,7 @@ function Register() {
 
   }
 
-  // Extract UID from the URL, looking for auth/register/uid pattern
-const extractUID = () => {
-  const hash = window.location.hash; // Get the hash part of the URL
-  const pattern = /auth\/register\/([a-f0-9-]+)/; // Regex to match the pattern and capture the UID
-  const match = hash.match(pattern); // Execute the regex on the hash
 
-  if (match && match[1]) {
-    const uidFromUrl = match[1];
-    console.log('UID found:', uidFromUrl);
-    return uidFromUrl;
-  } else {
-    console.error('UID not found in the URL');
-    return null;
-  }
-};
 
   // called on submitting form
   const handleSubmit = (event) => {
@@ -176,10 +162,13 @@ const extractUID = () => {
     
     
   // Extract UID from the URL
-  const uidFromUrl = extractUID();
+  const urlParts = window.location.pathname.split('/');
+  const uidIndex = urlParts.indexOf('register') + 1; // Assuming UID is right after 'register'
+  const uidFromUrl = uidIndex < urlParts.length ? urlParts[uidIndex] : null;
 
   if (!uidFromUrl) {
-    return; // Exit the function if UID is not found
+    console.error('UID not found in the URL');
+    return;
   }
 
      if(agreement == true)
