@@ -84,7 +84,6 @@ function Calendar() {
 
   function showEventDetails(event) {
     const { title, allDay, start, end, status } = event;
-console.log("hereee ", event)
     const newFormattedStart = new Date(start).toLocaleString();
     const newFormattedEnd = new Date(end).toLocaleString();
     setFormattedStart(newFormattedStart);
@@ -200,7 +199,6 @@ console.log("hereee ", event)
         const userHolidayEntitelementLeftHours = data.HolidayEntitelementLeftHours == null ? 0 : data.HolidayEntitelementLeftHours;
         const currentUserHolidayEntitelementOverall = (userHolidayEntitelementLeftDays == 1 ? userHolidayEntitelementLeftDays + " day " : userHolidayEntitelementLeftDays + " days ") +  (userHolidayEntitelementLeftHours == 1 ? userHolidayEntitelementLeftHours + " hour ": userHolidayEntitelementLeftHours + " hours ");
         const currentBalanceInHours = userHolidayEntitelementLeftDays * userWorkingShiftDuration + userHolidayEntitelementLeftHours;
-        
         let diffInMs;
           if (workingWeekends == 'No') {
             diffInMs = await diffInMsExcludeWeekends(start, end);
@@ -439,6 +437,9 @@ console.log("hereee ", event)
 
     const updateLeaveLeft = async () => {
     const input = Math.floor((currentBalanceInHours - durationInHours) / workingShiftHours)
+
+    // added total hours left which is a simple difference between balance and duration selected in form. if less than 0, then make the submit button read-only.
+    const totalHoursLeft = currentBalanceInHours - durationInHours;
     const hoursLeft = (currentBalanceInHours % workingShiftHours) - durationInHours < 0 ? 
      (currentBalanceInHours - durationInHours) % workingShiftHours :
      (currentBalanceInHours % workingShiftHours) - durationInHours;
@@ -446,9 +447,11 @@ console.log("hereee ", event)
     if(selectedDate < endDate && endDate > selectedDate )
     {
       setBalanceAfterDuration(result)
-      if(hoursLeft <= 0 && singleSelect == 1 || singleSelect == '')
+      if(totalHoursLeft < 0 && singleSelect == 1 || singleSelect == '')
         {
           setDisabled(true);
+          
+      console.log("disabled", true)
         }
         else setDisabled(false);
     }
