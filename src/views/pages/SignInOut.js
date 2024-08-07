@@ -40,6 +40,7 @@ function SignInOut(props) {
   const [fileName, setFileName] = useState("");;
   const [showSignInOutSuccessAlert, setShowSignInOutSuccessAlert] = useState(false);
   const [errorWrongPasswordAlert, setErrorWrongPasswordAlert] = useState(false);
+  const [aftersigninOutSuccessText, setAftersigninOutSuccessText] = useState(false);
 
   const hideAlert = () => {
     setShowSignInOutSuccessAlert(false);
@@ -191,6 +192,7 @@ function SignInOut(props) {
               } else {
                 setShowSignInOutSuccessAlert(true);
                 setSubmit(true);
+                setAftersigninOutSuccessText(true);
               }
             }
           });
@@ -230,7 +232,7 @@ function SignInOut(props) {
 ) : (
   <Avatar src={profilePic} round={true} size="100"/>
 )}
-
+            
             <Form onSubmit={handleSubmit} className="form" method="">
               <CardTitle tag="h4">{userFullName}</CardTitle>
               
@@ -265,6 +267,24 @@ function SignInOut(props) {
               </Button>
 
               }
+<br></br>
+
+{
+  aftersigninOutSuccessText && buttonText === 'Sign In' ? (
+    <p style={{ color: 'black', fontWeight: 'bold' }}>
+      Welcome back! Wishing you a productive day ahead.
+    </p>
+  ) : (
+    aftersigninOutSuccessText && (buttonText === 'Sign Out' || buttonText == 'Yes') && (
+      <p style={{ color: 'black', fontWeight: 'bold' }}>
+        Goodbye! Have a great rest of your day.
+      </p>
+    )
+  )
+}
+
+
+
             </Form>
             </CardBody>
             <CardFooter>

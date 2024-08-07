@@ -93,6 +93,8 @@ function Calendar() {
     setShowEventDetailsAlert(true);
   }
 
+
+
   useEffect(() => {
     async function fetchLeaveType() {
       try {
@@ -620,14 +622,14 @@ function Calendar() {
                     }
                   }}
                   views={['month']}
-
+                  longPressThreshold={0}
                 />
               </CardBody>
             </Card>
           </Col>
         </Row>
    
-
+      </div>
 
       {showAlert && (
   <SweetAlert
@@ -668,201 +670,217 @@ function Calendar() {
       </SweetAlert>
     )}
     
+    
+
+
 
       <Modal
         isOpen={showModal}
         toggle={() => setShowModal(!showModal)}
+        style={{ paddingTop: '0px' }} 
       >
-      <ModalHeader>Request Leave</ModalHeader>
-      <ModalBody>
-        
-        <form onSubmit={handleFormSubmit}>
-          
-            <Label>Leave type</Label>
-              <div>
-              <FormGroup>
-
-                <Select
-                  isRequired
-                  name="singleSelect"
-                  value={singleSelect.label}
-                  onChange={(selectedOption) => { setSingleSelect(selectedOption.value); setSingleSelectLabel(selectedOption.label) }}
-                  options={[
-                    ...options,
-                  ]}
-                  placeholder="Select From Dropdown"
-                />
-              </FormGroup>
-              </div>
-         
-          
-            <Label>Start date</Label>
-              <div>
-              <FormGroup>
-                <ReactDatetime
-                  ref={datetimeRef}
-                  inputProps={{
-                    placeholder: "Start Date Time",
-                  }}
-                  renderInput={(props, openCalendar) => (
-                    <input
-                      {...props}
-                      onClick={openCalendar} // still allow the calendar to open on click
-                    />
-                  )}
-                  onChange={(date) => {
-
-                    const newStartDate = date.valueOf(); // Convert new end date to Unix timestamp
-                    if (newStartDate >= endDate.valueOf()) {
-                      const startDateInput = document.querySelector(".rdtOpen input"); // Get the end date field's input element
-
-                      if (startDateInput) {
-                        setErrorMessage("Start date cannot be the same or greater than the end date")
-                        setDisabled(true)
-                      }
-                    } 
-                    else {
-                      setErrorMessage("")
-                    }
-                    
-                    setSelectedDate(date);
-                  }}
-                  value={selectedDate}
-                  dateFormat="DD/MM/YYYY"
-                  timeFormat="HH A"
-                  isValidDate={(currentDate) => { // disable earlier dates
-                    if (endDate != "") {
-                      return currentDate.isSameOrBefore(endDate, 'day');
-                    }
-                  }}
-                />
-              </FormGroup>
-              </div>
-         
-            <Label>End date</Label>
-              <div>
-              <FormGroup>
-                <ReactDatetime
-                  inputProps={{
-                    placeholder: "Select Date"
-                  }}
-                  value={endDate}
-                  onChange={(date) => {
-                    const newEndDate = date.valueOf(); // Convert new end date to Unix timestamp
-                    if (newEndDate <= selectedDate.valueOf()) {
-                      const endDateInput = document.querySelector(".rdtOpen input"); // Get the end date field's input element
-
-                      if (endDateInput) {
-                        setErrorMessage("End date cannot be the same or less than the start date")
-                        setDisabled(true)
-                      }
-                    } 
-                    else {
-                      setErrorMessage("")
-                    }
-                    setEndDate(date);
-                  }}
-                  dateFormat="DD/MM/YYYY"
-                  timeFormat="HH A"
-                  isValidDate={(currentDate) => {
-                      return currentDate.isSameOrAfter(selectedDate, "day");
-                  }}
-                  inputRef={inputRef} 
-
-                
-                />
-              </FormGroup>
-              </div>
-
-              <p style={{ color: "red"}}>
-                  {errorMessage}
-                </p>
-         
-    <Label>Notes</Label>
-      <div>
-      <FormGroup>
-        <Input type="textarea" 
-        name="notes"
-        onChange={(event) => {setNotes(event.target.value)}} />
-      </FormGroup>
-      </div>
-
-
-          <hr />
-
-{showEntitelementFields &&
-          <div>
-            <Label>Leave balance</Label>
-              <FormGroup>
-                <Input type="text" value={overallEntitelement} readOnly />
-              </FormGroup>
-            </div>
-        }
-
-          <div>
-            <Label>Duration</Label>
-              <FormGroup>
-                <Input type="text" value={duration} readOnly />
-              </FormGroup>
-          </div>
-
-          <hr /> 
-
-
-{showEntitelementFields &&
-          <div>
-            <Label>Leave left</Label>
-              <FormGroup>
-                <Input type="text" value={balanceAfterDuration} readOnly />
-              </FormGroup>
-</div> 
-        }
+        <ModalHeader>Request Leave</ModalHeader>
       
+      <ModalBody>
+     
+      <form onSubmit={handleFormSubmit}>
+          
+          <Label>Leave type</Label>
+            <div>
+            <FormGroup>
 
-          <div className="d-flex justify-content-center">
-
-            {disabled ? (<div title="Please fill in all required fields before submitting." style={{ display: 'inline-block', cursor: 'not-allowed', opacity: disabled ? 0.5 : 1 }}>
-              <Button
-                type="submit"
-                color="info"
-                disabled={disabled}
-                style={{ position: 'relative', zIndex: 1 }}
-              >
-                Submit
-              </Button>
+              <Select
+                isRequired
+                name="singleSelect"
+                value={singleSelect.label}
+                onChange={(selectedOption) => { setSingleSelect(selectedOption.value); setSingleSelectLabel(selectedOption.label) }}
+                options={[
+                  ...options,
+                ]}
+                placeholder="Select From Dropdown"
+              />
+            </FormGroup>
             </div>
-            ) : (
-              <Button
-                type="submit"
-                color="info"
-                disabled={disabled}
-              >
-                Submit
-              </Button>
-            )}
+       
+        
+          <Label>Start date</Label>
+            <div>
+            <FormGroup>
+              <ReactDatetime
+                ref={datetimeRef}
+                inputProps={{
+                  placeholder: "Start Date Time",
+                }}
+                renderInput={(props, openCalendar) => (
+                  <input
+                    {...props}
+                    onClick={openCalendar} // still allow the calendar to open on click
+                  />
+                )}
+                onChange={(date) => {
+
+                  const newStartDate = date.valueOf(); // Convert new end date to Unix timestamp
+                  if (newStartDate >= endDate.valueOf()) {
+                    const startDateInput = document.querySelector(".rdtOpen input"); // Get the end date field's input element
+
+                    if (startDateInput) {
+                      setErrorMessage("Start date cannot be the same or greater than the end date")
+                      setDisabled(true)
+                    }
+                  } 
+                  else {
+                    setErrorMessage("")
+                  }
+                  
+                  setSelectedDate(date);
+                }}
+                value={selectedDate}
+                dateFormat="DD/MM/YYYY"
+                timeFormat="HH A"
+                isValidDate={(currentDate) => { // disable earlier dates
+                  if (endDate != "") {
+                    return currentDate.isSameOrBefore(endDate, 'day');
+                  }
+                }}
+              />
+            </FormGroup>
+            </div>
+       
+          <Label>End date</Label>
+            <div>
+            <FormGroup>
+              <ReactDatetime
+                inputProps={{
+                  placeholder: "Select Date"
+                }}
+                value={endDate}
+                onChange={(date) => {
+                  const newEndDate = date.valueOf(); // Convert new end date to Unix timestamp
+                  if (newEndDate <= selectedDate.valueOf()) {
+                    const endDateInput = document.querySelector(".rdtOpen input"); // Get the end date field's input element
+
+                    if (endDateInput) {
+                      setErrorMessage("End date cannot be the same or less than the start date")
+                      setDisabled(true)
+                    }
+                  } 
+                  else {
+                    setErrorMessage("")
+                  }
+                  setEndDate(date);
+                }}
+                dateFormat="DD/MM/YYYY"
+                timeFormat="HH A"
+                isValidDate={(currentDate) => {
+                    return currentDate.isSameOrAfter(selectedDate, "day");
+                }}
+                inputRef={inputRef} 
+
+              
+              />
+            </FormGroup>
+            </div>
+
+            <p style={{ color: "red"}}>
+                {errorMessage}
+              </p>
+       
+  <Label>Notes</Label>
+    <div>
+    <FormGroup>
+      <Input type="textarea" 
+      name="notes"
+      onChange={(event) => {setNotes(event.target.value)}} />
+    </FormGroup>
+    </div>
 
 
+        <hr />
+
+{showEntitelementFields &&
+        <div>
+          <Label>Leave balance</Label>
+            <FormGroup>
+              <Input type="text" value={overallEntitelement} readOnly />
+            </FormGroup>
+          </div>
+      }
+
+        <div>
+          <Label>Duration</Label>
+            <FormGroup>
+              <Input type="text" value={duration} readOnly />
+            </FormGroup>
+        </div>
+
+        <hr /> 
+
+
+{showEntitelementFields &&
+        <div>
+          <Label>Leave left</Label>
+            <FormGroup>
+              <Input type="text" value={balanceAfterDuration} readOnly />
+            </FormGroup>
+</div> 
+      }
+    
+
+        <div className="d-flex justify-content-center">
+
+          {disabled ? (<div title="Please fill in all required fields before submitting." style={{ display: 'inline-block', cursor: 'not-allowed', opacity: disabled ? 0.5 : 1 }}>
             <Button
-              type="reset"
-              style={{ display: "inline-block", visibility: "visible" }}
-              color="danger"
-              onClick={() => {
-                setShowModal(false);
-                setEndDate("");
-                setSingleSelect("");
-                document.body.classList.remove("modal-open");
-              }}
+              type="submit"
+              color="info"
+              disabled={disabled}
+              style={{ position: 'relative', zIndex: 1 }}
             >
-              Cancel
+              Submit
             </Button>
           </div>
+          ) : (
+            <Button
+              type="submit"
+              color="info"
+              disabled={disabled}
+            >
+              Submit
+            </Button>
+          )}
 
-        </form>
+
+          <Button
+            type="reset"
+            style={{ display: "inline-block", visibility: "visible" }}
+            color="danger"
+            onClick={() => {
+              setShowModal(false);
+              setEndDate("");
+              setSingleSelect("");
+              document.body.classList.remove("modal-open");
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
+
+      </form>
         </ModalBody>
+      
       </Modal>
-      </div>
+
+
+      
+      
     </>
   );
 }
 
 export default Calendar;
+
+
+/*
+<ModalHeader>Request Leave</ModalHeader>
+
+
+        */

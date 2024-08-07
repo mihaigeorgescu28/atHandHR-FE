@@ -10,6 +10,16 @@ import {
   Col
 } from "reactstrap";
 
+// Function to convert text with newlines to HTML with <br> tags
+const convertNewlinesToBreaks = (text) => {
+  return text.replace(/\n/g, "<br>");
+};
+
+// Function to create markup from HTML content
+const createMarkup = (htmlContent) => {
+  return { __html: htmlContent };
+};
+
 function NewsFeed() {
   const [latestNews, setLatestNews] = useState([]);
   const apiUrl = process.env.REACT_APP_APIURL;
@@ -21,7 +31,10 @@ function NewsFeed() {
       try {
         const response = await axios.post(`${apiUrl}/user/viewLatestNews`, { clientId: clientId }); 
         if (response.data.success) {
-          setLatestNews(response.data.news);
+          setLatestNews(response.data.news.map(newsItem => ({
+            ...newsItem,
+            Content: convertNewlinesToBreaks(newsItem.Content)
+          })));
         } else {
           console.error('Failed to fetch latest news');
         }
@@ -51,12 +64,12 @@ function NewsFeed() {
                       </div>
                       <div className="timeline-panel">
                         <div className="timeline-heading">
-                          <Badge color={newsItem.Colour} pill>
+                          <Badge color={newsItem.Colour} pill style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>
                             {newsItem.Title}
                           </Badge>
                         </div>
                         <div className="timeline-body">
-                          <p>{newsItem.Content}</p>
+                          <p dangerouslySetInnerHTML={createMarkup(newsItem.Content)}></p>
                         </div>
                         <h6>
                           <i className="fa fa-clock-o" />

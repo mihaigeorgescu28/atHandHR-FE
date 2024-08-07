@@ -49,9 +49,9 @@ function ResetPassword() {
 
 
   useEffect(() => {
-    document.body.classList.toggle("register-page");
+    document.body.classList.toggle("login-page");
     return function cleanup() {
-      document.body.classList.toggle("register-page");
+      document.body.classList.toggle("login-page");
     };
   });
 
@@ -235,13 +235,6 @@ function ResetPassword() {
       setVerificationMessage('Invalid reset password link.'); // Set an error message
     }
   }, []);
-
-  useEffect(() => {
-    document.body.classList.toggle("verify-page");
-    return function cleanup() {
-      document.body.classList.toggle("verify-page");
-    };
-  });
 
   const handleLoginClick = () => {
     navigate('/auth/login');

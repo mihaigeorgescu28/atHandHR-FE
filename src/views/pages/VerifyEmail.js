@@ -8,12 +8,14 @@ import { faExclamationCircle, faCheckCircle } from '@fortawesome/free-solid-svg-
 const apiUrl = process.env.REACT_APP_APIURL;
 
 function VerifyEmail() {
-  useEffect(() => {
-    document.body.classList.toggle("register-page");
+  
+  React.useEffect(() => {
+    document.body.classList.toggle("login-page");
     return function cleanup() {
-      document.body.classList.toggle("register-page");
+      document.body.classList.toggle("login-page");
     };
   });
+  
 
   const navigate = useNavigate();
   const [verificationSuccess, setVerificationSuccess] = useState(false);
@@ -44,13 +46,6 @@ function VerifyEmail() {
     }
   }, []);
 
-  useEffect(() => {
-    document.body.classList.toggle("verify-page");
-    return function cleanup() {
-      document.body.classList.toggle("verify-page");
-    };
-  });
-
   const handleLoginClick = () => {
     navigate('/auth/login');
   };
@@ -61,6 +56,7 @@ function VerifyEmail() {
         <Row>
           <Col className="ml-auto mr-auto" lg="4" md="6">
             <Card className="card-signin text-center">
+              
               <CardBody>
                 <>
                   {verificationSuccess ? (

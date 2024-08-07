@@ -348,7 +348,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
       <div className="content">
         <Row>
         <Col md="4">
-  <Card className="card-user" style={{ paddingBottom: '58px' }}>
+  <Card className="card-user" style={{ paddingBottom: '25px' }}>
     <div className="image">
       <img
         alt="..."
