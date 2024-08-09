@@ -1502,104 +1502,184 @@ axios.get(signOutEndpoint)
         </Row>
 
         <Col md="3">
-    <Card>
-      <CardHeader>
-        <CardTitle>Pending Approval</CardTitle>
-        <p className="card-category">Year to date</p>
-      </CardHeader>
-      <CardBody style={{ height: "250px" }}>
-          <CustomPieChart
-            chartData={pendingApproval}
-            optionsPieChart={optionsPieChart}
-            handlePieChartClick={handlePieChartClick}
-            responseType={"Leave Type Pending"}
-            panelName={"Pending Approval"}
-          />
-      </CardBody>
-      <CardFooter>
-        <hr />
-        <div className="stats">
-          <i className="fa fa-clock-o" />
-          Updated  {lastSickLeaveUpdated !== null ? lastSickLeaveUpdated : 'Loading...'} ago
-        </div>
-      </CardFooter>
-    </Card>
+        <Card>
+  <CardHeader>
+    <CardTitle>Pending Approval</CardTitle>
+    <p className="card-category">Year to date</p>
+  </CardHeader>
+  <CardBody style={{ height: "250px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    {pendingApproval.datasets[0].data.every(value => value === 0) ? (
+      <div style={{ textAlign: 'center', color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '48px', marginBottom: '8px' }} />
+        <p>No data available.</p>
+      </div>
+    ) : (
+      <CustomPieChart
+        chartData={pendingApproval}
+        optionsPieChart={optionsPieChart}
+        handlePieChartClick={handlePieChartClick}
+        responseType={"Leave Type Pending"}
+        panelName={"Pending Approval"}
+      />
+    )}
+  </CardBody>
+  {/* Conditionally render the CardFooter based on data availability */}
+  {pendingApproval.datasets[0].data.some(value => value !== 0) ? (
+    <CardFooter>
+      <hr />
+      <div className="stats" style={{ color: '#999' }}>
+        <i className="fa fa-clock-o" style={{ fontSize: '16px', marginRight: '8px' }} />
+        Updated {lastSickLeaveUpdated !== null ? lastSickLeaveUpdated : 'Loading...'} ago
+      </div>
+    </CardFooter>
+  ) : (
+    <CardFooter>
+      <hr />
+      <div className="stats" style={{ color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '16px', marginRight: '8px', color: '#999' }} />
+        No data available
+      </div>
+    </CardFooter>
+  )}
+</Card>
+
+
   </Col>
 
   <Col md="3">
-    <Card>
-      <CardHeader>
-        <CardTitle>Approved Leaves</CardTitle>
-        <p className="card-category">Year to date</p>
-      </CardHeader>
-      <CardBody style={{ height: "250px" }}>
-          <CustomPieChart
-            chartData={approvedLeaves}
-            optionsPieChart={optionsPieChart}
-            handlePieChartClick={handlePieChartClick}
-            responseType={"Leave Type Approved"}
-            panelName={"Approved Leaves"}
-            
-          />
-      </CardBody>
-      <CardFooter>
-        <hr />
-        <div className="stats">
-          <i className="fa fa-clock-o" />
-          Updated  {lastSickLeaveUpdated !== null ? lastSickLeaveUpdated : 'Loading...'} ago
-        </div>
-      </CardFooter>
-    </Card>
+  <Card>
+  <CardHeader>
+    <CardTitle>Approved Leaves</CardTitle>
+    <p className="card-category">Year to date</p>
+  </CardHeader>
+  <CardBody style={{ height: "250px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    {approvedLeaves.datasets[0].data.every(value => value === 0) ? (
+      <div style={{ textAlign: 'center', color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '48px', marginBottom: '8px' }} />
+        <p>No data available.</p>
+      </div>
+    ) : (
+      <CustomPieChart
+        chartData={approvedLeaves}
+        optionsPieChart={optionsPieChart}
+        handlePieChartClick={handlePieChartClick}
+        responseType={"Leave Type Approved"}
+        panelName={"Approved Leaves"}
+      />
+    )}
+  </CardBody>
+  {/* Conditionally render the CardFooter based on data availability */}
+  {approvedLeaves.datasets[0].data.some(value => value !== 0) ? (
+    <CardFooter>
+      <hr />
+      <div className="stats" style={{ color: '#999' }}>
+        <i className="fa fa-clock-o" style={{ fontSize: '16px', marginRight: '8px' }} />
+        Updated {lastSickLeaveUpdated !== null ? lastSickLeaveUpdated : 'Loading...'} ago
+      </div>
+    </CardFooter>
+  ) : (
+    <CardFooter>
+      <hr />
+      <div className="stats" style={{ color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '16px', marginRight: '8px', color: '#999' }} />
+        No data available
+      </div>
+    </CardFooter>
+  )}
+</Card>
+
   </Col>
 
         <Col md="3">
-      <Card>
-        <CardHeader>
-          <CardTitle>Holiday Requests</CardTitle>
-          <p className="card-category">Year to date</p>
-        </CardHeader>
-        <CardBody style={{ height: "250px" }}>
-          <CustomPieChart
-            chartData={chartData}
-            optionsPieChart={optionsPieChart}
-            handlePieChartClick={handlePieChartClick}
-            responseType={"Status"}
-            panelName={"Holiday Requests"}
-          />
-        </CardBody>
-        <CardFooter>
-          <hr />
-          <div className="stats">
-            <i className="fa fa-clock-o" />
-            Updated {lastHolidayLeaveUpdated !== null ? lastHolidayLeaveUpdated : 'Loading...'} ago
-          </div>
-        </CardFooter>
-      </Card>
+        <Card>
+  <CardHeader>
+    <CardTitle>Holiday Requests</CardTitle>
+    <p className="card-category">Year to date</p>
+  </CardHeader>
+  <CardBody style={{ height: "250px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    {chartData.datasets[0].data.every(value => value === 0) ? (
+      // Placeholder message when no data is available
+      <div style={{ textAlign: 'center', color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '48px', marginBottom: '8px' }} />
+        <p>No data available.</p>
+      </div>
+    ) : (
+      // Display the chart when data is available
+      <CustomPieChart
+        chartData={chartData}
+        optionsPieChart={optionsPieChart}
+        handlePieChartClick={handlePieChartClick}
+        responseType={"Status"}
+        panelName={"Holiday Requests"}
+      />
+    )}
+  </CardBody>
+  {/* Conditionally render the CardFooter based on data availability */}
+  <CardFooter>
+    <hr />
+    <div className="stats" style={{ color: chartData.datasets[0].data.every(value => value === 0) ? '#999' : 'inherit' }}>
+      {chartData.datasets[0].data.every(value => value === 0) ? (
+        <>
+          <i className="fa fa-info-circle" style={{ fontSize: '16px', marginRight: '8px', color: '#999' }} />
+          No data available
+        </>
+      ) : (
+        <>
+          <i className="fa fa-clock-o" style={{ fontSize: '16px', marginRight: '8px' }} />
+          Updated {lastHolidayLeaveUpdated !== null ? lastHolidayLeaveUpdated : 'Loading...'} ago
+        </>
+      )}
+    </div>
+  </CardFooter>
+</Card>
+
+
     </Col>
 
   <Col md="3">
-    <Card>
-      <CardHeader>
-        <CardTitle>Absence Log</CardTitle>
-        <p className="card-category">Year to date</p>
-      </CardHeader>
-      <CardBody style={{ height: "250px" }}>
-          <CustomPieChart
-            chartData={sickRequestPieChart}
-            optionsPieChart={optionsPieChart}
-            handlePieChartClick={handlePieChartClick}
-            responseType={"Status"}
-            panelName={"Absence Log"}
-          />
-      </CardBody>
-      <CardFooter>
-        <hr />
-        <div className="stats">
-          <i className="fa fa-clock-o" />
-          Updated  {lastSickLeaveUpdated !== null ? lastSickLeaveUpdated : 'Loading...'} ago
-        </div>
-      </CardFooter>
-    </Card>
+  <Card>
+  <CardHeader>
+    <CardTitle>Absence Log</CardTitle>
+    <p className="card-category">Year to date</p>
+  </CardHeader>
+  <CardBody style={{ height: "250px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    {sickRequestPieChart.datasets[0].data.every(value => value === 0) ? (
+      // Placeholder message when no data is available
+      <div style={{ textAlign: 'center', color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '48px', marginBottom: '8px' }} />
+        <p>No data available.</p>
+      </div>
+    ) : (
+      // Display the chart when data is available
+      <CustomPieChart
+        chartData={sickRequestPieChart}
+        optionsPieChart={optionsPieChart}
+        handlePieChartClick={handlePieChartClick}
+        responseType={"Status"}
+        panelName={"Absence Log"}
+      />
+    )}
+  </CardBody>
+  {/* Conditionally render the CardFooter based on data availability */}
+  <CardFooter>
+    <hr />
+    <div className="stats" style={{ color: '#999' }}>
+      {sickRequestPieChart.datasets[0].data.every(value => value === 0) ? (
+        <>
+          <i className="fa fa-info-circle" style={{ fontSize: '16px', marginRight: '8px', color: '#999' }} />
+          No data available
+        </>
+      ) : (
+        <>
+          <i className="fa fa-clock-o" style={{ fontSize: '16px', marginRight: '8px' }} />
+          Updated {lastSickLeaveUpdated !== null ? lastSickLeaveUpdated : 'Loading...'} ago
+        </>
+      )}
+    </div>
+  </CardFooter>
+</Card>
+
+
   </Col>
 
   <Row>
@@ -1609,82 +1689,128 @@ axios.get(signOutEndpoint)
 </Row>
 
 <Col md="3">
-  <Card>
-    <CardHeader>
-      <CardTitle>Staff Signed In Today</CardTitle>
-      <p className="card-category">Out of total number</p>
-    </CardHeader>
-    <CardBody style={{ height: "253px" }}>
+<Card>
+  <CardHeader>
+    <CardTitle>Staff Signed In Today</CardTitle>
+    <p className="card-category">Out of total number</p>
+  </CardHeader>
+  <CardBody style={{ height: "253px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    {signInChart.data.datasets[0].data.every(value => value === 0) ? (
+      // Placeholder message when no data is available
+      <div style={{ textAlign: 'center', color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '48px', marginBottom: '8px' }} />
+        <p>No data available.</p>
+      </div>
+    ) : (
+      // Display the chart when data is available
       <CustomDoughnutChart
-        signInChartData={signInChart.data} // Use consistent prop names here
-        signInChartOptions={signInChart.options} // Use consistent prop names here
+        signInChartData={signInChart.data}
+        signInChartOptions={signInChart.options}
         handleDoughnutChartClick={handleDoughnutChartClick}
         panelName={"Staff Signed In Today"}
         className="ct-chart ct-perfect-fourth"
         height={300}
         width={456}
       />
-    </CardBody>
-    <CardFooter>
-      <hr />
-      <div className="stats">
-        <i className="fa fa-clock-o" />
-        Updated {lastSignInUpdated !== null ? lastSignInUpdated : 'Loading...'} ago
-      </div>
-    </CardFooter>
-  </Card>
+    )}
+  </CardBody>
+  <CardFooter>
+    <hr />
+    <div className="stats" style={{ color: '#999' }}>
+      {signInChart.data.datasets[0].data.every(value => value === 0) ? (
+        <>
+          <i className="fa fa-info-circle" style={{ fontSize: '16px', marginRight: '8px', color: '#999' }} />
+          No data available
+        </>
+      ) : (
+        <>
+          <i className="fa fa-clock-o" style={{ fontSize: '16px', marginRight: '8px' }} />
+          Updated {lastSignInUpdated !== null ? lastSignInUpdated : 'Loading...'} ago
+        </>
+      )}
+    </div>
+  </CardFooter>
+</Card>
+
 </Col>
 
 
   <Col md="3">
-    <Card>
-      <CardHeader>
-        <CardTitle>Staff Signed Out Today</CardTitle>
-        <p className="card-category">Out of total number</p>
-      </CardHeader>
-      <CardBody style={{ height: "253px" }}>
+  <Card>
+  <CardHeader>
+    <CardTitle>Staff Signed Out Today</CardTitle>
+    <p className="card-category">Out of total number</p>
+  </CardHeader>
+  <CardBody style={{ height: "253px", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    {signOutChart.data.datasets[0].data.every(value => value === 0) ? (
+      // Placeholder message when no data is available
+      <div style={{ textAlign: 'center', color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '48px', marginBottom: '8px' }} />
+        <p>No data available.</p>
+      </div>
+    ) : (
+      // Display the chart when data is available
       <CustomDoughnutChart
-        signInChartData={signOutChart.data} // Use consistent prop names here
-        signInChartOptions={signOutChart.options} // Use consistent prop names here
+        signInChartData={signOutChart.data}
+        signInChartOptions={signOutChart.options}
         handleDoughnutChartClick={handleDoughnutChartClick}
         panelName={"Staff Signed Out Today"}
         className="ct-chart ct-perfect-fourth"
         height={300}
         width={456}
       />
-      </CardBody>
-      <CardFooter>
-
-        <hr />
-        <div className="stats">
-          <i className="fa fa-clock-o" />
+    )}
+  </CardBody>
+  {/* Conditionally render the CardFooter based on data availability */}
+  <CardFooter>
+    <hr />
+    <div className="stats" style={{ color: '#999' }}>
+      {signOutChart.data.datasets[0].data.every(value => value === 0) ? (
+        <>
+           <i className="fa fa-info-circle" style={{ fontSize: '16px', marginRight: '8px', color: '#999' }} />
+          No data available
+        </>
+      ) : (
+        <>
+          <i className="fa fa-clock-o" style={{ fontSize: '16px', marginRight: '8px' }} />
           Updated {lastSignOutUpdated !== null ? lastSignOutUpdated : 'Loading...'} ago
-        </div>
-      </CardFooter>
-    </Card>
+        </>
+      )}
+    </div>
+  </CardFooter>
+</Card>
+
+
   </Col>
 
   <Col md="6">
-      <Card className="custom-chart-monthly-overview">
-        <CardHeader>
-          <CardTitle>Time Management Overview</CardTitle>
-          <p className="card-category">Annual Report</p>
-        </CardHeader>
-        <CardBody>
-          <CustomLineChart
-            timeManagementChartData={timeManagementChart.data}
-            timeManagementChartOptions={timeManagementChart.options}
-            handleLineChartClick={handleLineChartClick}
-            panelName={"Time Management Overview"}
-            width={400}
-            height={200}
-          />
-        </CardBody>
-        <CardFooter>
-          <hr />
-          
-        </CardFooter>
-      </Card>
+  <Card className="custom-chart-monthly-overview">
+  <CardHeader>
+    <CardTitle>Time Management Overview</CardTitle>
+    <p className="card-category">Annual Report</p>
+  </CardHeader>
+  <CardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+    {timeManagementChart.data.datasets[0].data.every(value => value === 0) ? (
+      <div style={{ textAlign: 'center', color: '#999' }}>
+        <i className="fa fa-info-circle" style={{ fontSize: '48px', marginBottom: '8px' }} />
+        <p>No data available.</p>
+      </div>
+    ) : (
+      <CustomLineChart
+        timeManagementChartData={timeManagementChart.data}
+        timeManagementChartOptions={timeManagementChart.options}
+        handleLineChartClick={handleLineChartClick}
+        panelName={"Time Management Overview"}
+        width={400}
+        height={200}
+      />
+    )}
+  </CardBody>
+  <CardFooter>
+    <hr />
+  </CardFooter>
+</Card>
+
     </Col>
 
     <Row>
