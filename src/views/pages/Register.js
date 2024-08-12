@@ -44,6 +44,16 @@ function Register() {
   const [agreement, setAgreement] = useState(false);
   const [agreementError, setAgreementError] = useState("");
   const apiUrl = process.env.REACT_APP_APIURL;
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+
+    // Array of image paths
+    const images = [
+      require("assets/img/bg/AdobeStock_764383894.jpeg"),
+      require("assets/img/bg/AdobeStock_399947468.jpeg"),
+      require("assets/img/bg/AdobeStock_883254820.jpeg"),
+      require("assets/img/bg/AdobeStock_275872311.jpeg"),
+    ];
 
   const navigate = useNavigate();
 
@@ -54,6 +64,20 @@ function Register() {
     setAgreement(event.target.checked);
 
   }
+
+  useEffect(() => {
+    const imageInterval = setInterval(() => {
+      setFade(false); // Start fading out the current image
+      setTimeout(() => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+        setFade(true); // Start fading in the new image
+      }, 1000); // Wait for 1 second before changing the image
+    }, 4000); // Change every 4 seconds
+
+    return () => {
+      clearInterval(imageInterval);
+    };
+  }, [images.length]);
 
   const handleLoginButtonClick = () => {
     // Navigate to the login page
@@ -399,11 +423,18 @@ function Register() {
         </Row>
       </Container>
       <div
-        className="full-page-background"
-        style={{
-          backgroundImage: `url(${require("assets/img/bg/pexels-jill-burrow.jpg")})`
-        }}
-      />
+  className="full-page-background"
+  style={{
+    backgroundImage: `url(${images[currentImageIndex]})`,
+    transition: "background-image 2s ease-in-out",
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: -1
+  }}
+/>
     </div>
 
     
