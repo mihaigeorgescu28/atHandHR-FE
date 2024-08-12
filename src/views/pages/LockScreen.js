@@ -75,7 +75,6 @@ function LockScreen() {
       <div
         className="full-page-background"
         style={{
-          backgroundImage: `url(${require("assets/img/bg/bruno-abatti.jpg")})`
         }}
       />
     </div>

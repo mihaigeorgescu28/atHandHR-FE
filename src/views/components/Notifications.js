@@ -401,7 +401,6 @@ function Notifications() {
                                 <img
                                   alt="..."
                                   className="rounded img-raised"
-                                  src={require("assets/img/bg/daniel-olahs.jpg")}
                                 />
                               </div>
                             </Col>
@@ -425,7 +424,6 @@ function Notifications() {
                                 <img
                                   alt="..."
                                   className="rounded img-raised"
-                                  src={require("assets/img/bg/david-marcu.jpg")}
                                 />
                               </div>
                             </Col>
