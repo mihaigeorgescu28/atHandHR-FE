@@ -35,10 +35,10 @@ function Login() {
 
   // Array of image paths
   const images = [
-    require("assets/img/bg/AdobeStock_764383894.jpeg"),
-    require("assets/img/bg/AdobeStock_399947468.jpeg"),
-    require("assets/img/bg/AdobeStock_883254820.jpeg"),
-    require("assets/img/bg/AdobeStock_275872311.jpeg"),
+    require("assets/img/bg/AdobeStock_764383894.webp"),
+    require("assets/img/bg/AdobeStock_399947468.webp"),
+    require("assets/img/bg/AdobeStock_883254820.webp"),
+    require("assets/img/bg/AdobeStock_275872311.webp"),
   ];
 
 
@@ -54,18 +54,8 @@ function Login() {
     return () => {
       clearInterval(imageInterval);
     };
-  }, [images.length]);
-
-  // Font import for Montserrat
-  useEffect(() => {
-    const link = document.createElement('link');
-    link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-    return () => {
-      document.head.removeChild(link);
-    };
   }, []);
+
 
   const handleChange = (event, field) => {
     const name = event.target.name;

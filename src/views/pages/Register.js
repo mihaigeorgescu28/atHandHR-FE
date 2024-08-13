@@ -49,10 +49,10 @@ function Register() {
 
     // Array of image paths
     const images = [
-      require("assets/img/bg/AdobeStock_764383894.jpeg"),
-      require("assets/img/bg/AdobeStock_399947468.jpeg"),
-      require("assets/img/bg/AdobeStock_883254820.jpeg"),
-      require("assets/img/bg/AdobeStock_275872311.jpeg"),
+      require("assets/img/bg/AdobeStock_764383894.webp"),
+      require("assets/img/bg/AdobeStock_399947468.webp"),
+      require("assets/img/bg/AdobeStock_883254820.webp"),
+      require("assets/img/bg/AdobeStock_275872311.webp"),
     ];
 
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ function Register() {
     return () => {
       clearInterval(imageInterval);
     };
-  }, [images.length]);
+  }, []);
 
   const handleLoginButtonClick = () => {
     // Navigate to the login page
