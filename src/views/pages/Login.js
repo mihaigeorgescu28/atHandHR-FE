@@ -43,6 +43,12 @@ function Login() {
 
 
   useEffect(() => {
+    // Preload images
+    images.forEach((image) => {
+      const img = new Image();
+      img.src = image;
+    });
+  
     const imageInterval = setInterval(() => {
       setFade(false); // Start fading out the current image
       setTimeout(() => {
@@ -50,11 +56,11 @@ function Login() {
         setFade(true); // Start fading in the new image
       }, 1000); // Wait for 1 second before changing the image
     }, 4000); // Change every 4 seconds
-
+  
     return () => {
       clearInterval(imageInterval);
     };
-  }, []);
+  }, [images.length]);
 
 
   const handleChange = (event, field) => {
@@ -106,7 +112,7 @@ function Login() {
       <Container>
         <Row>
           <Col className="ml-auto mr-auto" lg="4" md="6">
-            <Card className="card-signin text-center">
+            <Card className="card-signin text-center" >
               <CardHeader>
                 <CardTitle tag="h4">Login</CardTitle>
               </CardHeader>

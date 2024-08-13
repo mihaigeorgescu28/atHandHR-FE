@@ -66,6 +66,12 @@ function Register() {
   }
 
   useEffect(() => {
+    // Preload images
+    images.forEach((image) => {
+      const img = new Image();
+      img.src = image;
+    });
+  
     const imageInterval = setInterval(() => {
       setFade(false); // Start fading out the current image
       setTimeout(() => {
@@ -73,11 +79,11 @@ function Register() {
         setFade(true); // Start fading in the new image
       }, 1000); // Wait for 1 second before changing the image
     }, 4000); // Change every 4 seconds
-
+  
     return () => {
       clearInterval(imageInterval);
     };
-  }, []);
+  }, [images.length]);
 
   const handleLoginButtonClick = () => {
     // Navigate to the login page
