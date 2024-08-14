@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
 import { useNavigate } from "react-router-dom";
+import Logo from "assets/img/bg/athandhrlogo_transparent_small.png";
 
 // reactstrap components
 import {
@@ -114,7 +115,14 @@ function Login() {
           <Col className="ml-auto mr-auto" lg="4" md="6">
             <Card className="card-signin text-center" >
               <CardHeader>
-                <CardTitle tag="h4">Login</CardTitle>
+              <div >
+      <img 
+        src={Logo} 
+        alt="AT HAND HR" 
+        style={{ height: '70px', width: 'auto' }} 
+      /> 
+    </div>
+                <CardTitle tag="h3">Login</CardTitle>
               </CardHeader>
               <CardBody>
                 <form onSubmit={handleSubmit} className="form" method="">

@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Container, CardBody, Row, Col, Table } from "reactstrap";
+import Logo from "assets/img/bg/athandhrlogo_transparent.png";
 
 function PrivacyPolicy() {
   React.useEffect(() => {
@@ -10,11 +11,21 @@ function PrivacyPolicy() {
   });
 
   return (
+
+    
     <div className="login-page">
       <Container>
           <Row>
             <Col sm="12">
             <section style={{ color: "white" }}>
+            <div style={{ textAlign: 'center' }}>
+      <img 
+        src={Logo} 
+        alt="AT HAND HR" 
+        style={{ height: '200px', width: 'auto' }} 
+      /> 
+    </div>
+
             <h3 style={{ textAlign: "center" }}>PRIVACY POLICY</h3>
             <br/>
               <br/>
@@ -116,7 +127,7 @@ function PrivacyPolicy() {
                 <li>Access to your account is controlled by a password and a user name that is unique to you;</li>
                 <li>We store your Data on secure servers.</li>
               </ul>
-              <p>10. Technical and organisational measures include measures to deal with any suspected data breach. If you suspect any misuse or loss or unauthorized access to your Data, please let us know immediately by contacting us via this e-mail address: mihai.georgescu@athandhr.com.</p>
+              <p>10. Technical and organisational measures include measures to deal with any suspected data breach. If you suspect any misuse or loss or unauthorized access to your Data, please let us know immediately by contacting us via this e-mail address: support@athandhr.com.</p>
               <p>11. If you want detailed information from Get Safe Online on how to protect your information and your computers and devices against fraud, identity theft, viruses and many other online problems, please visit www.getsafeonline.org. Get Safe Online is supported by HM Government and leading businesses.</p>
               <h5><strong>Data Retention</strong></h5>
               <p>12. Unless a longer retention period is required or permitted by law, we will only hold your Data on our systems for the period necessary to fulfil the purposes outlined in this Privacy Policy or until you request that the Data be deleted.</p>
@@ -131,7 +142,7 @@ function PrivacyPolicy() {
                 <li><strong>Right to data portability</strong> - the right to request that we move, copy or transfer your Data.</li>
                 <li><strong>Right to object</strong> - the right to object to our use of your Data including where we use it for our legitimate interests.</li>
               </ul>
-              <p>15. To make enquiries, exercise any of your rights set out above, or withdraw your consent to the processing of your Data (where consent is our legal basis for processing your Data), please contact us via this e-mail address: mihai.georgescu@athandhr.com.</p>
+              <p>15. To make enquiries, exercise any of your rights set out above, or withdraw your consent to the processing of your Data (where consent is our legal basis for processing your Data), please contact us via this e-mail address: support@athandhr.com.</p>
               <p>16. If you are not satisfied with the way a complaint you make in relation to your Data is handled by us, you may be able to refer your complaint to the relevant data protection authority. For the UK, this is the Information Commissioner's Office (ICO). The ICO's contact details can be found on their website at https://ico.org.uk/.</p>
               <p>17. It is important that the Data we hold about you is accurate and current. Please keep us informed if your Data changes during the period for which we hold it.</p>
               <h5><strong>Links to Other Websites</strong></h5>

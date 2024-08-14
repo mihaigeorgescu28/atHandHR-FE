@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import moment from "moment";
 import bcrypt from 'bcryptjs';
 import axios from 'axios';
+import Logo from "assets/img/bg/athandhrlogo_transparent_small.png";
 
 // reactstrap components
 import {
@@ -257,7 +258,14 @@ function Register() {
           <Col className="ml-auto mr-auto" lg="4" md="6">
             <Card className="card-signin text-center" >
               <CardHeader>
-                <CardTitle tag="h4">Register</CardTitle>
+              <div >
+      <img 
+        src={Logo} 
+        alt="AT HAND HR" 
+        style={{ height: '70px', width: 'auto' }} 
+      /> 
+    </div>
+                <CardTitle tag="h3">Register</CardTitle>
               </CardHeader>
               <CardBody>
               

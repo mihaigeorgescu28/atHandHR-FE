@@ -68,7 +68,6 @@ function Widgets() {
                             <img
                               alt="..."
                               className="img-raised"
-                              src={require("assets/img/faces/ayo-ogunseinde-2.jpg")}
                             />
                           </div>
                         </td>
@@ -123,7 +122,6 @@ function Widgets() {
                             <img
                               alt="..."
                               className="img-raised"
-                              src={require("assets/img/faces/erik-lucatero-2.jpg")}
                             />
                           </div>
                         </td>
@@ -178,7 +176,6 @@ function Widgets() {
                             <img
                               alt="..."
                               className="img-raised"
-                              src={require("assets/img/faces/kaci-baum-2.jpg")}
                             />
                           </div>
                         </td>
@@ -233,7 +230,6 @@ function Widgets() {
                             <img
                               alt="..."
                               className="img-raised"
-                              src={require("assets/img/faces/joe-gardner-2.jpg")}
                             />
                           </div>
                         </td>
@@ -529,7 +525,6 @@ function Widgets() {
                     <img
                       alt="..."
                       className="img"
-                      src={require("assets/img/faces/joe-gardner-2.jpg")}
                     />
                   </a>
                 </div>

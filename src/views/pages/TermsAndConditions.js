@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Row, Col } from "reactstrap";
+import Logo from "assets/img/bg/athandhrlogo_transparent.png";
 
 function TermsAndConditions() {
   React.useEffect(() => {
@@ -16,6 +17,13 @@ function TermsAndConditions() {
       <Row>
           <Col sm="12">
             <section style={{ color: "white" }}>
+            <div style={{ textAlign: 'center' }}>
+      <img 
+        src={Logo} 
+        alt="AT HAND HR" 
+        style={{ height: '200px', width: 'auto' }} 
+      /> 
+    </div>
               <h3 style={{ textAlign: "center" }}>TERMS AND CONDITIONS OF USE</h3>
               <br/>
               <br/>

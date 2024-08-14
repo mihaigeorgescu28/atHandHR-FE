@@ -506,7 +506,6 @@ function ExtendedTables() {
                         <div className="img-container">
                           <img
                             alt="..."
-                            src={require("assets/img/agenda.png")}
                           />
                         </div>
                       </td>
@@ -563,7 +562,6 @@ function ExtendedTables() {
                         <div className="img-container">
                           <img
                             alt="..."
-                            src={require("assets/img/stylus.jpg")}
                           />
                         </div>
                       </td>
@@ -623,7 +621,6 @@ function ExtendedTables() {
                         <div className="img-container">
                           <img
                             alt="..."
-                            src={require("assets/img/evernote.png")}
                           />
                         </div>
                       </td>

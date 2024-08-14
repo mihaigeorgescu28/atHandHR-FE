@@ -45,7 +45,6 @@ function LockScreen() {
             <CardHeader>
               <img
                 alt="..."
-                src={require("assets/img/faces/joe-gardner-2.jpg")}
               />
             </CardHeader>
             <CardBody>
