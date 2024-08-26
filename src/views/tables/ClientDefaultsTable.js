@@ -129,7 +129,7 @@ function ClientDefaultsTable() {
         <Button
           onClick={() => handleEditClick(obj)}
           color="warning"
-          size="sm"
+          size="md"
           className="btn-icon btn-link edit"
           title="Edit Record"
         >

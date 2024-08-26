@@ -1,29 +1,24 @@
 import React from "react";
 import { Container, Row, Col } from "reactstrap";
-import Logo from "assets/img/bg/athandhrlogo_transparent.png";
+import Logo from "assets/img/bg/athandhrlogo_transparent_small.png";
 
 function TermsAndConditions() {
-  React.useEffect(() => {
-    document.body.classList.toggle("login-page");
-    return function cleanup() {
-      document.body.classList.toggle("login-page");
-    };
-  });
+  
 
   return (
-    <div className="login-page">
+    <div className="page-content">
       
       <Container>
       <Row>
           <Col sm="12">
-            <section style={{ color: "white" }}>
+            <section style={{ color: "black" }}>
             <div style={{ textAlign: 'center' }}>
       <img 
         src={Logo} 
         alt="AT HAND HR" 
-        style={{ height: '200px', width: 'auto' }} 
+        style={{ height: '150px', width: 'auto', paddingBottom: '50px' }} 
       /> 
-    </div>
+      </div>
               <h3 style={{ textAlign: "center" }}>TERMS AND CONDITIONS OF USE</h3>
               <br/>
               <br/>
@@ -143,12 +138,7 @@ function TermsAndConditions() {
           </Col>
         </Row>
       </Container>
-      <div
-        className="full-page-background"
-        style={{
-          backgroundImage: `url(${require("assets/img/bg/pexels-jill-burrow.jpg")})`
-        }}
-      />
+      
     </div>
   );
 }

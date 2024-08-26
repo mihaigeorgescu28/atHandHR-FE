@@ -119,10 +119,10 @@ function Login() {
       <img 
         src={Logo} 
         alt="AT HAND HR" 
-        style={{ height: '70px', width: 'auto' }} 
+        style={{ height: '100px', width: 'auto' }} 
       /> 
     </div>
-                <CardTitle tag="h3">Login</CardTitle>
+     
               </CardHeader>
               <CardBody>
                 <form onSubmit={handleSubmit} className="form" method="">

@@ -120,80 +120,67 @@ function Table({ columns, data }) {
   return (
     <>
       <div className="ReactTable -striped -highlight primary-pagination">
-      <div className="table-container">
-        <table {...getTableProps()} className="rt-table custom-table">
-          <thead className="rt-thead -header">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} className="rt-tr">
-                {headerGroup.headers.map((column, key) => (
-                  <th
+      <div className="table-container"> {/* Scrollable container */}
+      <table {...getTableProps()} className="rt-table custom-table">
+        <thead className="rt-thead -header">
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()} className="rt-tr">
+              {headerGroup.headers.map((column, key) => (
+                <th
                   {...column.getHeaderProps(column.getSortByToggleProps())}
                   className={classnames("rt-th rt-resizable-header", {
-                    "-cursor-pointer": headerGroup.headers[key].Header != 'Actions',
+                    "-cursor-pointer": headerGroup.headers[key].Header !== 'Actions',
                     "-sort-asc": column.isSorted && !column.isSortedDesc,
                     "-sort-desc": column.isSorted && column.isSortedDesc,
                   })}
-                  // centre column headers for the UI
-                  style={{
-                    textAlign: "center",
-                    //display: "flex", // Add this line for Flexbox
-                    //justifyContent: "center", // Center content horizontally
-                    //alignItems: "center", // Center content vertically
-                  }}
+                  style={{ textAlign: "center" }}
                 >
                   <div className="rt-resizable-header-content">
                     {column.render("Header")}
                   </div>
-                  {/* Render the columns filter UI */}
                   <div>
-  {headerGroup.headers[key].Header == 'Actions'
-  /* this is old (original) code commented out below */
-  /* headerGroup.headers.length - 1 == key */
-    ? null
-    : column.canFilter
-    ? column.render("Filter")
-    : null}
-</div>
+                    {headerGroup.headers[key].Header === 'Actions'
+                      ? null
+                      : column.canFilter
+                      ? column.render("Filter")
+                      : null}
+                  </div>
                 </th>
-                
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()} className="rt-tbody">
+          {page.map((row, i) => {
+            prepareRow(row);
+            return (
+              <tr
+                {...row.getRowProps()}
+                className={classnames("rt-tr", {
+                  " -odd": i % 2 === 0,
+                  " -even": i % 2 === 1,
+                })}
+              >
+                {row.cells.map((cell) => (
+                  <td
+                    {...cell.getCellProps()}
+                    className="rt-td"
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "pre-line",
+                      textAlign: "center",
+                    }}
+                  >
+                    {cell.render("Cell")}
+                  </td>
                 ))}
               </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()} className="rt-tbody">
-            {page.map((row, i) => {
-              prepareRow(row);
-              return (
-                <tr
-                  {...row.getRowProps()}
-                  className={classnames(
-                    "rt-tr",
-                    { " -odd": i % 2 === 0 },
-                    { " -even": i % 2 === 1 }
-                  )}
-                >
-                  {row.cells.map((cell) => {
-                    return (
-                      <td
-  {...cell.getCellProps()}
-  className="rt-td"
-  style={{
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "pre-line", // Allow text wrapping
-    textAlign: "center",
-  }}
->
-  {cell.render("Cell")}
-</td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        </div>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
         <div className="pagination-top">
           <div className="-pagination">
             <div className="-previous">

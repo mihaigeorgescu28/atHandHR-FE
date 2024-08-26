@@ -221,8 +221,7 @@ function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRang
   }
 
   return (
-    <Col lg="12" md="12" sm="12">
-      <div className="content d-flex justify-content-center align-items-center">
+      <div className="content justify-content-center align-items-center">
         <Row>
           <Col md="12">
             <div className="fixed-width-table-chart-container">
@@ -257,7 +256,6 @@ function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRang
           </Col>
         </Row>
       </div>
-    </Col>
   );
 }
 

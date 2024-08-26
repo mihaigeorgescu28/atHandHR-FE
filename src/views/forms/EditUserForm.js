@@ -36,13 +36,16 @@ function EditUserForm() {
   }, [location.pathname]);
 
 return (
-  <div>
+  <div className="content">
+        <div>
     {userId ? (
       <UserForm userData={userData} />
     ) : (
       <p>No user ID provided</p>
     )}
   </div>
+        
+      </div>
 );
 }
 

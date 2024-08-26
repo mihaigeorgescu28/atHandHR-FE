@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row } from "reactstrap";
 // used for making the prop types of this component
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Footer(props) {
 
@@ -10,31 +10,45 @@ function Footer(props) {
   
   return (
     <footer className={"footer" + (props.default ? " footer-default" : "")} >
+      
       <Container fluid={props.fluid ? true : false}>
       <Row>
-      <nav className="footer-nav">
-        <ul>
-          <li>
-            <a onClick={() => navigate("/auth/privacy-policy")} target="_blank" rel="noopener noreferrer">
-              Privacy Policy
-            </a>
-            
-          </li>
-          <li>
-            <a onClick={() => navigate("/auth/terms-and-conditions")} target="_blank" rel="noopener noreferrer">
-              Terms & Conditions
-            </a>
-          </li>
-        </ul>
+      <nav className="footer-nav ">
+    <div className="row align-items-center mb-0 text-center text-md-start">
+        <div className="col-md-6">
+        &copy; {1900 + new Date().getYear()} At Hand HR Limited
+         
+        </div>
+        <div className="col-md-6 text-md-end mt-3 mt-md-0">
+<ul className="list-inline mb-0">
+<li className="me-3 list-inline-item">
+<Link 
+className="list-group-item-action" 
+to="/terms-and-conditions"
+onClick={() => window.scrollTo(0, 0)}
+>
+Terms & Conditions
+</Link>
+</li>
+<li className="me-3 list-inline-item">
+<Link 
+className="list-group-item-action" 
+to="/privacy-policy"
+onClick={() => window.scrollTo(0, 0)}
+>
+Privacy Policy
+</Link>
+</li>
+</ul>
+</div>
+
+</div>
       </nav>
-      <div className="credits ml-auto">
-        <span className="copyright">
-          &copy; {1900 + new Date().getYear()} At Hand HR Limited
-        </span>
-      </div>
+      
     </Row>
       </Container>
     </footer>
+
   );
 }
 

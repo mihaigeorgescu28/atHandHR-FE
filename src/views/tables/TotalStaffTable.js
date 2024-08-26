@@ -155,7 +155,7 @@ function TotalStaffTable({ fetchUpdatedData }) {
         <Button
           onClick={handleEditClick}
           color="warning"
-          size="sm"
+          size="md"
           className="btn-icon btn-link edit"
           title="Edit Employee"
         >
@@ -164,15 +164,17 @@ function TotalStaffTable({ fetchUpdatedData }) {
         <Button
           onClick={() => handleResetPasswordClick(obj)}
           color="green"
-          size="sm"
+          size="md"
           className="btn-icon btn-link edit nc-icon nc-key-25"
           title="Reset Password"
         >
+          <i className="nc-icon nc-key-25"/>
         </Button>
+        
         <Button
           onClick={() => handleDeleteClick(obj)} // Pass obj to handleDeleteClick
           color="danger"
-          size="sm"
+          size="md"
           className="btn-icon btn-link remove"
           title="Delete Employee"
         >
@@ -217,11 +219,8 @@ function TotalStaffTable({ fetchUpdatedData }) {
   };
   
   return (
-    <Col lg="12" md="12" sm="12">
-      <div className="content d-flex justify-content-center align-items-center">
-        <Row>
-          <Col md="12">
-            <div className="fixed-width-table-chart-container">
+<div>
+
               <Card>
               <CardHeader>
   <div className="d-flex justify-content-between">
@@ -249,7 +248,7 @@ function TotalStaffTable({ fetchUpdatedData }) {
 </CardHeader>
                 <CardBody>
                   
-                  <ReactTable
+                  <ReactTable 
                     data={dataState}
                     columns={[
                       {
@@ -289,10 +288,9 @@ function TotalStaffTable({ fetchUpdatedData }) {
                   />
                 </CardBody>
               </Card>
-            </div>
-          </Col>
-        </Row>
-      </div>
+            
+          
+     
 
       {showDisableEmployeeAlert && confirmationDisableEmployee(hideAlert, confirmDelete)}
       {showDisableEmployeeSuccess && disableEmployeeSuccess(hideAlert, hideAlert)}
@@ -302,7 +300,7 @@ function TotalStaffTable({ fetchUpdatedData }) {
 
     {showResetPasswordSuccess && resetPasswordSuccess(hideAlert, hideAlert)}
       
-    </Col>
+    </div>
   );
 }
 

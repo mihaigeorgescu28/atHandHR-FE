@@ -353,10 +353,11 @@ const verifyPhoneNumber = (value) => {
         
 
         <div className="text-center">
-  <Button type="submit" color="primary">
+  <Button size="sm" type="submit" className="btn-round" color="success">
     Save
   </Button>
-  <Button type="submit" onClick={handleGoToDashboard} color="danger">
+  
+  <Button size="sm" type="submit" onClick={handleGoToDashboard} color="danger">
   Close
 </Button>
 </div>

@@ -15,7 +15,8 @@ import {
   Form,
   Input,
   Row,
-  Col
+  Col,
+  Container
 } from "reactstrap";
 import { errorAlert, userUpdatedSuccess, confirmationResetPasswordUserProfile, resetPasswordSuccess, errorInvalidData} from '../components/SweetAlert';
 
@@ -345,15 +346,17 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
 
   return (
     <>
-      <div className="content">
+      <div className="content" >
+      <Container >
         <Row>
         <Col md="4">
-  <Card className="card-user" style={{ paddingBottom: '25px' }}>
+  <Card className="card-user" style={{ paddingBottom: '105px' }}>
     <div className="image">
-      <img
-        alt="..."
-        src={require("assets/img/bg/luke-chesser.jpg")}
-      />
+    <img
+  alt="..."
+  src={require("assets/img/about/04.png")}
+  />
+
     </div>
     <CardBody>
       <div className="author">
@@ -372,6 +375,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
         type="submit"
         className="btn-round"
         color="success"
+        size="sm"
         onClick={() => {
           handleProfilePicSave();
         }}
@@ -386,6 +390,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
           type="submit"
           className="btn-round"
           color="warning"
+          size="sm"
           onClick={() => {
             handleResetPassword();
           }}
@@ -416,6 +421,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
       </Row>
     </CardBody>
   </Card>
+  
 </Col>
 
 
@@ -639,6 +645,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
     type="submit"
     className="btn-round"
     color="success"
+    size="sm"
   >
     Save
   </Button>
@@ -660,6 +667,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
             </Card>
           </Col>
         </Row>
+        </Container>
       </div>
     </>
   );

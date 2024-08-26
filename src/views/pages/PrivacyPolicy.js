@@ -1,28 +1,23 @@
 import React from "react";
 import { Card, Container, CardBody, Row, Col, Table } from "reactstrap";
-import Logo from "assets/img/bg/athandhrlogo_transparent.png";
+import Logo from "assets/img/bg/athandhrlogo_transparent_small.png";
 
 function PrivacyPolicy() {
-  React.useEffect(() => {
-    document.body.classList.toggle("login-page");
-    return function cleanup() {
-      document.body.classList.toggle("login-page");
-    };
-  });
+ 
 
   return (
 
     
-    <div className="login-page">
+    <div className="page-content">
       <Container>
           <Row>
             <Col sm="12">
-            <section style={{ color: "white" }}>
+            <section style={{ color: "black" }}>
             <div style={{ textAlign: 'center' }}>
       <img 
         src={Logo} 
         alt="AT HAND HR" 
-        style={{ height: '200px', width: 'auto' }} 
+        style={{ height: '150px', width: 'auto', paddingBottom: '50px' }} 
       /> 
     </div>
 
@@ -44,7 +39,7 @@ function PrivacyPolicy() {
               </strong>
               <p>1. In this Privacy Policy, the following definitions are used:</p>
               <Table bordered>
-                <tbody style={{ color: "white" }}>
+                <tbody style={{ color: "black" }}>
                   <tr>
                     <td><strong>Data</strong></td>
                     <td>Collectively all information that you submit to AT HAND HR LIMITED via the Website. This definition incorporates, where applicable, the definitions provided in the Data Protection Laws;</td>
@@ -164,12 +159,7 @@ function PrivacyPolicy() {
               </Col>
           </Row>
           </Container>
-          <div
-        className="full-page-background"
-        style={{
-          backgroundImage: `url(${require("assets/img/bg/pexels-jill-burrow.jpg")})`
-        }}
-      />
+         
     </div>
   );
 }

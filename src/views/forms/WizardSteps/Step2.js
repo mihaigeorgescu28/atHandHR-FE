@@ -423,10 +423,10 @@ useEffect(() => {
     value={selectedPositions && selectedPositions.value !== '' && selectedPositions.label !== '' ? selectedPositions : null}
     options={positions}
     onChange={(selectedOption) => {
-      handleChange('PositionID', selectedOption);
       if (!selectedOption) { // Check if selectedOption is null (field has been cleared)
         handleChange('PositionID', "");
       }
+      else handleChange('PositionID', selectedOption);
     }}
     isClearable={true}
   />
@@ -440,10 +440,10 @@ useEffect(() => {
     value={selectedLineManager && setSelectedLineManager.value !== '' && selectedLineManager.label !== '' ? linemanagers.find(manager => manager.value === selectedLineManager?.value) : null}
     options={linemanagers}
     onChange={(selectedOption) => {
-      handleChange('LineManagerID', selectedOption);
       if (!selectedOption) { // Check if selectedOption is null (field has been cleared)
         handleChange('LineManagerID', ""); // Call handleChange to handle clearing
       }
+      else handleChange('LineManagerID', selectedOption);
     }}
     isClearable={true}
   />
@@ -457,10 +457,10 @@ useEffect(() => {
     options={roles}
     value={selectedRole && setSelectedRole.value !== '' && selectedRole.label !== '' ? roles.find(role => role.value === selectedRole?.value) : null}
     onChange={(selectedOption) => {
-      handleChange('RoleID', selectedOption.value);
       if (!selectedOption) { // Check if selectedOption is null (field has been cleared)
         handleChange('RoleID', ""); // Call handleChange to handle clearing
       }
+      else handleChange('RoleID', selectedOption.value);
     }}
     isClearable={true}
   />
@@ -536,10 +536,10 @@ useEffect(() => {
           
         </div>
         <div className="text-center">
-          <Button type="submit" color="primary">
+          <Button size="sm" type="submit" color="success">
             Save
           </Button>
-          <Button type="submit" onClick={handleGoToDashboard} color="danger">
+          <Button size="sm" type="submit" onClick={handleGoToDashboard} color="danger">
             Close
           </Button>
         </div>

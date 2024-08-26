@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardHeader, CardBody, CardTitle, Col, Button } from "reactstrap";
+import { Card, CardHeader, CardBody, CardTitle, Col, Button, Row } from "reactstrap";
 // react plugin used to create a form with multiple steps
 import ReactWizard from "react-bootstrap-wizard";
 import { useLocation } from "react-router-dom";
@@ -268,11 +268,12 @@ if (!isValidEmail || !isValidPhoneNumber || !isValidCompanyEmail || !isValidComp
 
 
   return (
-    <div className="user-form-container" >
-      <Col className="mr-auto ml-auto" md="10" >
+  <>
+      <Col className="mr-auto ml-auto" md="12" >
           <ReactWizard
             steps={steps}
             navSteps
+            
           />
 
           
@@ -284,7 +285,8 @@ if (!isValidEmail || !isValidPhoneNumber || !isValidCompanyEmail || !isValidComp
 {showErrorInvalidData && errorInvalidData(hideAlert)}
 
         </Col>
-    </div>
+    
+        </>
   );
 }
 

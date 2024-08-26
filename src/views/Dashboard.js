@@ -1488,7 +1488,7 @@ axios.get(signOutEndpoint)
             </Card>
           </Col>
 
-        <Row>
+        <div>
 
           
         {openDrilldown === 'totalStaff' ? (
@@ -1499,7 +1499,7 @@ axios.get(signOutEndpoint)
         ) : openDrilldown === 'staffOnLeave30Days' ? (
         <StaffOnLeaveTable TableDateRange={tableDateRange} />
         ) :  null}
-        </Row>
+        </div>
 
         <Col md="3">
         <Card>
@@ -1682,11 +1682,11 @@ axios.get(signOutEndpoint)
 
   </Col>
 
-  <Row>
+  <div>
   {openDrilldown === 'leaveRequests' ? (
     <LeaveRequestsTable leaveTypeGroupID={leaveTypeGroupID} leaveStatusID={leaveStatusID} leaveTypeID={leaveType} panelName={panelName} datasetName={datasetName}  fetchLeaveUpdatedData={fetchLeaveUpdatedData}/>
   ) : null}
-</Row>
+</div>
 
 <Col md="3">
 <Card>
@@ -1789,7 +1789,7 @@ axios.get(signOutEndpoint)
     <CardTitle>Time Management Overview</CardTitle>
     <p className="card-category">Annual Report</p>
   </CardHeader>
-  <CardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+  <CardBody style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '278px' }}>
     {timeManagementChart.data.datasets[0].data.every(value => value === 0) ? (
       <div style={{ textAlign: 'center', color: '#999' }}>
         <i className="fa fa-info-circle" style={{ fontSize: '48px', marginBottom: '8px' }} />
@@ -1813,13 +1813,13 @@ axios.get(signOutEndpoint)
 
     </Col>
 
-    <Row>
+    <div>
   {openDrilldown === 'signIn' || openDrilldown === 'signOut' ? (
     <TimeManagementTable actionTypeID={actionTypeID} timeManagementStatus={timeManagementStatus} panelName={panelName} datasetName={datasetName}/>
   ) : openDrilldown === 'timeManagementReport' ? (
     <TimeManagementTable actionTypeID={actionTypeID} timeManagementStatus={timeManagementStatus} tableDateRange={tableDateRange} panelName={panelName} datasetName={datasetName}/>
   ) : null}
-</Row>
+</div>
 
 
 

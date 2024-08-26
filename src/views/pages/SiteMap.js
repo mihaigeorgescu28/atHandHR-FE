@@ -28,10 +28,10 @@ function SiteMap() {
           <Card style={{width: '24rem'}}>
             <CardBody className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
-                <i className="nc-icon nc-bell-55 mr-2" style={{ fontSize: '24px' }} />
+                <i className="nc-icon nc-bell-55 mr-2" style={{ fontSize: '35px' }} />
                 <CardTitle style={{ marginTop: '12px' }}>Newsfeed</CardTitle>
               </div>
-              <Button color="primary" onClick={handleViewNewsfeed} type = "submit">View</Button> {/* Attach onClick event handler */}
+              <Button size="sm" type="submit" className="btn-round" color="info" onClick={handleViewNewsfeed}>View</Button> {/* Attach onClick event handler */}
             </CardBody>
           </Card>
         </Col>
@@ -39,10 +39,10 @@ function SiteMap() {
           <Card style={{width: '24rem'}}>
             <CardBody className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
-                <i className="nc-icon nc-briefcase-24 mr-2" style={{ fontSize: '24px' }} />
+                <i className="nc-icon nc-briefcase-24 mr-2" style={{ fontSize: '35px' }} />
                 <CardTitle style={{ marginTop: '12px' }}>Employee Positions</CardTitle>
               </div>
-              <Button color="primary" onClick={handleViewPositions} type = "submit">View</Button> {/* Attach onClick event handler */}
+              <Button size="sm" type="submit" className="btn-round" color="info" onClick={handleViewPositions}>View</Button> {/* Attach onClick event handler */}
             </CardBody>
           </Card>
         </Col>
@@ -50,10 +50,10 @@ function SiteMap() {
           <Card style={{width: '24rem'}}>
             <CardBody className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
-                <i className="nc-icon nc-calendar-60" style={{ fontSize: '24px' }} />
+                <i className="nc-icon nc-calendar-60" style={{ fontSize: '35px' }} />
                 <CardTitle style={{ marginTop: '12px', paddingLeft: '10px' }}>Leave Types</CardTitle>
               </div>
-              <Button color="primary" onClick={handleViewLeaveTypes} type = "submit">View</Button> {/* Attach onClick event handler */}
+              <Button size="sm" type="submit" className="btn-round" color="info" onClick={handleViewLeaveTypes}>View</Button> {/* Attach onClick event handler */}
             </CardBody>
           </Card>
         </Col>
@@ -63,10 +63,10 @@ function SiteMap() {
           <Card style={{width: '24rem'}}>
             <CardBody className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
-                <i className="nc-icon nc-vector" style={{ fontSize: '24px' }} />
+                <i className="nc-icon nc-vector" style={{ fontSize: '35px' }} />
                 <CardTitle style={{ marginTop: '12px', paddingLeft: '10px' }}>Client Defaults</CardTitle>
               </div>
-              <Button color="primary" onClick={handleClientDefaults} type = "submit">View</Button> {/* Attach onClick event handler */}
+              <Button size="sm" type="submit" className="btn-round" color="info" onClick={handleClientDefaults}>View</Button> {/* Attach onClick event handler */}
             </CardBody>
           </Card>
         </Col>

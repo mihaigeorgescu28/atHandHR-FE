@@ -1,61 +1,27 @@
-import React from "react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Container, Row, Col } from 'reactstrap';
 
 function NotFound() {
   return (
-    <div className="wrapper">
-      <h1 id="animation">404</h1>
-      <p>Page not found</p>
-          <style>
-            {`
-              body {
-                background-color: #f9f9f9;
-                font-family: Arial, sans-serif;
-              }
-
-              .wrapper {
-                width: 100%;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-              }
-
-              #animation {
-                font-size: 60px;
-                margin-bottom: 50px;
-                display: inline-block;
-                position: relative;
-                animation-name: draw;
-                animation-duration: 2s;
-                animation-timing-function: ease;
-                animation-fill-mode: forwards;
-              }
-
-              @keyframes draw {
-                from {
-                  width: 0;
-                }
-                to {
-                  width: 220px;
-                  text-align: center;
-                }
-              }
-
-              p {
-                margin: 0;
-                font-size: 30px;
-                text-align: center;
-              }
-            `}
-          </style>
-          </div>
-
+    <div className="page-content">
+      <section className="fullscreen-banner p-0 my-5">
+        <Container fluid className="h-100">
+          <Row className="h-100">
+            <Col className="text-center h-100 d-flex align-items-center">
+              <div className="w-100">
+                <img className="img-fluid d-inline mb-5 mt-5" src={require("../../assets/img/404.png")} alt="" />
+                <h2>Oops! Page Not Found</h2>
+                <h6>You’re either misspelling the URL or requesting a page that's no longer here.</h6>
+                <Link className="btn btn-primary mt-4" to="/">
+                  Back To Home Page
+                </Link>
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+    </div>
   );
 }
 

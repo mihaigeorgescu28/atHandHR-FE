@@ -38,23 +38,45 @@ import PrivacyPolicy from "views/pages/PrivacyPolicy.js"
 import EditUserForm from "views/forms/EditUserForm.js";
 import InsertUserForm from "views/forms/InsertUserForm.js";
 import TermsAndConditions from "views/pages/TermsAndConditions.js";
+import LandingPage from "views/pages/LandingPage.js";
+import AboutUs from "views/pages/AboutUs.js";
 
 const routes = [
+  {
+    path: "/about-us",
+    name: "About Us",
+    icon: "nc-icon nc-badge",
+    component: AboutUs.js,
+    layout: "",
+    sidebar: "false",
+    views: [],
+  },
+  {
+    path: "",
+    name: "Landing Page",
+    icon: "nc-icon nc-badge",
+    component: LandingPage.js,
+    layout: "",
+    sidebar: "false",
+    views: [],
+  },
   {
     path: "/terms-and-conditions",
     name: "Terms & Conditions",
     icon: "nc-icon nc-badge",
     component: TermsAndConditions,
-    layout: "/auth",
-    sidebar: "false"
+    layout: "",
+    sidebar: "false",
+    views: [],
   },
   {
     path: "/privacy-policy",
     name: "Privacy Policy",
     icon: "nc-icon nc-badge",
     component: PrivacyPolicy,
-    layout: "/auth",
-    sidebar: "false"
+    layout: "",
+    sidebar: "false",
+    views: [],
   },
   {
     path: "/user-profile",

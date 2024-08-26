@@ -33,9 +33,11 @@ function InsertUserForm() {
   }, []);
 
   return (
+    <div className="content">
     <div>
       {/* Pass userData as props to UserForm */}
       <UserForm userData={userData} />
+    </div>
     </div>
   );
 }

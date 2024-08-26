@@ -434,12 +434,13 @@ function ClientDefaultsForm() {
                   
                   </Row>
                   <Row className="justify-content-center">
-                  <Col  md="2">
+                  <Col  >
                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
   <Button
     type="submit"
     className="btn-round"
     color="success"
+    size="sm"
   >
     Save
   </Button>
@@ -447,6 +448,7 @@ function ClientDefaultsForm() {
   type="reset"
   className="btn-round"
   color="danger"
+  size="sm"
   onClick={() => navigate('/admin/sitemap')}
 >
   Cancel

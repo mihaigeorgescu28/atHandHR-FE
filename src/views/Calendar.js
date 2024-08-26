@@ -9,7 +9,6 @@ import moment, { invalid } from "moment";
 import ReactDatetime from "react-datetime";
 import Select from "react-select";
 import axios from 'axios';
-import "../assets/css/paper-dashboard.css";
 import SweetAlert from 'react-bootstrap-sweetalert';
 
 
@@ -831,9 +830,10 @@ function Calendar() {
           {disabled ? (<div title="Please fill in all required fields before submitting." style={{ display: 'inline-block', cursor: 'not-allowed', opacity: disabled ? 0.5 : 1 }}>
             <Button
               type="submit"
-              color="info"
+              color="success"
               disabled={disabled}
               style={{ position: 'relative', zIndex: 1 }}
+              size="sm"
             >
               Submit
             </Button>
@@ -841,8 +841,9 @@ function Calendar() {
           ) : (
             <Button
               type="submit"
-              color="info"
+              color="success"
               disabled={disabled}
+              size="sm"
             >
               Submit
             </Button>
@@ -853,6 +854,7 @@ function Calendar() {
             type="reset"
             style={{ display: "inline-block", visibility: "visible" }}
             color="danger"
+            size="sm"
             onClick={() => {
               setShowModal(false);
               setEndDate("");

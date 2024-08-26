@@ -212,7 +212,7 @@ function LeaveTypesTable() {
         <Button
           onClick={() => handleEditClick(obj)}
           color="warning"
-          size="sm"
+          size="md"
           className="btn-icon btn-link edit"
           title="Edit Record"
         >
@@ -221,7 +221,7 @@ function LeaveTypesTable() {
         <Button
           onClick={() => handleDeleteClick(obj)} // Pass obj to handleDeleteClick
           color="danger"
-          size="sm"
+          size="md"
           className="btn-icon btn-link remove"
           title="Delete Record"
         >
@@ -358,8 +358,8 @@ function LeaveTypesTable() {
 
 
     <div className="d-flex justify-content-center">
-    <Button type="submit" color="primary">Save</Button>{' '}
-    <Button type="reset" color="danger" onClick={() => setModalOpen(!modalOpen)}>Cancel</Button>
+    <Button size="sm" type="submit" color="success">Save</Button>{' '}
+    <Button size="sm" type="reset" color="danger" onClick={() => setModalOpen(!modalOpen)}>Cancel</Button>
   </div>
 
 
@@ -368,7 +368,7 @@ function LeaveTypesTable() {
  
 </Modal>
     <Col lg="12" md="12" sm="12">
-      <div className="content d-flex justify-content-center align-items-center">
+      <div className="content justify-content-center align-items-center">
         <Row>
           <Col md="12">
             

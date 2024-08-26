@@ -262,10 +262,9 @@ function Register() {
       <img 
         src={Logo} 
         alt="AT HAND HR" 
-        style={{ height: '70px', width: 'auto' }} 
+        style={{ height: '100px', width: 'auto' }} 
       /> 
     </div>
-                <CardTitle tag="h3">Register</CardTitle>
               </CardHeader>
               <CardBody>
               
@@ -377,7 +376,7 @@ function Register() {
                       
                       <span className="form-check-sign" />I agree to the{" "}
                       
-                      <a href="/auth/terms-and-conditions" target="_blank">
+                      <a href="/terms-and-conditions" target="_blank">
                         terms and conditions
                       </a>
                       

@@ -71,8 +71,7 @@ function StaffOnLeave({ TableDateRange }) {
   }, [TableDateRange]); // Add TableDateRange to the dependency array to re-fetch data when it changes
 
   return (
-    <Col lg="12" md="12" sm="12">
-      <div className="content d-flex justify-content-center align-items-center">
+      <div className="content justify-content-center align-items-center">
         <Row>
           <Col md="12">
             <div className="fixed-width-table-chart-container">
@@ -136,7 +135,6 @@ function StaffOnLeave({ TableDateRange }) {
           </Col>
         </Row>
       </div>
-    </Col>
   );
 }
 

@@ -70,7 +70,7 @@ function AuthAdmin(props) {
 
     const route = updatedRoutes.find((updatedRoute) => {
       if (!updatedRoute.layout || !updatedRoute.path) {
-
+        console.log("updatedRoute.views. ", updatedRoute)
         const nestedRoute = updatedRoute.views.find((nested) => {
           if (!nested.layout || !nested.path) {
             return false;
@@ -144,7 +144,7 @@ function AuthAdmin(props) {
         bgColor={backgroundColor}
         activeColor={activeColor}
       />
-      <div className="main-panel" ref={mainPanel}>
+      <div className="main-panel"  ref={mainPanel}>
         <AdminNavbar {...props} handleMiniClick={handleMiniClick} />
         <Routes>
           <Route path="/" element={<Outlet />} />

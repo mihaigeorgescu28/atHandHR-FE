@@ -277,17 +277,15 @@ const confirmDeclineLeave = async () => {
   }
 
   return (
-    <Col lg="12" md="12" sm="12">
-      <div className="content d-flex justify-content-center align-items-center">
-        <Row>
-          <Col md="12">
-            <div className="fixed-width-table-chart-container">
+    <div>
+        
+
               <Card>
               <CardHeader>
                 <div className="d-flex justify-content-between">
-                <div>
+                
       <CardTitle tag="h5">{panelName} - {datasetName}</CardTitle>
-    </div>
+    
                 
                 <div>
                 <Button
@@ -301,24 +299,21 @@ const confirmDeclineLeave = async () => {
       </div>
                 </div>
                 </CardHeader>
-                <CardBody>
-                  <ReactTable
+                <CardBody >
+                  <ReactTable 
                     data={dataState}
                     columns={columns}
                     className="-striped -highlight primary-pagination"
                   />
                 </CardBody>
               </Card>
-            </div>
-          </Col>
-        </Row>
-      </div>
+
 
       {showConfirmationDeclineLeaveAlert && confirmationDeclineLeave(hideAlert, confirmDeclineLeave)}
       {showConfirmationApproveLeaveAlert && confirmationApproveLeave(hideAlert, confirmAproveLeave)}
       {showConfirmationUpdateRecordSuccess && updateRecordSuccess(hideAlert, hideAlert)}
       {showErrorAlert && errorAlert(hideAlert)}
-    </Col>
+      </div>
   );
 }
 

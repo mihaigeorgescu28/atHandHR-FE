@@ -228,13 +228,13 @@ function SignInOut(props) {
             <CardBody>
 
             {fileName == '' || fileName == null ? (
-  <Avatar src={require("assets/img/default-avatar.png")} round={true} size="100"/>
+  <Avatar src={require("assets/img/default-avatar.png")} round={true} size="100"  />
 ) : (
   <Avatar src={profilePic} round={true} size="100"/>
 )}
             
             <Form onSubmit={handleSubmit} className="form" method="">
-              <CardTitle tag="h4">{userFullName}</CardTitle>
+              <CardTitle tag="h4" style={{ paddingBottom: '15px', paddingTop: '15px' }}>{userFullName}</CardTitle>
               
               {extraValidation == false && !submit && 
               <p style={{backgroundColor: '#50BCDA', color: 'white'}}> Current time is {currentTime}</p>
@@ -262,6 +262,7 @@ function SignInOut(props) {
                 color="default"
                 outline
                 style={{backgroundColor: '#50BCDA', color: 'white'}}
+                size="sm"
               >
                 {buttonText}
               </Button>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
 import { useLocation,useNavigate } from "react-router-dom";
+import logo from '../../assets/img/business/athandhrlogo_transparent_small.png'; 
 import axios from 'axios';
 import {
   Button,
@@ -28,10 +29,21 @@ const apiUrl = process.env.REACT_APP_APIURL;
 function AdminNavbar(props) {
   const [collapseOpen, setCollapseOpen] = React.useState(false);
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [loader, setLoader] = useState(true);
   const [color, setColor] = React.useState("navbar-transparent");
   const [clientName, setClientName] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loader) {
+        const timeout = setTimeout(() => {
+            setLoader(false);
+        }, 2000);
+
+        return () => clearTimeout(timeout);
+    }
+}, [loader]);
   
 
 
@@ -107,8 +119,9 @@ function AdminNavbar(props) {
 
   return (
     <>
+    <div>
+    {!loader ? (
       <Navbar
-        
         className={classnames("navbar-absolute fixed-top", color)}
         expand="lg"
       >
@@ -117,7 +130,8 @@ function AdminNavbar(props) {
             <div className="navbar-minimize">
               <Button
                 className="btn-icon btn-round"
-                color="default"
+                size="sm"
+                color="secondary"
                 id="minimizeSidebar"
                 onClick={props.handleMiniClick}
                 type="submit"
@@ -170,17 +184,28 @@ function AdminNavbar(props) {
             <Nav navbar>
 
             <UncontrolledDropdown nav>
-            <DropdownToggle onClick={() => Logout()} nav>
-            <i className="nc-icon nc-button-power" />
-            &nbsp;Log out
-            </DropdownToggle>
-            </UncontrolledDropdown>
+  <DropdownToggle onClick={() => Logout()} nav style={{ fontSize: '18px' }}>
+    
+  <i className="nc-icon nc-button-power" />
+    &nbsp;Log out
+  </DropdownToggle>
+</UncontrolledDropdown>
+
 
 
             </Nav>
           </Collapse>
         </Container>
       </Navbar>
+          ) : (
+            <div id="ht-preloader">
+            <div className="loader clear-loader">
+                <img src={logo} style={{ width: '150px', height: 'auto' }} alt="AT HAND HR" className="animated-image" />
+            </div>
+        </div>
+        
+        )}  
+    </div>
     </>
   );
 }

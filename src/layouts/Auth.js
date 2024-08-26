@@ -12,6 +12,7 @@ import LockScreen from "views/pages/LockScreen.js";
 import NotFound from "views/pages/NotFound.js";
 import TermsAndConditions from "views/pages/TermsAndConditions";
 import PrivacyPolicy from "views/pages/PrivacyPolicy";
+import LandingPage from "views/pages/LandingPage";
 
 var ps;
 
@@ -60,11 +61,13 @@ function AuthLayout() {
     return <TemporaryPassword />;
   }
 
+  function LandingPageWrapper() {
+    const { id } = useParams();
+    return <LandingPage />;
+  }
+
   const nestedRoute = () => {
     const { pathname } = location;
-
-    
-    console.log("path here", pathname)
 
     if (pathname === "/auth/login") {
       return <Login />;
@@ -86,14 +89,7 @@ function AuthLayout() {
     else if (pathname === "/auth/lock-screen") {
       return <LockScreen />;
     }
-    else if (pathname === "/auth/terms-and-conditions")
-      {
-        return <TermsAndConditions />
-      }
-    else if (pathname === "/auth/privacy-policy")
-      {
-        return <PrivacyPolicy />
-      } else {
+      else {
     return <NotFound />;
     }
   };
