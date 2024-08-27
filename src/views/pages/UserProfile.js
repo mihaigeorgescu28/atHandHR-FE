@@ -409,7 +409,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
             <i className="nc-icon nc-sun-fog-29" />
           </div>
         </Col>
-        <Col md="8" xs="7">
+        <Col md="8" xs="8">
           <div className="numbers">
             <p className="card-category">Days until next holiday</p>
             <CardTitle tag="p">

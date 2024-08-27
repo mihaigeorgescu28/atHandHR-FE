@@ -82,8 +82,9 @@ const WebsiteNavbar = () => {
                             <div className="col">
                                 {/* Navbar */}
                                 <Navbar className="navbar navbar-expand-lg navbar-light">
-                                
-
+                                    <Link className="navbar-brand logo text-primary mb-0 font-w-7o" to="/">
+                                    <img src={logo} className="logo-img" style={{ height: '50px' }} />
+                                    </Link>
                                     <button
                                         className="navbar-toggler"
                                         type="button"
@@ -99,7 +100,6 @@ const WebsiteNavbar = () => {
                                         isOpen={isOpen}
                                         className="collapse navbar-collapse"
                                         navbar
-
                                     >
                                         <Nav className="mx-auto" navbar>
                                             {navLinks.map((navLink, index) => (
@@ -108,7 +108,7 @@ const WebsiteNavbar = () => {
                                                         <UncontrolledDropdown nav inNavbar isOpen={openMenus.includes(index)}
                                                             toggle={() => toggleMenu(index)}
                                                             onMouseLeave={closeAllMenus}>
-                                                            <DropdownToggle nav caret  >
+                                                            <DropdownToggle nav caret >
                                                                 {navLink.menu_title}
                                                             </DropdownToggle>
                                                             <DropdownMenu
@@ -169,7 +169,7 @@ const WebsiteNavbar = () => {
                                                             </DropdownMenu>
                                                         </UncontrolledDropdown>
                                                     ) : (
-                                                        <NavLink href={navLink.path} >
+                                                        <NavLink href={navLink.path}>
                                                             {navLink.menu_title}
                                                         </NavLink>
                                                     )}
@@ -178,7 +178,7 @@ const WebsiteNavbar = () => {
                                         </Nav>
                                     </Collapse>
                                     <div className="d-sm-flex align-items-center justify-content-end">
-                                        <Link className="btn btn-primary btn-sm ms-3 d-sm-inline-block d-none" to="auth/login">Login</Link>
+                                        <Link className="btn-link btn-primary btn-sm ms-3 d-sm-inline-block" to="/auth/login">Login</Link>
                                     </div>
                                 </Navbar>
                             </div>

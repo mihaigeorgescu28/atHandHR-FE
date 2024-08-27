@@ -12,40 +12,31 @@ function Herosection() {
         autoplay: true,
         loop: true,
         margin: 30,
-        dots: false, 
     };
 
     const teamMembers = [
-        { image: require("../../assets/img/landing/02.jpg") },
-        { image: require("../../assets/img/landing/03.jpg") },
+        { image: require("../../assets/img/landing/dashboard2.png") },
+        { image: require("../../assets/img/landing/my-account.png") },
+        { image: require("../../assets/img/landing/time-management.png") },
+        { image: require("../../assets/img/landing/calendar.png") },
+        { image: require("../../assets/img/landing/news-feed.png") },
     ];
 
     return (
             <Container>
                 <Row>
                 
-                    <div className="col-12 col-lg-5">
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-  <Link to="/">
-    <img
-      src={logo}
-      alt="AT HAND HR"
-      style={{ width: '150px', paddingBottom: '50px', paddingTop: '20px' }}  // Adjust the width as needed
-    />
-  </Link>
-</div>
-
-
-                        <h1 className="mb-4 font-w-4">
+                    <div className="col-12 col-lg-5" style={{ paddingTop: '100px'}}>
+                        <h1 className="mb-4 font-w-4" >
                         Your <span className="font-w-6 text-primary">HR </span>needs, at the tip of your<span className="font-w-6 text-primary"> fingers</span>
                         </h1>
                         <p className="lead mb-4">Effortless employee management, just a click away.</p>
                         <a href="https://calendly.com/mihai-georgescu-athandhr/30min" className="btn btn-primary" target="_blank" rel="noopener noreferrer">Book a demo</a>
                     </div>
                    
-                    <div className="col-12 col-lg-6 mt-5 mt-lg-0">
+                    <div className="col-12 col-lg-6 mt-5 mt-lg-6">
                         <div className="bg-white shadow-primary rounded overflow-hidden p-3 me-lg-n8">
-                            <OwlCarousel options={options}>
+                            <OwlCarousel options={options}  >
                                 {teamMembers.map((member, index) => (
                                     <div key={index}>
                                         <img className="img-fluid border border-light" src={member.image} alt="" />
