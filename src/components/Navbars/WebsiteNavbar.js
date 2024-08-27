@@ -62,6 +62,14 @@ const WebsiteNavbar = () => {
         }
     };
 
+    const handleLoginClick = () => {
+        const fullURL = process.env.REACT_APP_URL;
+        const loginURL = `${fullURL}/auth/login`;
+        // Redirect to the constructed login URL
+        window.location.href = loginURL;
+      };
+
+
     useEffect(() => {
         if (loader) {
             const timeout = setTimeout(() => {
@@ -178,7 +186,7 @@ const WebsiteNavbar = () => {
                                         </Nav>
                                     </Collapse>
                                     <div className="d-sm-flex align-items-center justify-content-end">
-                                        <Link className="btn-link btn-primary btn-sm ms-3 d-sm-inline-block" to="/auth/login">Login</Link>
+                                        <button className="btn-link btn-primary btn-sm ms-3 d-sm-inline-block" onClick={handleLoginClick}>Login</button>
                                     </div>
                                 </Navbar>
                             </div>

@@ -14,13 +14,19 @@ import NotFound from "views/pages/NotFound";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { PersistGate } from 'redux-persist/integration/react';
-import { persistStore, persistReducer } from "redux-persist"; // Import persistStore and persistReducer
-import storage from "redux-persist/lib/storage"; // Import the storage option
+import { persistStore, persistReducer } from "redux-persist"; 
+import storage from "redux-persist/lib/storage"; 
 import rootReducer from "../src/views/helper/RootReducer.js";
 import "./Vender.js"
 import $ from 'jquery';
 window.jQuery = $;
 window.$ = $;
+
+const fullAppURL = process.env.REACT_APP_URL;
+// Create a URL object from the full URL
+const urlObject = new URL(fullAppURL);
+// Extract the hostname from the URL object
+const appURL = urlObject.hostname;
 
 
 const persistConfig = {
@@ -28,84 +34,52 @@ const persistConfig = {
   storage,
 };
 
-
-
-// Create the persistedReducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-
-// Create the Redux store
 const store = configureStore({
-  reducer: persistedReducer, // Use the persistedReducer
+  reducer: persistedReducer,
 });
-
-// Create the persisted store
 const persistor = persistStore(store);
-
 
 function App() {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const location = useLocation();
   const navigate = useNavigate();
+  const baseURL = window.location.hostname;
 
-  
   useEffect(() => {
-    // Redirect to /auth/login if not logged in and not already on an auth route
-    //if (!isLoggedIn && !location.pathname.startsWith('/auth')) {
-    //  navigate('/auth/login');
-    //}
-    console.log("pathname", location.pathname)
-    console.log("current location", location);
-
-    // Redirect to /admin/newsfeed if user is logged in and on the root path
-    //if (isLoggedIn && location.pathname === '/') {
-    //  navigate('/admin/newsfeed');
-   // }
-  }, [location.pathname, navigate, isLoggedIn]);
+    if (!isLoggedIn && !location.pathname.startsWith('/auth') && baseURL === appURL) {
+      navigate('/auth/login');
+    } else if (isLoggedIn && location.pathname === '/' && baseURL === appURL) {
+      navigate('/admin/newsfeed');
+    }
+  }, [location.pathname, navigate, isLoggedIn, baseURL]);
 
   return (
-
     <Routes>
-  {isLoggedIn ? (
-    <>
-
-      {/* Auth Routes */}
-      <Route path="/auth/*" element={<AuthLayout />} />
-
-      {/* Admin Dashboard Routes */}
-      <Route path="/admin/dashboard/*" element={
-          <>
-            {console.log('Admin Dashboard Route is being rendered')}
-            <AdminLayout />
-          </>
-        }  />
-
-      {/* Admin Routes */}
-      <Route path="/admin/*" element={<AdminLayout />} />
-
-      {/* Website Routes*/}
-      <Route path="/*" element={<WebsiteLayout />} />
-
-      {/* Catch-All (NotFound) Route */}
-      <Route path="*" element={<NotFound />} />
-    </>
-  ) : (
-    <>
-
-      {/* Website Routes*/}
-      <Route path="/*" element={<WebsiteLayout />} />
-
-      {/* Auth Routes */}
-      <Route path="/auth/*" element={<AuthLayout />} />
-
-      {/* Redirect if trying to access /admin and not logged in */}
-      <Route path="/admin/*" element={<Navigate to="/auth/login" />} />
-
-      {/* Redirect all other paths to /auth/login */}
-      <Route path="*" element={<Navigate to="/auth/login" />} />
-    </>
-  )}
-</Routes>
+      {baseURL === appURL ? (
+        <>
+          {isLoggedIn ? (
+            <>
+              <Route path="/auth/*" element={<AuthLayout />} />
+              <Route path="/admin/dashboard/*" element={<AdminLayout />} />
+              <Route path="/admin/*" element={<AdminLayout />} />
+              <Route path="*" element={<NotFound />} />
+            </>
+          ) : (
+            <>
+              <Route path="/*" element={<Navigate to="/auth/login" />} />
+              <Route path="/auth/*" element={<AuthLayout />} />
+              <Route path="*" element={<Navigate to="/auth/login" />} />
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <Route path="/*" element={<WebsiteLayout />} />
+          <Route path="*" element={<NotFound />} />
+        </>
+      )}
+    </Routes>
   );
 }
 
@@ -114,9 +88,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Router>
     <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-    <App />
-    </PersistGate>
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+      </PersistGate>
     </Provider>
   </Router>
 );

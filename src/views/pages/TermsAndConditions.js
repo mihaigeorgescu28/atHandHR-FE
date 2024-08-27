@@ -12,13 +12,7 @@ function TermsAndConditions() {
       <Row>
           <Col sm="12">
             <section style={{ color: "black" }}>
-            <div style={{ textAlign: 'center' }}>
-      <img 
-        src={Logo} 
-        alt="AT HAND HR" 
-        style={{ height: '150px', width: 'auto', paddingBottom: '50px' }} 
-      /> 
-      </div>
+           
               <h3 style={{ textAlign: "center" }}>TERMS AND CONDITIONS OF USE</h3>
               <br/>
               <br/>
