@@ -451,8 +451,6 @@ function Calendar() {
       if(totalHoursLeft < 0 && singleSelect == 1 || singleSelect == '')
         {
           setDisabled(true);
-          
-      console.log("disabled", true)
         }
         else setDisabled(false);
     }
@@ -514,12 +512,18 @@ function Calendar() {
 
 
   function isWeekend(date) {
-    const day = date.getUTCDate(); // Get the day of the week (0-6, where 0 is Sunday)
-    return day === 0 || day === 6; // Return true if it's Sunday (0) or Saturday (6)
-  }
+    // Convert to local time
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+
+    // Get the day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
+    const dayOfWeek = localDate.getDay();
+
+    // Return true if the day is Saturday (6) or Sunday (0)
+    return dayOfWeek === 0 || dayOfWeek === 6;
+}
+
 
   async function isBankHoliday(date) {
-    console.log("before day ", date)
     // Convert to local time
     const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
 
@@ -577,7 +581,6 @@ const finalDate = `${year}-${month}-${day}`;
       if (clientResult.status === 200) {
 
         const workingWeekends = clientResult.data.WorkingWeekends;
-  
         if (workingWeekends === "No" && isWeekend(slotInfo.start)) {
           setInvalidDate('Weekend');
           return false;
