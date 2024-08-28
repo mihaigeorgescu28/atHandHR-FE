@@ -552,10 +552,19 @@ const finalDate = `${year}-${month}-${day}`;
   }
 
   async function isSameDayExistingLeave(date) {
+    // Convert to local time
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+
+    // Extract local date components
+const year = localDate.getFullYear();
+const month = (localDate.getMonth() + 1).toString().padStart(2, '0');
+const day = localDate.getDate().toString().padStart(2, '0');
+const finalDate = `${year}-${month}-${day}`;
+
     try {
       const result = await axios.post(`${apiUrl}/leave/sameDayExistingLeave`, {
         UserID: UserID,
-        Date: date,
+        Date: finalDate,
       });
   
       if (result.status === 200) {
