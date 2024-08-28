@@ -33,6 +33,7 @@ function TotalStaffTable({ fetchUpdatedData }) {
   const [showDisableEmployeeAlert, setShowDisableEmployeeAlert] = React.useState(false);
   const [showDisableEmployeeSuccess, setShowDisableEmployeeSuccess] = React.useState(false);
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
+  const clientID = localStorage.getItem('ClientID');
 
   const fetchData = async () => {
     try {
@@ -126,7 +127,7 @@ function TotalStaffTable({ fetchUpdatedData }) {
       async function fetchUserData(userId) {
         try {
           setIsLoadingUserData(true);
-          const response = await axios.get(`${apiUrl}/getUserData/${userId}`);
+          const response = await axios.get(`${apiUrl}/getUserData/${userId}?clientID=${clientID}`);
           setUserData(response.data);
         } catch (error) {
           console.error(error);

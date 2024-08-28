@@ -5,6 +5,13 @@ import logo from '../../assets/img/business/athandhrlogo_transparent_small.png';
 function WebsiteFooter() {
     const [Visible, setVisible] = useState(false)
     const [loader, setLoader] = useState(true);
+    const handleLoginClick = () => {
+        const fullURL = process.env.REACT_APP_URL;
+        const loginURL = `${fullURL}/auth/login`;
+        // Redirect to the constructed login URL
+        window.location.href = loginURL;
+      };
+    
     const handleScroll = () => {
         var scrollTop =
             (document.documentElement && document.documentElement.scrollTop) ||
@@ -81,8 +88,10 @@ function WebsiteFooter() {
                 <li className="mb-3">
                     <Link 
                         className="list-group-item-action" 
-                        to="/auth/login" 
-                        onClick={() => window.scrollTo(0, 0)}
+                        to="#"  // or omit this if not needed
+    onClick={() => {
+        handleLoginClick(); // Call the handleLoginClick function
+    }}   
                     >
                         Login
                     </Link>

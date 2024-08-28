@@ -308,7 +308,7 @@ function UserProfile() {
     async function fetchUserData() {
       try {
         
-        const response = await axios.get(`${apiUrl}/user/getUserData/${UserID}`);
+        const response = await axios.get(`${apiUrl}/user/getUserData/${UserID}?clientID=${clientID}`);
         setUserData(response.data);
 
         // Extract user data and set form data

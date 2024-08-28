@@ -514,14 +514,24 @@ function Calendar() {
 
 
   function isWeekend(date) {
-    const day = date.getDay(); // Get the day of the week (0-6, where 0 is Sunday)
+    const day = date.getUTCDate(); // Get the day of the week (0-6, where 0 is Sunday)
     return day === 0 || day === 6; // Return true if it's Sunday (0) or Saturday (6)
   }
 
   async function isBankHoliday(date) {
+    console.log("before day ", date)
+    // Convert to local time
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+
+    // Extract local date components
+const year = localDate.getFullYear();
+const month = (localDate.getMonth() + 1).toString().padStart(2, '0');
+const day = localDate.getDate().toString().padStart(2, '0');
+const finalDate = `${year}-${month}-${day}`;
+
     try {
       const result = await axios.post(`${apiUrl}/leave/bankHoliday`, {
-        Date: date,
+        Date: finalDate,
       });
   
       if (result.status === 200) {

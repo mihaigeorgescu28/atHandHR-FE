@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 function EditUserForm() {
   const [userData, setUserData] = useState(null);
   const apiUrl = process.env.REACT_APP_APIURL;
+  const clientID = localStorage.getItem('ClientID');
   const [userId, setUserId] = useState(null);
 
   const extractIdFromPathname = (pathname) => {
@@ -23,7 +24,7 @@ function EditUserForm() {
 
     async function fetchUserData() {
       try {
-        const response = await axios.get(`${apiUrl}/user/getUserData/${extractedUserId}`);
+        const response = await axios.get(`${apiUrl}/user/getUserData/${extractedUserId}?clientID=${clientID}`);
         setUserData(response.data);
       } catch (error) {
         console.error(error);
