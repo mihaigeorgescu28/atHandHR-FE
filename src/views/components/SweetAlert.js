@@ -149,7 +149,7 @@ export const userUpdatedSuccess = (confirmAction) => {
   );
 };
 
-// success message for disabling employee
+// success message for creating employee
 export const createNewUserSuccess = (confirmAction, temporaryPassword) => {
   return (
     <ReactBSAlert
@@ -166,6 +166,42 @@ export const createNewUserSuccess = (confirmAction, temporaryPassword) => {
 
   );
 };
+
+// success message for submitting new leave
+export const submitNewLeaveSuccess = (confirmAction) => {
+  return (
+    <ReactBSAlert
+  success
+  title="Success"
+  onConfirm={confirmAction}
+> 
+  <span style={{ color: 'black' }}>
+  Your request was submitted
+  </span>
+</ReactBSAlert>
+
+
+  );
+};
+
+export const submitNewLeaveError = (confirmAction, errorMessage) => {
+  return (
+    <ReactBSAlert
+  info
+  title=""
+  onConfirm={confirmAction}
+  onCancel={confirmAction}
+> 
+  <span style={{ color: 'black' }}>
+  {errorMessage}
+  </span>
+</ReactBSAlert>
+
+
+  );
+};
+
+
 
 export const errorAlert = (confirmAction) => {
   return (

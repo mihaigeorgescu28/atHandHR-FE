@@ -139,7 +139,7 @@ function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRang
           const { dateRangeStart, dateRangeEnd } = mapMonthToNumber(tableDateRange);
           apiUrlWithParams += `&DateRangeStart=${dateRangeStart}&DateRangeEnd=${dateRangeEnd}`;
         }
-      
+        axios.defaults.withCredentials = true;
         const result = await axios.get(apiUrlWithParams);
       
         if (result.status === 200) {

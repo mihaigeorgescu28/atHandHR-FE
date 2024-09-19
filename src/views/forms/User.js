@@ -158,7 +158,8 @@ if (!isValidEmail || !isValidPhoneNumber || !isValidCompanyEmail || !isValidComp
       Object.entries(formData).forEach(([field, value]) => {
           formData[field] = value;
       });
-
+      
+      axios.defaults.withCredentials = true;
       const result = await axios.post(
           `${apiUrl}/user/submitUserForm`,
           formData,

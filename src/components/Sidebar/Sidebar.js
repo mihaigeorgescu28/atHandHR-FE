@@ -134,6 +134,7 @@ function Sidebar(props) {
     async function fetchUserFullName() {
       const UserID = localStorage.getItem("UserID");
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.post(
           `${apiUrl}/user/getUserDetails`,
           {

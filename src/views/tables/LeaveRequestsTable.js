@@ -79,7 +79,7 @@ const confirmAproveLeave = async () => {
       console.error('Invalid object:', obj);
       return;
     }
-
+    axios.defaults.withCredentials = true;
     const response = await axios.post(`${apiUrl}/leave/actionLeaveRequest`, {
       StatusID: 2,
       LeaveRequestID: obj.LeaveRequestID,
@@ -109,7 +109,7 @@ const confirmDeclineLeave = async () => {
       console.error('Invalid object:', obj);
       return;
     }
-
+    axios.defaults.withCredentials = true;
     const response = await axios.post(`${apiUrl}/leave/actionLeaveRequest`, {
       StatusID: 3,
       LeaveRequestID: obj.LeaveRequestID,
@@ -173,6 +173,7 @@ const confirmDeclineLeave = async () => {
 
   async function fetchTableData() {
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.get(`${apiUrl}/leave/LeaveRequestStatusBreakDown?ClientID=${clientID}&LeaveTypeGroupID=${leaveTypeGroupID}&LeaveStatusID=${leaveStatusID}&LeaveTypeID=${leaveTypeID}`);
 
       if (result.status === 200) {
@@ -188,6 +189,7 @@ const confirmDeclineLeave = async () => {
   useEffect(() => {
     async function fetchData() {
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.get(`${apiUrl}/leave/LeaveRequestStatusBreakDown?ClientID=${clientID}&LeaveTypeGroupID=${leaveTypeGroupID}&LeaveStatusID=${leaveStatusID}&LeaveTypeID=${leaveTypeID}`);
 
         if (result.status === 200) {

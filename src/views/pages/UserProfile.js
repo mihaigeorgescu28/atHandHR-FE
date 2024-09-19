@@ -77,6 +77,7 @@ function UserProfile() {
   const confirmResetPassword = async () => {
     try {
       // Make an API call to reset user password with UserID in the body
+      axios.defaults.withCredentials = true;
       const response = await axios.post(`${apiUrl}/emails/resetUserPassword`, { UserID });
   
       if (response.status === 200) {
@@ -166,6 +167,7 @@ function UserProfile() {
         formData.append('ProfilePicture', fileName);
       }
   
+      axios.defaults.withCredentials = true;
       const result = await axios.post(
         `${apiUrl}/user/submitUserForm`,
         formData,
@@ -236,6 +238,7 @@ function UserProfile() {
         formData.append('ProfilePicture', fileName);
       }
   
+      axios.defaults.withCredentials = true;
       const result = await axios.post(
         `${apiUrl}/user/submitUserForm`,
         formData,
@@ -281,6 +284,7 @@ function UserProfile() {
     async function fetchUserFullName() {
       const UserID = localStorage.getItem("UserID");
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.post(
           `${apiUrl}/user/getUserDetails`,
           {
@@ -307,7 +311,7 @@ function UserProfile() {
 
     async function fetchUserData() {
       try {
-        
+        axios.defaults.withCredentials = true;
         const response = await axios.get(`${apiUrl}/user/getUserData/${UserID}?clientID=${clientID}`);
         setUserData(response.data);
 
@@ -350,7 +354,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
       <Container >
         <Row>
         <Col md="4">
-  <Card className="card-user" style={{ paddingBottom: '105px' }}>
+  <Card className="card-user" style={{ paddingBottom: '133px' }}>
     <div className="image">
     <img
   alt="..."
@@ -409,7 +413,7 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
             <i className="nc-icon nc-sun-fog-29" />
           </div>
         </Col>
-        <Col md="8" xs="8">
+        <Col >
           <div className="numbers">
             <p className="card-category">Days until next holiday</p>
             <CardTitle tag="p">

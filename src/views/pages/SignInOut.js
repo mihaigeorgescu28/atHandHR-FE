@@ -92,6 +92,7 @@ function SignInOut(props) {
     async function fetchUserFullName() {
       const UserID = localStorage.getItem("UserID");
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.post(
           `${apiUrl}/user/getUserDetails`, 
           {
@@ -115,6 +116,7 @@ function SignInOut(props) {
     async function currentShift() {
       const UserID = localStorage.getItem("UserID");
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.post(
           `${apiUrl}/timeManagement/currentShift`,
           {
@@ -169,6 +171,7 @@ function SignInOut(props) {
         const longitude = position.coords.longitude;
   
         try {
+          axios.defaults.withCredentials = true;
           const result = axios.post(
             `${apiUrl}/timeManagement/dailyShift`,
             {

@@ -14,7 +14,7 @@ import ReactTable from "components/ReactTable/ReactTable.js";
 import { useNavigate} from "react-router-dom";
 import * as XLSX from "xlsx";
 import { disableEmployeeSuccess, confirmationDisableEmployee, resetPasswordSuccess, confirmationResetPassword } from '../components/SweetAlert';
-
+import LeaveRequestForm from "views/forms/LeaveRequestForm";
 
 const apiUrl = process.env.REACT_APP_APIURL;
 
@@ -34,9 +34,11 @@ function TotalStaffTable({ fetchUpdatedData }) {
   const [showDisableEmployeeSuccess, setShowDisableEmployeeSuccess] = React.useState(false);
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
   const clientID = localStorage.getItem('ClientID');
+  const [showModal, setShowModal] = useState(false);
 
   const fetchData = async () => {
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.get(`${apiUrl}/user/totalStaffOfClient`, {
         params: { ClientID: clientId },
       });
@@ -71,7 +73,7 @@ function TotalStaffTable({ fetchUpdatedData }) {
         console.error('Invalid object:', obj);
         return;
       }
-  
+      axios.defaults.withCredentials = true;
       // Make an API call to reset user password with UserID
       const response = await axios.post(`${apiUrl}/emails/resetUserPassword`, { UserID: obj.UserID });
       
@@ -99,7 +101,7 @@ function TotalStaffTable({ fetchUpdatedData }) {
         console.error('Invalid object:', objToDelete);
         return;
       }
-  
+      axios.defaults.withCredentials = true;
       // Call the API to disable the employee using objToDelete.UserID
       await axios.post(`${apiUrl}/user/disableEmployee`, { UserID: objToDelete.UserID });
   
@@ -127,6 +129,7 @@ function TotalStaffTable({ fetchUpdatedData }) {
       async function fetchUserData(userId) {
         try {
           setIsLoadingUserData(true);
+          axios.defaults.withCredentials = true;
           const response = await axios.get(`${apiUrl}/getUserData/${userId}?clientID=${clientID}`);
           setUserData(response.data);
         } catch (error) {
@@ -141,6 +144,10 @@ function TotalStaffTable({ fetchUpdatedData }) {
 
   const handleAddEmployee = () => {
     navigate(`/admin/dashboard/totalStaff/new`);
+  };
+
+  const handleAddLeave = () => {
+    setShowModal(true);
   };
 
   const renderActions = (actionsID) => {
@@ -229,6 +236,15 @@ function TotalStaffTable({ fetchUpdatedData }) {
       <CardTitle tag="h5">Total Staff</CardTitle>
     </div>
     <div>
+    
+    <Button
+        style={{ backgroundColor: "#000000", color: "#fff" }}
+        size="sm"
+        onClick={handleAddLeave}
+      >
+        Add Leave
+      </Button>
+     
     <Button
         style={{ backgroundColor: "#007bff", color: "#fff" }}
         size="sm"
@@ -300,6 +316,9 @@ function TotalStaffTable({ fetchUpdatedData }) {
     {showResetPasswordAlert && confirmationResetPassword(hideAlert, confirmResetPassword)}
 
     {showResetPasswordSuccess && resetPasswordSuccess(hideAlert, hideAlert)}
+
+    
+    <LeaveRequestForm showModal={showModal} setShowModal={setShowModal} />
       
     </div>
   );

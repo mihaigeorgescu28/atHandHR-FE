@@ -63,7 +63,7 @@ function PositionsTable() {
           ClientID: clientID,
           UserID: userID
         };
-    
+        axios.defaults.withCredentials = true;
         // Make a POST request to the endpoint with formData and ClientID in the request body
         await axios.post(`${apiUrl}/sitemap/InsertPositionRecord`, dataToSend);
         
@@ -86,7 +86,7 @@ function PositionsTable() {
           ClientID: clientID,
           UserID: userID
         };
-    
+        axios.defaults.withCredentials = true;
         // Make a POST request to the endpoint with formData and ClientID in the request body
         await axios.post(`${apiUrl}/sitemap/EditPositionRecord`, dataToSend);
         
@@ -101,6 +101,7 @@ function PositionsTable() {
 
     const handleEditClick = async (obj) => {
       try {
+        axios.defaults.withCredentials = true;
         // Fetch the data for the record to be edited
         const response = await axios.post(`${apiUrl}/sitemap/EmployeePositionData`, {
           PositionID: obj.PositionID,
@@ -140,7 +141,7 @@ function PositionsTable() {
           console.error('Invalid object:', objToDelete);
           return;
         }
-    
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/sitemap/DeletePositionRecord`, { PositionID: objToDelete.PositionID, UserID: userID });
     
         // Check if the response status is 200

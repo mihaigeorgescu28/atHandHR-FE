@@ -55,6 +55,7 @@ function StaffOnLeave({ TableDateRange }) {
   useEffect(() => {
     async function fetchData() {
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.get(
           `${apiUrl}/leave/staffOnLeave?ClientID=${clientID}&DateRange=${TableDateRange}`
         );

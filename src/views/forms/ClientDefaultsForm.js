@@ -154,7 +154,7 @@ function ClientDefaultsForm() {
           ClientID: clientID,
           UserID: userID
         };
-    
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/sitemap/SubmitClientDefaultsRecord`, dataToSend);
   
   // Check if the response status is 200
@@ -179,6 +179,7 @@ function ClientDefaultsForm() {
     async function fetchClientDefaultsData() {
       try {
         // Fetch ClientDefaultsData
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/sitemap/ClientDefaultsData`, {
           ClientID: localStorage.getItem('ClientID')
         });
