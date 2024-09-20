@@ -75,13 +75,15 @@ function Login() {
   };
 
   const handleSubmit = (event) => {
+    // IMPORTANT NEEDS TO STAY HERE TO PUT TOKEN IN COOKIES
+    axios.defaults.withCredentials = true;
     event.preventDefault();
     axios.post(
       `${apiUrl}/user/login`,
       {
         email: inputs.email,
         password: inputs.password
-      }
+      },
     ).then((result) => {
       console.log(result); // Log the full response for debugging
   
