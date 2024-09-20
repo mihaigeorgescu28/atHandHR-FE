@@ -75,6 +75,8 @@ function Login() {
   };
 
   const handleSubmit = (event) => {
+    // IMPORTANT NEEDS TO STAY HERE TO PUT TOKEN IN COOKIES
+    axios.defaults.withCredentials = true;
     event.preventDefault();
     axios.post(
       `${apiUrl}/user/login`,
@@ -83,12 +85,17 @@ function Login() {
         password: inputs.password
       },
     ).then((result) => {
-      if(result.status === 200) {
-        setMessage(result.data.message);
-        if(result.data.success) {
+      console.log(result); // Log the full response for debugging
+  
+      if (result.status === 200) {
+        if (result.data.success) {
+          // Store relevant info in localStorage, no need to handle token manually
+          setMessage(result.data.message);
           localStorage.setItem('isLoggedIn', 'true');
           localStorage.setItem('UserID', result.data.UserID);
           localStorage.setItem('RoleID', result.data.RoleID);
+          
+          // Navigate based on whether the temporary password was found
           setSubmit(true);
           setSuccess(true);
           navigate(result.data.temporaryPasswordFound ? `/auth/temporaryPassword/${result.data.UserID}` : "/admin/newsfeed");
@@ -98,8 +105,12 @@ function Login() {
           setMessage(result.data.message);
         }
       }
-    }).catch(() => {});
-  }
+    }).catch((error) => {
+      console.error('Error during login:', error); // Handle and log error if any
+    });
+  };
+  
+  
 
   React.useEffect(() => {
     document.body.classList.toggle("login-page");

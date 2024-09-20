@@ -12,6 +12,7 @@ function InsertUserForm() {
     async function fetchClientName() {
       const UserID = localStorage.getItem("UserID");
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.post(
           `${apiUrl}/user/currentClient`,
           {

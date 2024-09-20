@@ -129,7 +129,8 @@ const fetchLeaveUpdatedData = async () => {
   try {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
-  
+    axios.defaults.withCredentials = true;
+
     axios.get(`${apiUrl}/leave/leaveRequestLastUpdated?ClientID=${clientID}&LeaveTypeID=1`)
       .then((response) => {
         if (response.data.length > 0) {
@@ -1041,6 +1042,7 @@ const fetchLeaveUpdatedData = async () => {
     // Function to fetch combined data
     const fetchData = async () => {
       try {
+        axios.defaults.withCredentials = true;
         const response = await axios.get(`${apiUrl}/leave/countStaffData?ClientID=${clientID}`);
         if (response.data) {
           const { TotalStaff, StaffOnLeave, StaffOnLeaveNext30Days } = response.data;
@@ -1064,7 +1066,7 @@ useEffect(() => {
   // Get the ClientID from local storage
   const clientID = localStorage.getItem('ClientID');
 
-
+  axios.defaults.withCredentials = true;
   axios.get(`${apiUrl}/timeManagement/SignInOutReportToday?ClientID=${clientID}&ActionTypeID=2`)
     .then((response) => {
       if (Object.keys(response.data).length > 0) {
@@ -1142,7 +1144,7 @@ useEffect(() => {
   // Get the ClientID from local storage
   const clientID = localStorage.getItem('ClientID');
 
-
+  axios.defaults.withCredentials = true;
   axios.get(`${apiUrl}/timeManagement/SignInOutReportToday?ClientID=${clientID}&ActionTypeID=1`)
     .then((response) => {
       if (Object.keys(response.data).length > 0) {
@@ -1224,7 +1226,7 @@ useEffect(() => {
 useEffect(() => {
   // Get the ClientID from local storage
   const clientID = localStorage.getItem('ClientID');
-
+  axios.defaults.withCredentials = true;
   // Make the API call using Axios to fetch all three values in one request
   axios.get(`${apiUrl}/leave/CurrentNumberOfLeaveRequests?ClientID=${clientID}`)
     .then(response => {
@@ -1247,7 +1249,7 @@ useEffect(() => {
 useEffect(() => {
   // Get the ClientID from local storage
   const clientID = localStorage.getItem('ClientID');
-
+  axios.defaults.withCredentials = true;
   // Make the API call using Axios to fetch all three values in one request
   axios.get(`${apiUrl}/leave/CurrentNumberOfLeaveRequestsByMonth?ClientID=${clientID}`)
     .then(response => {
@@ -1293,7 +1295,7 @@ useEffect(() => {
 
   const signInEndpoint = `${apiUrl}/timeManagement/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=1`;
   const signOutEndpoint = `${apiUrl}/timeManagement/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=2`;
-
+  axios.defaults.withCredentials = true;
   // Fetch data for ActionTypeID 1
 axios.get(signInEndpoint)
   .then((response) => {

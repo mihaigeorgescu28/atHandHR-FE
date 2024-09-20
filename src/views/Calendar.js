@@ -97,6 +97,7 @@ function Calendar() {
   useEffect(() => {
     async function fetchLeaveType() {
       try {
+        axios.defaults.withCredentials = true;
         const result = await axios.post(
           `${apiUrl}/leave/leaveType`,
           {
@@ -163,6 +164,7 @@ function Calendar() {
     
     try 
     {
+        axios.defaults.withCredentials = true;
         const result = await axios.post(
         `${apiUrl}/leave/WithinBankHoliday`,
         {
@@ -186,6 +188,7 @@ function Calendar() {
   async function calculateDurationEntitelementLeft(start, end) {
     const UserID = localStorage.getItem("UserID");
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.post(
         `${apiUrl}/leave/userHolidayInfo`,
         {
@@ -287,6 +290,7 @@ function Calendar() {
       const endDateForm = formatTimestampForSQL(endDate);
 
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.post(
         `${apiUrl}/leave/submitLeave`,
         {
@@ -309,7 +313,7 @@ function Calendar() {
       setDuration("");
       setShowAlert(true); // Show the SweetAlert
       }
-
+      axios.defaults.withCredentials = true;
       const response = await axios.get(`${apiUrl}/leave/leaveRequests?ClientID=${clientID}`);
       if (response.status === 200) {
         const data = response.data;
@@ -465,6 +469,7 @@ function Calendar() {
     async function fetchEvents() {
       try {
         const clientID = localStorage.getItem('ClientID');
+        axios.defaults.withCredentials = true;
         const response = await axios.get(`${apiUrl}/leave/leaveRequests?ClientID=${clientID}`);
         if (response.status === 200) {
           const data = response.data;
@@ -481,6 +486,7 @@ function Calendar() {
 
   const addNewEvent = async (slotInfo, singleSelectName, selectedDate, endDate) => {
     const UserID = localStorage.getItem("UserID");
+    axios.defaults.withCredentials = true;
     try {
       const result = await axios.post(
         `${apiUrl}/user/user`,
@@ -534,6 +540,7 @@ const day = localDate.getDate().toString().padStart(2, '0');
 const finalDate = `${year}-${month}-${day}`;
 
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.post(`${apiUrl}/leave/bankHoliday`, {
         Date: finalDate,
       });
@@ -562,6 +569,7 @@ const day = localDate.getDate().toString().padStart(2, '0');
 const finalDate = `${year}-${month}-${day}`;
 
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.post(`${apiUrl}/leave/sameDayExistingLeave`, {
         UserID: UserID,
         Date: finalDate,
@@ -582,6 +590,7 @@ const finalDate = `${year}-${month}-${day}`;
 
   async function beforeLoadFormCheck(slotInfo) {
     try {
+      axios.defaults.withCredentials = true;
       const UserID = localStorage.getItem("UserID");
       const clientResult = await axios.post(`${apiUrl}/user/currentClient`, {
         UserID: UserID,

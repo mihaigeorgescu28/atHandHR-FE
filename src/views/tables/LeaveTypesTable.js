@@ -45,6 +45,7 @@ function LeaveTypesTable() {
   const fetchLeaveTypes = async () => {
     try {
       let result;
+      axios.defaults.withCredentials = true;
       if (formType === 'new') {
         result = await axios.post(`${apiUrl}/leave/globalLeaveTypes`, { UserID: userID });
       } else if (formType === 'edit') {
@@ -87,7 +88,7 @@ function LeaveTypesTable() {
           ClientID: clientID,
           UserID: userID
         };
-    
+        axios.defaults.withCredentials = true;
         // Make a POST request to the endpoint with formData and ClientID in the request body
         await axios.post(`${apiUrl}/sitemap/InsertClientLeaveTypeRecord`, dataToSend);
         
@@ -112,7 +113,7 @@ function LeaveTypesTable() {
           ClientID: clientID,
           UserID: userID
         };
-    
+        axios.defaults.withCredentials = true;
         // Make a POST request to the endpoint with formData and ClientID in the request body
         await axios.post(`${apiUrl}/sitemap/EditClientLeaveTypeRecord`, dataToSend);
         
@@ -132,7 +133,7 @@ function LeaveTypesTable() {
       try {
         setFormType("edit");
         setModalOpen(true);
-    
+        axios.defaults.withCredentials = true;
         // Fetch the data for the record to be edited
         const response = await axios.post(`${apiUrl}/sitemap/ClientLeaveTypeData`, {
           ClientLeaveTypeID: obj.ClientLeaveTypeID,
@@ -173,7 +174,7 @@ function LeaveTypesTable() {
           console.error('Invalid object:', objToDelete);
           return;
         }
-    
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/sitemap/DeleteClientLeaveTypeRecord`, { ClientLeaveTypeID: objToDelete.ClientLeaveTypeID, UserID: userID });
     
         // Check if the response status is 200
@@ -250,6 +251,7 @@ function LeaveTypesTable() {
 
   const fetchData = async () => {
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.post(`${apiUrl}/sitemap/ClientLeaveTypeData`, {
         ClientID: clientID,
         UserID: userID

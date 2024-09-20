@@ -48,6 +48,7 @@ function NewsfeedTable() {
   useEffect(() => {
     async function fetchIcons() {
       try {
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/sitemap/Icons`);
         if (response.status === 200) {
           setIconOptions(response.data.result.map(icon => icon.IconName));
@@ -82,7 +83,7 @@ function NewsfeedTable() {
           ClientID: clientID,
           UserID: userID
         };
-    
+        axios.defaults.withCredentials = true;
         // Make a POST request to the endpoint with formData and ClientID in the request body
         await axios.post(`${apiUrl}/sitemap/InsertNewsfeedRecord`, dataToSend);
         
@@ -104,7 +105,7 @@ function NewsfeedTable() {
           ClientID: clientID,
           UserID: userID
         };
-    
+        axios.defaults.withCredentials = true;
         // Make a POST request to the endpoint with formData and ClientID in the request body
         await axios.post(`${apiUrl}/sitemap/EditNewsfeedRecord`, dataToSend);
         
@@ -119,6 +120,7 @@ function NewsfeedTable() {
 
     const handleEditClick = async (obj) => {
       try {
+        axios.defaults.withCredentials = true;
         // Fetch the data for the record to be edited
         const response = await axios.post(`${apiUrl}/sitemap/NewsfeedData`, {
           LatestNewsID: obj.LatestNewsID,
@@ -161,7 +163,7 @@ function NewsfeedTable() {
           console.error('Invalid object:', objToDelete);
           return;
         }
-    
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/sitemap/DeleteNewsfeedRecord`, { LatestNewsID: objToDelete.LatestNewsID, UserID: userID });
     
         // Check if the response status is 200
@@ -224,6 +226,7 @@ function NewsfeedTable() {
 
   const fetchData = async () => {
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.post(`${apiUrl}/sitemap/NewsfeedData`, {
         ClientID: clientID,
         UserID: userID

@@ -71,7 +71,7 @@ function TemporaryPassword() {
     return;
   }
 
-  
+      axios.defaults.withCredentials = true;
       axios.post(
         `${apiUrl}/user/updateTemporaryUserPassword`,
         {
@@ -215,6 +215,7 @@ function TemporaryPassword() {
   useEffect(() => {
     const resetUserOnLoad = async (resetPasswordUID) => {
       try {
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/user/temporaryUserPassword`, { resetPasswordUID });
         setVerificationSuccess(true);
         setVerificationMessage(response.data.message);
@@ -244,8 +245,8 @@ function TemporaryPassword() {
       const uidIndex = urlParts.indexOf('temporaryPassword') + 1; // Assuming userId is right after 'temporaryPassword'
       const userId = uidIndex < urlParts.length ? urlParts[uidIndex] : null;
       setUserId(userId)
-
-        const response = await axios.post(`${apiUrl}/user/checkForTemporaryPassword`, { userId });
+      
+        const response = await axios.post(`${apiUrl}/user/checkForTemporaryPassword`, { userId }, { withCredentials: true });
 
         if (response.data.success) {
           console.log('User with temporary password found.');

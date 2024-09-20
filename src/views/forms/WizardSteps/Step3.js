@@ -59,6 +59,7 @@ const Step3 = React.forwardRef((props, ref) => {
 
   const confirmDisableEmployee = async () => {
     try {
+      axios.defaults.withCredentials = true;
       // Make an API call to disable employee with UserID in the body
       const response = await axios.post(`${apiUrl}/user/disableEmployee`, { UserID });
   

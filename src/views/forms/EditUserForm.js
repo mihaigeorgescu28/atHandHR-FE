@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import UserForm from "views/forms/User.js";
 import { useLocation } from "react-router-dom";
+import app from 'utils/axiosConfig.js';  // Import the configured axios instance
 
 
 function EditUserForm() {
@@ -21,13 +22,13 @@ function EditUserForm() {
     const extractedUserId = extractIdFromPathname(location.pathname);
     setUserId(extractedUserId);
 
-
     async function fetchUserData() {
       try {
+        axios.defaults.withCredentials = true;
         const response = await axios.get(`${apiUrl}/user/getUserData/${extractedUserId}?clientID=${clientID}`);
         setUserData(response.data);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching user data:', error);
       }
     }
 

@@ -146,6 +146,7 @@ const Step2 = forwardRef(({ formType, formData, updateFormData, handleSubmit }, 
 
       try {
         // Fetch line managers
+        axios.defaults.withCredentials = true;
         const rolesResponse = await axios.post(
           `${apiUrl}/user/getRoles`,
           { clientId: clientID },
@@ -177,10 +178,11 @@ const updatedRoles = defaultRole
   setRoles(updatedRoles);
 
         } else {
-          console.error('Invalid response format for line managers:', rolesResponse.data);
+          console.error('Invalid response format for roles:', rolesResponse.data);
         }
 
         // Fetch line managers
+        axios.defaults.withCredentials = true;
         const lineManagersResponse = await axios.post(
           `${apiUrl}/user/getLineManagers`,
           { clientId: clientID },
@@ -214,6 +216,7 @@ setLinemanagers(updatedLineManagers);
         }
   
         // Fetch positions
+        axios.defaults.withCredentials = true;
         const positionsResponse = await axios.post(
           `${apiUrl}/user/getClientPositions`,
           { clientId: clientID },
