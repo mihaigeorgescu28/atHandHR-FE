@@ -16,17 +16,18 @@ function AuthAdmin(props) {
   const [activeColor, setActiveColor] = React.useState("info");
   const [sidebarMini, setSidebarMini] = React.useState(false);
   const mainPanel = React.useRef();
-  const [userId, setUserId] = React.useState(null);
+  const [Id, setId] = React.useState(null);
   const RoleID = localStorage.getItem("RoleID");
 
-  const extractIdFromPathname = (pathname) => {
-    const match = pathname.match(/\/totalStaff\/(\d+)/);
-    return match ? match[1] : null;
+  const extractIdFromPathname = (pathname, fieldBeforeId) => {
+    const regex = new RegExp(`/${fieldBeforeId}/(\\d+)`); // Dynamically create the regex
+    const match = pathname.match(regex);
+    return match ? match[1] : null; // Return the captured id or null if no match
   };
 
   React.useEffect(() => {
-    const extractedUserId = extractIdFromPathname(location.pathname);
-    setUserId(extractedUserId);
+    const extractedId = extractIdFromPathname(location.pathname, "totalStaff");
+    setId(extractedId);
   }, [location]);
 
 
@@ -49,16 +50,24 @@ function AuthAdmin(props) {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     mainPanel.current.scrollTop = 0;
-  }, [location, userId]);
+  }, [location, Id]);
 
   const updatedRoutes = React.useMemo(() => {
     return routes.map((route) => {
       if (route.path === "/dashboard/totalStaff/:id") {
-        const extractedId = extractIdFromPathname(location.pathname);
-        setUserId(extractedId);
+        const extractedId = extractIdFromPathname(location.pathname, "totalStaff");
+        setId(extractedId);
         return {
           ...route,
           path: `/dashboard/totalStaff/${extractedId}`,
+        };
+      }
+      else if(route.path === "/company-documents/:id") {
+        const extractedId = extractIdFromPathname(location.pathname, "company-documents");
+        setId(extractedId);
+        return {
+          ...route,
+          path: `/company-documents/${extractedId}`,
         };
       }
       return route;

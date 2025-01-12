@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate hook from 
 function SiteMap() {
   const navigate = useNavigate(); 
 
+  const handleCompanyDocuments = () => {
+    navigate('/admin/sitemap/company-documents');
+  };
+
   const handleViewNewsfeed = () => {
     navigate('/admin/sitemap/newsfeed');
   };
@@ -24,6 +28,17 @@ function SiteMap() {
   return (
     <div className="content">
       <Row>
+      <Col md="4">
+          <Card style={{width: '24rem'}}>
+            <CardBody className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center">
+                <i className="nc-icon nc-paper mr-2" style={{ fontSize: '35px' }} />
+                <CardTitle style={{ marginTop: '12px' }}>Company Documents</CardTitle>
+              </div>
+              <Button size="sm" type="submit" className="btn-round" style={{backgroundColor: '#50BCDA', color: 'white'}} color="default" onClick={handleCompanyDocuments}>View</Button> {/* Attach onClick event handler */}
+            </CardBody>
+          </Card>
+        </Col>
         <Col md="4">
           <Card style={{width: '24rem'}}>
             <CardBody className="d-flex justify-content-between align-items-center">
@@ -31,7 +46,7 @@ function SiteMap() {
                 <i className="nc-icon nc-bell-55 mr-2" style={{ fontSize: '35px' }} />
                 <CardTitle style={{ marginTop: '12px' }}>Newsfeed</CardTitle>
               </div>
-              <Button size="sm" type="submit" className="btn-round" color="info" onClick={handleViewNewsfeed}>View</Button> {/* Attach onClick event handler */}
+              <Button size="sm" type="submit" className="btn-round" style={{backgroundColor: '#50BCDA', color: 'white'}} color="default" onClick={handleViewNewsfeed}>View</Button> {/* Attach onClick event handler */}
             </CardBody>
           </Card>
         </Col>
@@ -42,7 +57,21 @@ function SiteMap() {
                 <i className="nc-icon nc-briefcase-24 mr-2" style={{ fontSize: '35px' }} />
                 <CardTitle style={{ marginTop: '12px' }}>Employee Positions</CardTitle>
               </div>
-              <Button size="sm" type="submit" className="btn-round" color="info" onClick={handleViewPositions}>View</Button> {/* Attach onClick event handler */}
+              <Button size="sm" type="submit" className="btn-round" style={{backgroundColor: '#50BCDA', color: 'white'}} color="default" onClick={handleViewPositions}>View</Button> {/* Attach onClick event handler */}
+            </CardBody>
+          </Card>
+        </Col>
+        
+      </Row>
+      <Row>
+      <Col md="4">
+          <Card style={{width: '24rem'}}>
+            <CardBody className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center">
+                <i className="nc-icon nc-vector" style={{ fontSize: '35px' }} />
+                <CardTitle style={{ marginTop: '12px', paddingLeft: '10px' }}>Client Defaults</CardTitle>
+              </div>
+              <Button size="sm" type="submit" className="btn-round" style={{backgroundColor: '#50BCDA', color: 'white'}} color="default" onClick={handleClientDefaults}>View</Button> {/* Attach onClick event handler */}
             </CardBody>
           </Card>
         </Col>
@@ -53,20 +82,7 @@ function SiteMap() {
                 <i className="nc-icon nc-calendar-60" style={{ fontSize: '35px' }} />
                 <CardTitle style={{ marginTop: '12px', paddingLeft: '10px' }}>Leave Types</CardTitle>
               </div>
-              <Button size="sm" type="submit" className="btn-round" color="info" onClick={handleViewLeaveTypes}>View</Button> {/* Attach onClick event handler */}
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-      <Row>
-      <Col md="4">
-          <Card style={{width: '24rem'}}>
-            <CardBody className="d-flex justify-content-between align-items-center">
-              <div className="d-flex align-items-center">
-                <i className="nc-icon nc-vector" style={{ fontSize: '35px' }} />
-                <CardTitle style={{ marginTop: '12px', paddingLeft: '10px' }}>Client Defaults</CardTitle>
-              </div>
-              <Button size="sm" type="submit" className="btn-round" color="info" onClick={handleClientDefaults}>View</Button> {/* Attach onClick event handler */}
+              <Button size="sm" type="submit" className="btn-round" style={{backgroundColor: '#50BCDA', color: 'white'}} color="default" onClick={handleViewLeaveTypes}>View</Button> {/* Attach onClick event handler */}
             </CardBody>
           </Card>
         </Col>

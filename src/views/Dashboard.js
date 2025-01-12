@@ -106,6 +106,7 @@ const createChartData = () => {
 const fetchUpdatedData = async () => {
   try {
     const clientID = localStorage.getItem('ClientID');
+    axios.defaults.withCredentials = true;
     const response = await axios.get(`${apiUrl}/leave/countStaffData?ClientID=${clientID}`);
     
     if (response.data) {
@@ -861,7 +862,8 @@ const fetchLeaveUpdatedData = async () => {
   useEffect(() => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
-  
+    axios.defaults.withCredentials = true;
+    
     axios.get(`${apiUrl}/leave/leaveRequestLastUpdated?ClientID=${clientID}&LeaveTypeID=1`)
       .then((response) => {
         if (response.data.length > 0) {
@@ -908,6 +910,7 @@ const fetchLeaveUpdatedData = async () => {
   useEffect(() => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
+    axios.defaults.withCredentials = true;
   
     axios.get(`${apiUrl}/leave/leaveRequestsStatus?ClientID=${clientID}&LeaveTypeGroupID=2`)
       .then((response) => {
@@ -1038,6 +1041,7 @@ const fetchLeaveUpdatedData = async () => {
   useEffect(() => {
     // Get the ClientID from local storage
     const clientID = localStorage.getItem('ClientID');
+    axios.defaults.withCredentials = true;
   
     // Function to fetch combined data
     const fetchData = async () => {
@@ -1292,6 +1296,7 @@ useEffect(() => {
 
 useEffect(() => {
   const clientID = localStorage.getItem('ClientID'); // Modify this as needed
+  axios.defaults.withCredentials = true;
 
   const signInEndpoint = `${apiUrl}/timeManagement/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=1`;
   const signOutEndpoint = `${apiUrl}/timeManagement/SignInOutMonthlyReport?ClientID=${clientID}&ActionTypeID=2`;

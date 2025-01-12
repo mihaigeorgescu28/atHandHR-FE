@@ -41,6 +41,7 @@ function SignInOut(props) {
   const [showSignInOutSuccessAlert, setShowSignInOutSuccessAlert] = useState(false);
   const [errorWrongPasswordAlert, setErrorWrongPasswordAlert] = useState(false);
   const [aftersigninOutSuccessText, setAftersigninOutSuccessText] = useState(false);
+  const clientID = localStorage.getItem('ClientID');
 
   const hideAlert = () => {
     setShowSignInOutSuccessAlert(false);
@@ -102,7 +103,7 @@ function SignInOut(props) {
         if (result.status === 200) {
           setUserFullName(result.data.FullName);
           setFileName(result.data.ProfilePic);
-          setProfilePic(`${apiUrl}/user_uploads/profile_pic/${result.data.ProfilePic}`);
+          setProfilePic(`${apiUrl}/user_uploads/${clientID}/profile_pics/${result.data.ProfilePic}`);
         }
       } catch (error) {
         console.error(error);

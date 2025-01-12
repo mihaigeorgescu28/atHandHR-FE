@@ -3,8 +3,8 @@ import { Container, Row, Col } from 'reactstrap';
 import CountUp from 'react-countup';
 
 const counters = [
-  { icon: "flaticon-project", end: 5, label: "Companies Trust Us", duration: 3 },
-  { icon: "flaticon-group", end: 100, label: "Leave Requests Managed", duration: 6 },
+  { icon: "flaticon-project", end: 20, label: "Companies Trust Us", duration: 3 },
+  { icon: "flaticon-group", end: 250, label: "Leave Requests Managed", duration: 6 },
   { icon: "flaticon-opinion", end: 50, label: "Documents Secured", duration: 6 },
   { icon: "flaticon-affection", end: 24, label: "Support Available", duration: 6, is24_7: true },
 ];

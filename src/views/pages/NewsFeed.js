@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios"; // Import axios for making HTTP requests
+import { useNavigate } from "react-router-dom";
 
 // reactstrap components
 import {
@@ -24,6 +25,7 @@ function NewsFeed() {
   const [latestNews, setLatestNews] = useState([]);
   const apiUrl = process.env.REACT_APP_APIURL;
   const clientId = localStorage.getItem('ClientID');
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Function to fetch latest news

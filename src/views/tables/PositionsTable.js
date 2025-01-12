@@ -204,6 +204,7 @@ function PositionsTable() {
 
   const fetchData = async () => {
     try {
+      axios.defaults.withCredentials = true;
       const result = await axios.post(`${apiUrl}/sitemap/EmployeePositionData`, {
         ClientID: clientID,
         UserID: userID

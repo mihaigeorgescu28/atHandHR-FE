@@ -19,6 +19,7 @@ function Sidebar(props) {
   const [userFullName, setUserFullName] = useState('');
   const sidebar = React.useRef();
   const [profilePic, setProfilePic] = React.useState();
+  const clientID = localStorage.getItem('ClientID');
   
   // this creates the intial state of this component based on the collapse routes
   // that it gets through props.routes
@@ -143,7 +144,7 @@ function Sidebar(props) {
         );
         if (result.status === 200) {
           setUserFullName(result.data.FullName);
-          setProfilePic(`${apiUrl}/user_uploads/profile_pic/${result.data.ProfilePic}`);
+          setProfilePic(`${apiUrl}/user_uploads/${clientID}/profile_pics/${result.data.ProfilePic}`);
         }
       } catch (error) {
         console.error(error);

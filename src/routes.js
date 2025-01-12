@@ -28,18 +28,21 @@ import Widgets from "views/Widgets.js";
 import NotFound from "views/pages/NotFound.js"
 import NewsFeed from "views/pages/NewsFeed.js"
 import NewsfeedTable from "views/tables/NewsfeedTable.js";
+import CompanyDocumentsTable from "views/tables/CompanyDocumentsTable.js";
 import PositionsTable from "views/tables/PositionsTable.js";
 import LeaveTypesTable from "views/tables/LeaveTypesTable.js";
 import ClientDefaultsForm from "views/forms/ClientDefaultsForm.js";
 import SignInOut from "views/pages/SignInOut.js";
 import SiteMap from "views/pages/SiteMap";
 import MyDocuments from "views/pages/MyDocuments";
+import DocumentGroups from "views/pages/DocumentGroups";
 import PrivacyPolicy from "views/pages/PrivacyPolicy.js"
 import EditUserForm from "views/forms/EditUserForm.js";
 import InsertUserForm from "views/forms/InsertUserForm.js";
 import TermsAndConditions from "views/pages/TermsAndConditions.js";
 import LandingPage from "views/pages/LandingPage.js";
 import AboutUs from "views/pages/AboutUs.js";
+import DocumentGroupsTable from "views/tables/DocumentGroupsTable";
 
 const routes = [
   {
@@ -79,6 +82,15 @@ const routes = [
     views: [],
   },
   {
+    path: "/dashboard",
+    name: "Dashboard",
+    icon: "nc-icon nc-bank",
+    component: Dashboard,
+    layout: "/admin",
+    sidebar: "True",
+    roleId: "1"
+  },
+  {
     path: "/user-profile",
     name: "My Account",
     icon: "nc-icon nc-badge",
@@ -88,14 +100,23 @@ const routes = [
     roleId: "2"
   },
   {
-  path: "/user-documents",
-  name: "My Documents",
+  path: "/document-groups",
+  name: "Group Documents",
   icon: "nc-icon nc-paper",
-  component: MyDocuments,
+  component: DocumentGroups,
   layout: "/admin",
   sidebar: "False",
-  roleId: "1"
+  roleId: "2"
   },
+  {
+    path: "/company-documents/:id",
+    name: "My Documents",
+    icon: "nc-icon nc-paper",
+    component: MyDocuments,
+    layout: "/admin",
+    sidebar: "False",
+    roleId: "2"
+    },
   {
     path: "/resetUserPassword:id",
     name: "Reset Password",
@@ -187,6 +208,24 @@ const routes = [
     roleId: "1"
   },
   {
+    path: "/sitemap/company-documents",
+    name: "Site Map Company Documents",
+    icon: "nc-icon nc-bell-55",
+    component: CompanyDocumentsTable,
+    layout: "/admin",
+    sidebar: "False",
+    roleId: "1"
+  },
+  {
+    path: "/sitemap/document-groups",
+    name: "Site Map Document Groups",
+    icon: "nc-icon nc-bell-55",
+    component: DocumentGroupsTable,
+    layout: "/admin",
+    sidebar: "False",
+    roleId: "1"
+  },
+  {
     path: "/sitemap/positions",
     name: "Site Map Positions",
     icon: "nc-icon nc-bell-55",
@@ -211,15 +250,6 @@ const routes = [
     component: ClientDefaultsForm,
     layout: "/admin",
     sidebar: "False",
-    roleId: "1"
-  },
-  {
-    path: "/dashboard",
-    name: "Dashboard",
-    icon: "nc-icon nc-bank",
-    component: Dashboard,
-    layout: "/admin",
-    sidebar: "True",
     roleId: "1"
   },
   {

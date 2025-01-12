@@ -24,6 +24,7 @@ function VerifyEmail() {
   useEffect(() => {
     const verifyUserOnLoad = async (verifyEmailUID) => {
       try {
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/user/verifyUser`, { verifyEmailUID });
         setVerificationSuccess(true);
         setVerificationMessage(response.data.message); // Set the verification message

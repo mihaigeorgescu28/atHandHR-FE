@@ -68,7 +68,7 @@ function ResetPassword() {
     console.error('UID not found in the URL');
     return;
   }
-
+      axios.defaults.withCredentials = true;
       axios.post(
         `${apiUrl}/user/updateResetUserPassword`,
         {

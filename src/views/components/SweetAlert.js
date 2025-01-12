@@ -1,6 +1,19 @@
 import React from "react";
 import ReactBSAlert from "react-bootstrap-sweetalert";
 
+// generic contact administrator
+export const genericErrorButtonText = (confirmAction, cancelAction, buttonText) => {
+  return (
+    <ReactBSAlert
+      error
+      title="Error"
+      onConfirm= {confirmAction} 
+      onCancel= {cancelAction}
+    > {buttonText}
+    </ReactBSAlert>
+  );
+};
+
 // success message for disabling employee
 export const disableEmployeeSuccess = (confirmAction, cancelAction) => {
   return (
@@ -247,6 +260,18 @@ export const errorInvalidData = (confirmAction) => {
     onConfirm={confirmAction}
   >
     It seems there is a problem with the information you entered. Please fix the errors and try again!
+    </ReactBSAlert>
+  );
+};
+
+export const errorFileUploadMaximumLimit = (confirmAction) => {
+  return (
+    <ReactBSAlert
+    error
+    title="Error!"
+    onConfirm={confirmAction}
+  >
+    File size exceeds the maximum limit of 25MB. Please select a smaller file.
     </ReactBSAlert>
   );
 };

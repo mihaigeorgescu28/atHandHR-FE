@@ -17,6 +17,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore, persistReducer } from "redux-persist"; 
 import storage from "redux-persist/lib/storage"; 
 import rootReducer from "../src/views/helper/RootReducer.js";
+import useAxiosInterceptor from './useAxiosInterceptor.js';
 import "./Vender.js"
 import $ from 'jquery';
 window.jQuery = $;
@@ -41,6 +42,8 @@ const store = configureStore({
 const persistor = persistStore(store);
 
 function App() {
+  useAxiosInterceptor();  // Apply the global Axios interceptor
+
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   const location = useLocation();
   const navigate = useNavigate();

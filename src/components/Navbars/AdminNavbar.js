@@ -39,7 +39,7 @@ function AdminNavbar(props) {
     if (loader) {
         const timeout = setTimeout(() => {
             setLoader(false);
-        }, 2000);
+        }, 1000);
 
         return () => clearTimeout(timeout);
     }
@@ -87,7 +87,7 @@ function AdminNavbar(props) {
   function Logout()
   {
     window.location.href = "/auth/login";
-    localStorage.removeItem('isLoggedIn');
+    localStorage.clear()
   }
 
 
