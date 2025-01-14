@@ -205,7 +205,7 @@ function Register() {
      if(agreement == true)
     {
       setAgreementError("");
-
+      axios.defaults.withCredentials = true;
       axios.post(
         `${apiUrl}/user/register`,
         {

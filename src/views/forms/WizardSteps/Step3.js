@@ -35,6 +35,7 @@ const Step3 = React.forwardRef((props, ref) => {
 
   const confirmResetPassword = async () => {
     try {
+      axios.defaults.withCredentials = true;
       // Make an API call to reset user password with UserID in the body
       const response = await axios.post(`${apiUrl}/emails/resetUserPassword`, { UserID });
   

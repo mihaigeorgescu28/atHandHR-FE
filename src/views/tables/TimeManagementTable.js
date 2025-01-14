@@ -132,6 +132,7 @@ function TimeManagementTable({ actionTypeID, timeManagementStatus, tableDateRang
   useEffect(() => {
     async function fetchData() {
       try {
+        axios.defaults.withCredentials = true;
         let apiUrlWithParams = `${apiUrl}/timeManagement/TimeManagementBreakDown?ClientID=${clientID}&ActionTypeID=${actionTypeID}&TimeManagementStatus=${timeManagementStatus}`;
       
         if (tableDateRange) {

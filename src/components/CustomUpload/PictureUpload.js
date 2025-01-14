@@ -7,6 +7,7 @@ const apiUrl = process.env.REACT_APP_APIURL;
 function PictureUpload(props) {
   const [fileState, setFileState] = useState(null);
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
+  const clientID = localStorage.getItem('ClientID');
 
   
 
@@ -40,7 +41,7 @@ function PictureUpload(props) {
   const imageUrl = fileState
     ? URL.createObjectURL(fileState)
     : props.profilePic
-    ? `${apiUrl}/user_uploads/profile_pic/${props.profilePic}`
+    ? `${apiUrl}/user_uploads/${clientID}/profile_pics//${props.profilePic}`
     : defaultImage;
 
   return (

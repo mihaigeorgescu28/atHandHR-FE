@@ -16248,4 +16248,35 @@ This file was modified entirely by Creative Tim for React-Select v2.0.0
   margin-top: 10vh; }
 
 
- 
+  .custom-file-upload-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  .custom-file-label {
+    display: block;
+    padding: 10px;
+    background-color: #f8f9fa; /* Light gray */
+    border: 1px solid #ced4da; /* Border color */
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    color: #6c757d; /* Muted text */
+    transition: all 0.3s;
+  }
+  
+  .custom-file-label:hover {
+    background-color: #e9ecef; /* Slightly darker gray on hover */
+  }
+  
+  .custom-file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  

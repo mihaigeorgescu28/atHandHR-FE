@@ -245,7 +245,7 @@ function TemporaryPassword() {
       const uidIndex = urlParts.indexOf('temporaryPassword') + 1; // Assuming userId is right after 'temporaryPassword'
       const userId = uidIndex < urlParts.length ? urlParts[uidIndex] : null;
       setUserId(userId)
-      
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${apiUrl}/user/checkForTemporaryPassword`, { userId }, { withCredentials: true });
 
         if (response.data.success) {

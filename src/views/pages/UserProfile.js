@@ -3,6 +3,7 @@ import axios from 'axios';
 import ReactDatetime from "react-datetime";
 
 import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 // reactstrap components
 import {
   Button,
@@ -24,6 +25,7 @@ import PictureUpload from "components/CustomUpload/PictureUpload.js";
 
 const apiUrl = process.env.REACT_APP_APIURL;
 function UserProfile() {
+  const navigate = useNavigate();
   const [UserID, setUserID] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [userFullName, setUserFullName] = useState("");
@@ -294,7 +296,7 @@ function UserProfile() {
         if (result.status === 200) {
           setUserFullName(result.data.FullName);
           setFileName(result.data.ProfilePic);
-          setProfilePic(`${apiUrl}/user_uploads/profile_pic/${result.data.ProfilePic}`);
+          setProfilePic(`${apiUrl}/user_uploads/${clientID}/profile_pics/${result.data.ProfilePic}`);
           setDaysUntilNextHoliday(result.data.DaysUntilNextHoliday)
         }
       } catch (error) {
@@ -400,6 +402,18 @@ setPostalCode(userData.PostalCode !== 'null' ? userData.PostalCode : '');
           }}
         >
           Reset Password
+        </Button>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Button
+          type="submit"
+          className="btn-round"
+          color="secondary"
+          size="sm"
+          onClick={() => navigate('/admin/document-groups')}
+        >
+          View Documents
         </Button>
       </div>
     </CardBody>

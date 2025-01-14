@@ -75,8 +75,8 @@ function Login() {
   };
 
   const handleSubmit = (event) => {
-    // IMPORTANT NEEDS TO STAY HERE TO PUT TOKEN IN COOKIES
-    axios.defaults.withCredentials = true;
+     // IMPORTANT NEEDS TO STAY HERE TO PUT TOKEN IN COOKIES
+     axios.defaults.withCredentials = true;
     event.preventDefault();
     axios.post(
       `${apiUrl}/user/login`,
@@ -86,8 +86,8 @@ function Login() {
       },
     ).then((result) => {
       console.log(result); // Log the full response for debugging
-  
       if (result.status === 200) {
+        
         if (result.data.success) {
           // Store relevant info in localStorage, no need to handle token manually
           setMessage(result.data.message);
