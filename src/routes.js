@@ -116,6 +116,7 @@ const routes = [
     component: MyDocuments,
     layout: "/admin",
     sidebar: "False",
+    innerURL: "True",
     roleId: "2"
     },
   {
