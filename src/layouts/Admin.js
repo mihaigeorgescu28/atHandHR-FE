@@ -92,7 +92,7 @@ function AuthAdmin(props) {
         }
       } else if (updatedRoute.collapse !== true) {
         // Admin can see everything
-      if ((parseInt(RoleID) === 1 || (parseInt(updatedRoute.roleId) === parseInt(RoleID) ) && (updatedRoute.sidebar === 'True') || updatedRoute.innerURL == 'True') )
+      if ((parseInt(RoleID) === 1 || (parseInt(updatedRoute.roleId) === parseInt(RoleID) ) && (updatedRoute.sidebar === 'True') || updatedRoute.innerURL === 'True') )
          {
           
         const fullPath = updatedRoute.layout + updatedRoute.path;

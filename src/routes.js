@@ -99,6 +99,7 @@ const routes = [
     sidebar: "True",
     roleId: "2"
   },
+  
   {
   path: "/document-groups",
   name: "Group Documents",
@@ -116,6 +117,7 @@ const routes = [
     component: MyDocuments,
     layout: "/admin",
     sidebar: "False",
+    innerURL: "True",
     roleId: "2"
     },
   {
