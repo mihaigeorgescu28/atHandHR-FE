@@ -106,6 +106,7 @@ const routes = [
   component: DocumentGroups,
   layout: "/admin",
   sidebar: "False",
+  innerURL: "True",
   roleId: "2"
   },
   {
