@@ -1,129 +1,59 @@
-# [Material Dashboard PRO React](https://demos.creative-tim.com/paper-dashboard-pro-react/#/dashboard) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?url=https%3A%2F%2Fnud-pro-react.creative-tim.com&text=Light%20Bootstrap%20Dashboard%20React%20-%20Free%20Bootstrap%20Admin%20Template&original_referer=https%3A%2F%2Fdemos.creative-tim.com%2Fpaper-dashboard-pro-react%2F&via=creativetim&hashtags=react%2Cbootstrap)
+<div align="center">
+At Hand HR
+</div>
 
-![version](https://img.shields.io/badge/version-1.3.1-blue.svg) [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/ct-paper-dashboard-pro-react.svg?maxAge=2592000)](https://github.com/creativetimofficial/ct-paper-dashboard-pro-react/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/ct-paper-dashboard-pro-react.svg?maxAge=2592000)](https://github.com/creativetimofficial/ct-paper-dashboard-pro/issues-react?q=is%3Aissue+is%3Aclosed) [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/E4aHAQy)
+<br>
 
-![Product Gif](./github-assets/paper-dashboard-pro-react.gif)
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/51523ae4-ed0d-4f7c-aadd-5cc096b8ecfe" alt="At Hand HR Logo" width="200" />
+</div>
+<br>
+At Hand HR is a full-stack HR management platform designed for small teams and remote companies. It provides a secure and user-friendly way to manage employee information, leave requests, internal documents, time tracking, and basic reporting.
 
-**[Paper Dashboard PRO React](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/dashboard)** is a beautiful [Reactstrap](https://reactstrap.github.io/) ([Bootstrap 4](http://getbootstrap.com/)) admin dashboard with a large number of components, designed to look neat and organized. If you are looking for a tool to manage and visualize data about your business, this dashboard is the thing for you. It combines colors that are easy on the eye, spacious cards, beautiful typography, and graphics. Paper Dashboard PRO React comes packed with all plugins that you might need inside a project and documentation on how to get started. It is light and easy to use, and also very powerful.
+🚀 Tech Stack
+Frontend: React.js
 
-We made it our priority to not add things that you don't need, so the Paper Dashboard PRO React comes with just enough features for you to easily use. It combines multiple components and plugins and features numerous example of how it can be used. Inside the archive, you will also find multiple example pages to get you started or provide inspiration.
+Backend: Node.js (Express)
 
-**[Paper Dashboard PRO React](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/dashboard)** is the extended version of [Paper Dashboard](https://www.creative-tim.com/product/paper-dashboard-pro). Based on feedback from people that downloaded and used it, we have added needed components, and we have created multiple examples pages. We are curious to see how you want to use it and also improve it, so let us know any feedback you have.
+Database: MySQL
 
-**Bootstrap 4 support**
+Deployment: Self-hosted on VPS (Nginx), with domain and database security configured
 
-Paper Dashboard PRO React is built on top of [Bootstrap 4](http://getbootstrap.com/) with the usage of [Reactstrap](https://reactstrap.github.io/), so it fully supports it. Most of the elements from the dashboard are re-designed to resemble sheets of paper and color pastels. If they are elements that we have not touched, they will gracefully fall back to the [Bootstrap 4](http://getbootstrap.com/) / [Reactstrap](https://reactstrap.github.io/) default.
+Authentication & Access: Role-based (Admin, Manager, Employee)
 
-Let us know what you think and what we can improve below. And good luck with development!
+✨ Key Features
+Employee Portal – View company news, manage personal details
 
-View example pages [here](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/dashboard).
+Leave & Absence Management – Submit, approve, and track time off with a shared calendar
 
-## Table of Contents
+Document Centre – Store and share policies, contracts, and other internal documents
 
-- [Versions](#versions)
-- [Demo](#demo)
-- [Quick Start](#quick-start)
-- [Documentation](#documentation)
-- [File Structure](#file-structure)
-- [Browser Support](#browser-support)
-- [Resources](#resources)
-- [Reporting Issues](#reporting-issues)
-- [Technical Support or Questions](#technical-support-or-questions)
-- [Licensing](#licensing)
-- [Useful Links](#useful-links)
+Time Tracking – Clock in/out functionality with built-in reporting
 
-## Versions
+Reporting – Basic reporting tools using custom queries and data visualisations
 
-[<img src="./github-assets/html.png" width="60" height="60" />](https://www.creative-tim.com/product/paper-dashboard-2-pro)
-[<img src="./github-assets/react.svg" width="60" height="60" />](https://www.creative-tim.com/product/paper-dashboard-pro-react)
-[<img src="./github-assets/angular.png" width="60" height="60" />](https://www.creative-tim.com/product/vue-paper-dashboard-2-pro)
-[<img src="./github-assets/vuejs.png" width="60" height="60" />](https://www.creative-tim.com/product/paper-dashboard-pro-angular)
+Role-Based Access Control – Admins, managers, and employees have tailored views and permissions
 
-| HTML                                                                                                                                                                              | React                                                                                                                                                                            | Vue                                                                                                                                                                                      | Angular                                                                                                                                                                                         |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Paper Dashboard 2 Pro HTML](https://s3.amazonaws.com/creativetim_bucket/products/84/thumb/opt_pd2p_thumbnail.jpg)](https://www.creative-tim.com/product/paper-dashboard-2-pro) | [![Paper Dashboard Pro React](https://s3.amazonaws.com/creativetim_bucket/products/134/thumb/opt_pdp_react.jpg)](https://www.creative-tim.com/product/paper-dashboard-pro-react) | [![Vue Paper Dashboard 2 Pro](https://s3.amazonaws.com/creativetim_bucket/products/88/thumb/opt_pd2p_vue_thumbnail.jpg)](https://www.creative-tim.com/product/vue-paper-dashboard-2-pro) | [![Paper Dashboard Pro Angular](https://s3.amazonaws.com/creativetim_bucket/products/59/thumb/opt_pdp_angular_thumbnail.jpg)](https://www.creative-tim.com/product/paper-dashboard-pro-angular) |
+Responsive Design – Fully optimised for desktop and mobile use
 
-## Demo
+🔐 Deployment & Security
+Configured and deployed to a private server with domain management
 
-- [Start page](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/dashboard)
-- [User profile page](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/user-profile)
-- [Tables page ](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/extended-tables)
-- [Maps Page](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/google-maps)
-- [Notifications page](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/notifications)
+Secured MySQL database with remote access restrictions and encryption
 
-[View More](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/dashboard).
+Proper separation of frontend and backend environments
 
-## Quick start
+HTTPS-ready (with optional SSL configuration)
 
-Quick start options:
+📷 Screenshots
 
-- Buy from [Creative Tim](https://www.creative-tim.com/product/paper-dashboard-pro-react)
+<img width="1893" height="855" alt="image" src="https://github.com/user-attachments/assets/f580b7b8-3f51-4cac-8e26-1ec5a49fadb6" />
+<img width="1905" height="843" alt="image" src="https://github.com/user-attachments/assets/35e31f78-708e-4bc2-b3b8-c9178ca2d6bf" />
+<img width="1898" height="961" alt="image" src="https://github.com/user-attachments/assets/e741ce32-28c4-4959-88c7-90cda6f2cf93" />
+<img width="1915" height="849" alt="image" src="https://github.com/user-attachments/assets/ae9f51cf-3e22-4fd3-8c67-720ae86c90e9" />
+<img width="1891" height="853" alt="image" src="https://github.com/user-attachments/assets/d7e1ef9b-4a2f-44a6-8b5c-63b5ffdd3774" />
+<img width="1916" height="859" alt="image" src="https://github.com/user-attachments/assets/9fb9b88e-4af9-4c52-8fc9-d743e242fac2" />
+<img width="1918" height="859" alt="image" src="https://github.com/user-attachments/assets/8ee70f2b-f95d-40f7-9460-5753713fc8a4" />
 
-## Documentation
-
-The documentation for the Material Dashboard Pro is hosted at our [website](https://demos.creative-tim.com/paper-dashboard-pro-react/#/documentation/tutorial).
-
-## File Structure
-
-Within the download you'll find the following directories and files:
-
-```
-paper-dashboad-pro-react
-│
-
-```
-
-## Browser Support
-
-At present, we officially aim to support the last two versions of the following browsers:
-
-<img src="./github-assets/chrome.png" width="64" height="64"> <img src="./github-assets/firefox.png" width="64" height="64"> <img src="./github-assets/edge.png" width="64" height="64"> <img src="./github-assets/safari.png" width="64" height="64"> <img src="./github-assets/opera.png" width="64" height="64">
-
-## Resources
-
-- [Live Preview](https://demos.creative-tim.com/paper-dashboard-pro-react/#/admin/dashboard)
-- Buy Page: https://www.creative-tim.com/product/paper-dashboard-pro-react
-- Documentation is [here](https://demos.creative-tim.com/paper-dashboard-pro-react/#/documentation/tutorial)
-- License Agreement: https://www.creative-tim.com/license
-- Support: https://www.creative-tim.com/contact-us
-- Issues: [Github Issues Page](https://github.com/creativetimofficial/ct-paper-dashboard-pro-react/issues)
-- Paper Dashboard React - [demo](https://www.creative-tim.com/product/paper-dashboard-react?ref=github-md-pro-react)
-
-## Reporting Issues
-
-We use GitHub Issues as the official bug tracker for the Material Dashboard Pro. Here are some advices for our users that want to report an issue:
-
-1. Make sure that you are using the latest version of the Material Dashboard Pro. Check the CHANGELOG from your dashboard on our [website](https://www.creative-tim.com/).
-2. Providing us reproducible steps for the issue will shorten the time it takes for it to be fixed.
-3. Some issues may be browser specific, so specifying in what browser you encountered the issue might help.
-
-## Technical Support or Questions
-
-If you have questions or need help integrating the product please [contact us](https://www.creative-tim.com/contact-us) instead of opening an issue.
-
-## Licensing
-
-- Copyright 2022 Creative Tim (https://www.creative-tim.com)
-- Creative Tim [license](https://www.creative-tim.com/license)
-
-## Useful Links
-
-- [More products](https://www.creative-tim.com/bootstrap-themes) from Creative Tim
-
-- [Tutorials](https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w)
-
-- [Freebies](https://www.creative-tim.com/bootstrap-themes/free) from Creative Tim
-
-- [Affiliate Program](https://www.creative-tim.com/affiliates/new) (earn money)
-
-##### Social Media
-
-Twitter: <https://twitter.com/CreativeTim>
-
-Facebook: <https://www.facebook.com/CreativeTim>
-
-Dribbble: <https://dribbble.com/creativetim>
-
-Google+: <https://plus.google.com/+CreativetimPage>
-
-Instagram: <https://instagram.com/creativetimofficial>
+🛠 Status
+Actively maintained and evolving. New modules such as performance reviews and onboarding workflows are planned for future releases.
